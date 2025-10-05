@@ -22,7 +22,13 @@ export function renderCoursesPage(root, deps) {
   input.name = 'courseName';
   const btn = document.createElement('button');
   btn.type = 'submit';
-  btn.textContent = 'Ajouter un cours';
+  btn.textContent = '+';
+  // Match action button sizing used elsewhere
+  btn.style.backgroundColor = '#e5e7eb';
+  btn.style.color = '#111827';
+  btn.style.border = 'none';
+  btn.style.borderRadius = '0.375rem';
+  btn.style.padding = '0.25rem 0.5rem';
   form.appendChild(input);
   form.appendChild(btn);
   root.appendChild(form);

@@ -31,20 +31,26 @@ export async function renderCourseDetailsPage(root, params, deps) {
   renameInput.required = true;
   const renameBtn = document.createElement('button');
   renameBtn.type = 'submit';
-  renameBtn.textContent = 'Renommer le cours';
+  renameBtn.textContent = '✏️';
+  // Style to match delete button size
+  renameBtn.style.backgroundColor = '#e5e7eb';
+  renameBtn.style.color = '#111827';
+  renameBtn.style.border = 'none';
+  renameBtn.style.borderRadius = '0.375rem';
+  renameBtn.style.padding = '0.25rem 0.5rem';
   renameForm.appendChild(renameInput);
   renameForm.appendChild(renameBtn);
-  root.appendChild(renameForm);
 
-  const back = document.createElement('a');
-  back.href = '#/courses';
-  back.textContent = '← Retour aux cours';
-  root.appendChild(back);
-
+  // Delete course button next to rename
   const deleteCourseBtn = document.createElement('button');
   deleteCourseBtn.type = 'button';
-  deleteCourseBtn.textContent = 'Supprimer ce cours';
-  deleteCourseBtn.style.marginLeft = '1rem';
+  deleteCourseBtn.textContent = '🗑️';
+  deleteCourseBtn.style.marginLeft = '0.5rem';
+  deleteCourseBtn.style.backgroundColor = '#dc2626';
+  deleteCourseBtn.style.color = '#fff';
+  deleteCourseBtn.style.border = 'none';
+  deleteCourseBtn.style.borderRadius = '0.375rem';
+  deleteCourseBtn.style.padding = '0.25rem 0.5rem';
   deleteCourseBtn.addEventListener('click', async () => {
     const confirmed = window.confirm('Supprimer ce cours et tous ses élèves ?');
     if (!confirmed) return;
@@ -53,7 +59,15 @@ export async function renderCourseDetailsPage(root, params, deps) {
       location.hash = '#/courses';
     }
   });
-  root.appendChild(deleteCourseBtn);
+  renameForm.appendChild(deleteCourseBtn);
+  root.appendChild(renameForm);
+
+  const back = document.createElement('a');
+  back.href = '#/courses';
+  back.textContent = '← Retour aux cours';
+  root.appendChild(back);
+
+  // (delete course button moved next to rename form)
 
   const hr = document.createElement('hr');
   root.appendChild(hr);
@@ -68,7 +82,13 @@ export async function renderCourseDetailsPage(root, params, deps) {
   input.name = 'studentName';
   const submit = document.createElement('button');
   submit.type = 'submit';
-  submit.textContent = 'Ajouter un élève';
+  submit.textContent = '+';
+  // Match action button sizing used elsewhere
+  submit.style.backgroundColor = '#e5e7eb';
+  submit.style.color = '#111827';
+  submit.style.border = 'none';
+  submit.style.borderRadius = '0.375rem';
+  submit.style.padding = '0.25rem 0.5rem';
   form.appendChild(input);
   form.appendChild(submit);
   root.appendChild(form);
@@ -101,7 +121,13 @@ export async function renderCourseDetailsPage(root, params, deps) {
       renameInput.size = Math.max(8, s.name.length);
       const renameBtn = document.createElement('button');
       renameBtn.type = 'submit';
-      renameBtn.textContent = 'Renommer';
+      renameBtn.textContent = '✏️';
+      // Style to match delete button size
+      renameBtn.style.backgroundColor = '#e5e7eb';
+      renameBtn.style.color = '#111827';
+      renameBtn.style.border = 'none';
+      renameBtn.style.borderRadius = '0.375rem';
+      renameBtn.style.padding = '0.25rem 0.5rem';
       renameInlineForm.appendChild(renameInput);
       renameInlineForm.appendChild(renameBtn);
 
@@ -117,8 +143,13 @@ export async function renderCourseDetailsPage(root, params, deps) {
 
       const deleteBtn = document.createElement('button');
       deleteBtn.type = 'button';
-      deleteBtn.textContent = 'Supprimer';
+      deleteBtn.textContent = '🗑️';
       deleteBtn.style.marginLeft = '0.5rem';
+      deleteBtn.style.backgroundColor = '#dc2626';
+      deleteBtn.style.color = '#fff';
+      deleteBtn.style.border = 'none';
+      deleteBtn.style.borderRadius = '0.375rem';
+      deleteBtn.style.padding = '0.25rem 0.5rem';
       deleteBtn.addEventListener('click', async () => {
         const confirmed = window.confirm(`Supprimer l'élève "${s.name}" ?`);
         if (!confirmed) return;
