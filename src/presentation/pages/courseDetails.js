@@ -67,6 +67,20 @@ export async function renderCourseDetailsPage(root, params, deps) {
   back.textContent = '← Retour aux cours';
   root.appendChild(back);
 
+  // Generate impro button
+  const generateImproBtn = document.createElement('a');
+  generateImproBtn.href = `#/courses/${params.id}/impro`;
+  generateImproBtn.textContent = '🎭 Générer une impro';
+  generateImproBtn.style.display = 'inline-block';
+  generateImproBtn.style.marginLeft = '1rem';
+  generateImproBtn.style.backgroundColor = '#22c55e';
+  generateImproBtn.style.color = '#052e16';
+  generateImproBtn.style.textDecoration = 'none';
+  generateImproBtn.style.borderRadius = '0.5rem';
+  generateImproBtn.style.padding = '0.5rem 1rem';
+  generateImproBtn.style.fontWeight = '600';
+  root.appendChild(generateImproBtn);
+
   // (delete course button moved next to rename form)
 
   const hr = document.createElement('hr');
