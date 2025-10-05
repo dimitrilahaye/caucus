@@ -52,53 +52,77 @@ export function renderPlacesPage(root, deps) {
         placeCard.className = 'card';
         
         const placeContent = document.createElement('div');
-        placeContent.className = 'inline-edit-container';
+        placeContent.className = 'flex items-center justify-between gap-sm';
         
-        const renameInput = document.createElement('input');
-        renameInput.type = 'text';
-        renameInput.value = p.name;
-        renameInput.required = true;
-        renameInput.className = 'input-inline';
-
-        const renameBtn = document.createElement('button');
-        renameBtn.type = 'button';
-        renameBtn.textContent = '✏️';
-        renameBtn.className = 'btn-secondary btn-match-input';
-        renameBtn.addEventListener('click', async (ev) => {
-          ev.preventDefault();
-          const newName = renameInput.value.trim();
-          if (!newName) return;
+        // Utiliser contenteditable pour l'édition inline
+        const editableName = document.createElement('span');
+        editableName.textContent = p.name;
+        editableName.contentEditable = 'true';
+        editableName.className = 'editable-name px-2 py-1 rounded hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500';
+        editableName.style.minHeight = '2rem';
+        editableName.style.display = 'inline-block';
+        
+        // Ajouter un padding supplémentaire en mode édition
+        editableName.addEventListener('focus', () => {
+          editableName.style.padding = '8px 12px';
+          editableName.style.backgroundColor = '';
+          editableName.style.border = '1px solid #dee2e6';
           
-          // Feedback visuel pendant la sauvegarde
-          const originalText = renameBtn.textContent;
-          renameBtn.textContent = '⏳';
-          renameBtn.disabled = true;
-          
-          try {
-            const changed = await deps.placesUseCase.rename(p.id, newName);
-            if (changed) {
-              // Confirmation de succès
-              renameBtn.textContent = '✅';
-              setTimeout(() => {
-                refresh();
-              }, 500);
-            } else {
-              // Erreur
-              renameBtn.textContent = '❌';
-              setTimeout(() => {
-                renameBtn.textContent = originalText;
-                renameBtn.disabled = false;
-              }, 1000);
+          // Positionner le curseur à la fin du texte
+          setTimeout(() => {
+            const range = document.createRange();
+            const sel = window.getSelection();
+            if (sel) {
+              range.selectNodeContents(editableName);
+              range.collapse(false); // false = à la fin
+              sel.removeAllRanges();
+              sel.addRange(range);
             }
-          } catch (error) {
-            renameBtn.textContent = '❌';
-            setTimeout(() => {
-              renameBtn.textContent = originalText;
-              renameBtn.disabled = false;
-            }, 1000);
+          }, 0);
+        });
+        
+        // Gérer la sauvegarde et le style lors de la perte de focus
+        editableName.addEventListener('blur', async () => {
+          // Restaurer le style normal
+          editableName.style.padding = '4px 8px';
+          editableName.style.backgroundColor = '';
+          editableName.style.border = '';
+          
+          // Gérer la sauvegarde
+          const newName = editableName.textContent.trim();
+          if (newName && newName !== p.name) {
+            try {
+              await deps.placesUseCase.rename(p.id, newName);
+              // Feedback visuel de succès
+              editableName.style.backgroundColor = '#d4edda';
+              setTimeout(() => {
+                editableName.style.backgroundColor = '';
+              }, 1000);
+            } catch (error) {
+              // En cas d'erreur, revenir à l'ancienne valeur
+              editableName.textContent = p.name;
+              editableName.style.backgroundColor = '#f8d7da';
+              setTimeout(() => {
+                editableName.style.backgroundColor = '';
+              }, 2000);
+            }
+          } else if (!newName) {
+            // Si vide, revenir à l'ancienne valeur
+            editableName.textContent = p.name;
           }
         });
-
+        
+        editableName.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            editableName.blur(); // Déclenche l'événement blur
+          } else if (e.key === 'Escape') {
+            e.preventDefault();
+            editableName.textContent = p.name;
+            editableName.blur();
+          }
+        });
+        
         const deleteBtn = document.createElement('button');
         deleteBtn.type = 'button';
         deleteBtn.textContent = '🗑️';
@@ -109,14 +133,9 @@ export function renderPlacesPage(root, deps) {
           const ok = await deps.placesUseCase.remove(p.id);
           if (ok) refresh();
         });
-
-        const btnGroup = document.createElement('div');
-        btnGroup.className = 'btn-group';
-        btnGroup.appendChild(renameBtn);
-        btnGroup.appendChild(deleteBtn);
         
-        placeContent.appendChild(renameInput);
-        placeContent.appendChild(btnGroup);
+        placeContent.appendChild(editableName);
+        placeContent.appendChild(deleteBtn);
         
         placeCard.appendChild(placeContent);
         list.appendChild(placeCard);
