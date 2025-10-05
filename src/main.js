@@ -6,6 +6,7 @@ import { renderCourseDetailsPage } from './presentation/pages/courseDetails.js';
 import { renderBurgerMenu } from './presentation/components/burgerMenu.js';
 import { renderPlacesPage } from './presentation/pages/places.js';
 import { renderMoodsPage } from './presentation/pages/moods.js';
+import { renderCharactersPage } from './presentation/pages/characters.js';
 
 const counterElement = document.querySelector('#counter');
 const button = document.querySelector('#btn');
@@ -45,6 +46,7 @@ if (appRoot) {
     { path: '/courses/:id', handler: (params) => renderCourseDetailsPage(appRoot, params, deps) },
     { path: '/places', handler: () => renderPlacesPage(appRoot, deps) },
     { path: '/moods', handler: () => renderMoodsPage(appRoot, deps) },
+    { path: '/characters', handler: () => renderCharactersPage(appRoot, deps) },
   ]);
   router.start();
 }

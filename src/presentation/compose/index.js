@@ -2,6 +2,7 @@
 import { createCoursesAdapter } from '../../datasource/localstorage/coursesAdapter.js';
 import { createPlacesAdapter } from '../../datasource/localstorage/placesAdapter.js';
 import { createMoodsAdapter } from '../../datasource/localstorage/moodsAdapter.js';
+import { createCharactersAdapter } from '../../datasource/localstorage/charactersAdapter.js';
 
 /**
  * Composition root: instantiates adapters (datasource) and injects them into core use-cases.
@@ -12,6 +13,7 @@ import { createMoodsAdapter } from '../../datasource/localstorage/moodsAdapter.j
  *  coursesPort: import('../../core/ports/coursesPort.js').CoursesPort,
  *  placesPort: import('../../core/ports/placesPort.js').PlacesPort,
  *  moodsPort: import('../../core/ports/moodsPort.js').MoodsPort,
+ *  charactersPort: import('../../core/ports/charactersPort.js').CharactersPort,
  * }} CompositionDeps */
 
 /**
@@ -23,6 +25,7 @@ export function composeApp() {
     coursesPort: createCoursesAdapter(),
     placesPort: createPlacesAdapter(),
     moodsPort: createMoodsAdapter(),
+    charactersPort: createCharactersAdapter(),
   };
   return deps;
 }
