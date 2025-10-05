@@ -161,6 +161,7 @@ export async function renderImproPage(root, params, deps) {
   const generateBtn = document.createElement('button');
   generateBtn.textContent = '🎭 Générer une impro';
   generateBtn.className = 'btn-primary btn-lg mb-lg';
+  generateBtn.disabled = true; // Désactivé par défaut
   container.appendChild(generateBtn);
 
   // Results section
@@ -173,6 +174,11 @@ export async function renderImproPage(root, params, deps) {
 
           let selectedStudents = new Set();
           let hasGeneratedImpro = false;
+
+          // Fonction pour mettre à jour l'état du bouton de génération
+          function updateGenerateButton() {
+            generateBtn.disabled = selectedStudents.size === 0;
+          }
 
           // Fonctions de régénération
           async function regeneratePlace(currentPlaces, placeIndex) {
@@ -409,6 +415,8 @@ export async function renderImproPage(root, params, deps) {
         } else {
           selectAllBtn.textContent = 'Tout sélectionner';
         }
+        // Mettre à jour l'état du bouton de génération
+        updateGenerateButton();
       });
       
       label.appendChild(checkbox);
@@ -432,6 +440,7 @@ export async function renderImproPage(root, params, deps) {
       selectAllBtn.textContent = 'Tout dé-sélectionner';
     }
     renderStudents();
+    updateGenerateButton();
   });
 
   generateBtn.addEventListener('click', async () => {
@@ -622,4 +631,5 @@ export async function renderImproPage(root, params, deps) {
   });
 
   renderStudents();
+  updateGenerateButton();
 }
