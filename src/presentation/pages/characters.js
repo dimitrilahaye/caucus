@@ -54,15 +54,6 @@ export function renderCharactersPage(root, deps) {
         const characterContent = document.createElement('div');
         characterContent.className = 'flex justify-between items-center';
         
-        const nameSpan = document.createElement('span');
-        nameSpan.textContent = c.name;
-        nameSpan.className = 'font-medium';
-        
-        const actionsDiv = document.createElement('div');
-        actionsDiv.className = 'flex gap-sm';
-        
-        const renameInlineForm = document.createElement('form');
-        renameInlineForm.className = 'flex gap-xs';
         const renameInput = document.createElement('input');
         renameInput.type = 'text';
         renameInput.value = c.name;
@@ -70,20 +61,43 @@ export function renderCharactersPage(root, deps) {
         renameInput.className = 'btn-sm';
         renameInput.style.width = 'auto';
         renameInput.style.minWidth = '120px';
+
         const renameBtn = document.createElement('button');
-        renameBtn.type = 'submit';
+        renameBtn.type = 'button';
         renameBtn.textContent = '✏️';
         renameBtn.className = 'btn-secondary btn-sm';
-        renameInlineForm.appendChild(renameInput);
-        renameInlineForm.appendChild(renameBtn);
-
-        renameInlineForm.addEventListener('submit', async (ev) => {
+        renameBtn.addEventListener('click', async (ev) => {
           ev.preventDefault();
           const newName = renameInput.value.trim();
           if (!newName) return;
-          const changed = await deps.charactersPort.rename(c.id, newName);
-          if (changed) {
-            refresh();
+          
+          // Feedback visuel pendant la sauvegarde
+          const originalText = renameBtn.textContent;
+          renameBtn.textContent = '⏳';
+          renameBtn.disabled = true;
+          
+          try {
+            const changed = await deps.charactersPort.rename(c.id, newName);
+            if (changed) {
+              // Confirmation de succès
+              renameBtn.textContent = '✅';
+              setTimeout(() => {
+                refresh();
+              }, 500);
+            } else {
+              // Erreur
+              renameBtn.textContent = '❌';
+              setTimeout(() => {
+                renameBtn.textContent = originalText;
+                renameBtn.disabled = false;
+              }, 1000);
+            }
+          } catch (error) {
+            renameBtn.textContent = '❌';
+            setTimeout(() => {
+              renameBtn.textContent = originalText;
+              renameBtn.disabled = false;
+            }, 1000);
           }
         });
 
@@ -98,10 +112,12 @@ export function renderCharactersPage(root, deps) {
           if (ok) refresh();
         });
 
-        actionsDiv.appendChild(renameInlineForm);
+        const actionsDiv = document.createElement('div');
+        actionsDiv.className = 'flex gap-sm';
+        actionsDiv.appendChild(renameBtn);
         actionsDiv.appendChild(deleteBtn);
         
-        characterContent.appendChild(nameSpan);
+        characterContent.appendChild(renameInput);
         characterContent.appendChild(actionsDiv);
         
         characterCard.appendChild(characterContent);
