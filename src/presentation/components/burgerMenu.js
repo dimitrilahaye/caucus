@@ -63,6 +63,19 @@ export function renderBurgerMenu(mountOn) {
     }
   });
 
+  // Close menu when clicking outside
+  document.addEventListener('click', (e) => {
+    const target = /** @type {HTMLElement} */(e.target);
+    const isMenuOpen = !panel.hasAttribute('hidden');
+    
+    if (isMenuOpen && 
+        !container.contains(target) && 
+        target !== button && 
+        target !== panel) {
+      panel.setAttribute('hidden', '');
+    }
+  });
+
   container.appendChild(button);
   container.appendChild(panel);
   mountOn.appendChild(container);
