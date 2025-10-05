@@ -9,21 +9,6 @@ import { renderMoodsPage } from './presentation/pages/moods.js';
 import { renderCharactersPage } from './presentation/pages/characters.js';
 import { renderImproPage } from './presentation/pages/impro.js';
 
-const counterElement = document.querySelector('#counter');
-const button = document.querySelector('#btn');
-let count = 0;
-
-function updateCounter() {
-  counterElement.textContent = `Clicks: ${count}`;
-}
-
-button.addEventListener('click', () => {
-  count += 1;
-  updateCounter();
-});
-
-updateCounter();
-
 // Optional: report that PWA service worker is ready
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', async () => {
