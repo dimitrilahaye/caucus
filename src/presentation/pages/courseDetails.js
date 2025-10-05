@@ -84,6 +84,12 @@ export async function renderCourseDetailsPage(root, params, deps) {
   generateImproBtn.href = `#/courses/${params.id}/impro`;
   generateImproBtn.textContent = '🎭 Générer une impro';
   generateImproBtn.className = 'btn-primary btn-lg';
+  generateImproBtn.addEventListener('click', (e) => {
+    if (!course.students.length) {
+      e.preventDefault();
+      alert('Il faut au moins un élève pour générer une impro');
+    }
+  });
   improSection.appendChild(generateImproBtn);
   
   container.appendChild(improSection);
