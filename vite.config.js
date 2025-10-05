@@ -14,9 +14,9 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'favicon.ico', 'robots.txt', 'apple-touch-icon.png'],
       manifest: {
-        name: 'Cre Impro Vibe Cording',
+        name: 'Cré\'Impro',
         short_name: 'CIVC',
-        description: 'Hello World PWA (Vite + vanilla JS)',
+        description: 'Générateur d\'impros',
         theme_color: '#0f172a',
         background_color: '#0f172a',
         display: 'standalone',
