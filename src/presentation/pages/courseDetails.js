@@ -21,6 +21,21 @@ export async function renderCourseDetailsPage(root, params, deps) {
   title.textContent = `Cours: ${course.name}`;
   root.appendChild(title);
 
+  // Rename course form
+  const renameForm = document.createElement('form');
+  renameForm.style.margin = '0 0 1rem 0';
+  const renameInput = document.createElement('input');
+  renameInput.type = 'text';
+  renameInput.placeholder = 'Nouveau nom du cours';
+  renameInput.value = course.name;
+  renameInput.required = true;
+  const renameBtn = document.createElement('button');
+  renameBtn.type = 'submit';
+  renameBtn.textContent = 'Renommer le cours';
+  renameForm.appendChild(renameInput);
+  renameForm.appendChild(renameBtn);
+  root.appendChild(renameForm);
+
   const back = document.createElement('a');
   back.href = '#/courses';
   back.textContent = '← Retour aux cours';
@@ -72,6 +87,16 @@ export async function renderCourseDetailsPage(root, params, deps) {
     await deps.coursesPort.addStudent(params.id, name);
     input.value = '';
     refreshStudents();
+  });
+
+  renameForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const newName = renameInput.value.trim();
+    if (!newName) return;
+    const updated = await deps.coursesPort.rename(params.id, newName);
+    if (updated) {
+      title.textContent = `Cours: ${updated.name}`;
+    }
   });
 
   refreshStudents();
