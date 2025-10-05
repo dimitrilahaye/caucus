@@ -15,10 +15,13 @@
   - `core/` expose des interfaces (ports) pour les accès données et l’aléatoire.
   - `datasource/` fournit les adaptateurs qui implémentent ces ports.
   - `presentation/` compose le tout (composition root) et injecte les implémentations dans les use-cases `core/`.
-- Règles d’import:
+- Règles d'import:
   - `core` → importe seulement `core`.
   - `datasource` → peut importer `core`, jamais `presentation`.
   - `presentation` → peut importer `core` et la composition, jamais directement `datasource`.
+- **OBLIGATOIRE**: La couche `presentation` ne doit JAMAIS importer directement les adaptateurs `datasource`.
+- **OBLIGATOIRE**: La couche `presentation` doit TOUJOURS utiliser les use-cases de `core` pour accéder aux données.
+- **OBLIGATOIRE**: Les use-cases `core` encapsulent la logique métier et injectent les ports `datasource`.
 
 ## Typage strict via JSDoc (JavaScript vanilla)
 - Utiliser `// @ts-check` en tête des fichiers pertinents.
@@ -56,8 +59,10 @@
 - Commentaires concis pour invariants et décisions non évidentes.
 - Aucune dépendance au DOM/Storage dans `core`.
 
-## Par défaut, l’IA doit
-- Respecter les couches et l’inversion de dépendances.
+## Par défaut, l'IA doit
+- Respecter les couches et l'inversion de dépendances.
+- **JAMAIS** permettre d'imports directs `datasource` dans `presentation`.
+- **TOUJOURS** utiliser les use-cases `core` comme intermédiaire entre `presentation` et `datasource`.
 - Écrire/mettre à jour les types via JSDoc.
-- Centraliser l’instanciation dans `presentation/compose`.
-- Garder `core` pur et indépendant de l’environnement.
+- Centraliser l'instanciation dans `presentation/compose`.
+- Garder `core` pur et indépendant de l'environnement.
