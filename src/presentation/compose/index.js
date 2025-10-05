@@ -9,6 +9,9 @@ import { createPlacesUseCase } from '../../core/usecases/placesUseCase.js';
 import { createMoodsUseCase } from '../../core/usecases/moodsUseCase.js';
 import { createCharactersUseCase } from '../../core/usecases/charactersUseCase.js';
 import { createImproGenerationUseCase } from '../../core/usecases/generateImpro.js';
+import { createValidationUseCase } from '../../core/usecases/validationUseCase.js';
+import { createRegenerationUseCase } from '../../core/usecases/regenerationUseCase.js';
+import { createDeletionUseCase } from '../../core/usecases/deletionUseCase.js';
 
 /**
  * Composition root: instantiates adapters (datasource) and injects them into core use-cases.
@@ -21,6 +24,9 @@ import { createImproGenerationUseCase } from '../../core/usecases/generateImpro.
  *  moodsUseCase: import('../../core/usecases/moodsUseCase.js').MoodsUseCase,
  *  charactersUseCase: import('../../core/usecases/charactersUseCase.js').CharactersUseCase,
  *  improGenerationUseCase: import('../../core/usecases/generateImpro.js').ImproGenerationUseCase,
+ *  validationUseCase: import('../../core/usecases/validationUseCase.js').ValidationUseCase,
+ *  regenerationUseCase: import('../../core/usecases/regenerationUseCase.js').RegenerationUseCase,
+ *  deletionUseCase: import('../../core/usecases/deletionUseCase.js').DeletionUseCase,
  * }} CompositionDeps */
 
 /**
@@ -48,6 +54,14 @@ export function composeApp() {
       placesPort: placesAdapter,
       randomPort
     }),
+    validationUseCase: createValidationUseCase(),
+    regenerationUseCase: createRegenerationUseCase({
+      placesPort: placesAdapter,
+      charactersPort: charactersAdapter,
+      moodsPort: moodsAdapter,
+      randomPort
+    }),
+    deletionUseCase: createDeletionUseCase(),
   };
   return deps;
 }

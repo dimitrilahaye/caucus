@@ -8,11 +8,11 @@ import { IMPRO_CONFIG, IMPRO_MESSAGES } from './improConstants.js';
  * @param {HTMLElement} root
  * @param {{ courseId: string }} params
  * @param {{
- *   coursesUseCase: import('../../core/usecases/coursesUseCase.js').CoursesUseCase,
- *   placesUseCase: import('../../core/usecases/placesUseCase.js').PlacesUseCase,
- *   moodsUseCase: import('../../core/usecases/moodsUseCase.js').MoodsUseCase,
- *   charactersUseCase: import('../../core/usecases/charactersUseCase.js').CharactersUseCase,
- *   improGenerationUseCase: import('../../core/usecases/generateImpro.js').ImproGenerationUseCase
+ *   coursesUseCase: import('../../../core/usecases/coursesUseCase.js').CoursesUseCase,
+ *   placesUseCase: import('../../../core/usecases/placesUseCase.js').PlacesUseCase,
+ *   moodsUseCase: import('../../../core/usecases/moodsUseCase.js').MoodsUseCase,
+ *   charactersUseCase: import('../../../core/usecases/charactersUseCase.js').CharactersUseCase,
+ *   improGenerationUseCase: import('../../../core/usecases/generateImpro.js').ImproGenerationUseCase
  * }} deps
  */
 export async function renderImproPage(root, params, deps) {
@@ -39,7 +39,7 @@ export async function renderImproPage(root, params, deps) {
   maxPlaces = places.length;
 
   // Assertion de type pour TypeScript
-  /** @type {import('../../core/entities/course.js').Course} */
+  /** @type {import('../../../core/entities/course.js').Course} */
   const courseTyped = course;
 
   const container = document.createElement('div');
@@ -173,7 +173,7 @@ export async function renderImproPage(root, params, deps) {
     const placesList = createPlacesList(
       impro.places,
       (index) => createPlaceRegenerateHandler(impro.places, index, deps, renderResults)(),
-      (index) => createPlaceDeleteHandler(impro.places, index, renderResults)()
+      (index) => createPlaceDeleteHandler(impro.places, index, deps, renderResults)()
     );
     resultsSection.appendChild(placesList);
     
@@ -187,7 +187,7 @@ export async function renderImproPage(root, params, deps) {
       impro.assignments,
       (index) => createCharacterRegenerateHandler(impro.assignments, index, deps, renderResults)(),
       (index) => createMoodRegenerateHandler(impro.assignments, index, deps, renderResults)(),
-      (index) => createStudentDeleteHandler(impro.assignments, index, renderResults)()
+      (index) => createStudentDeleteHandler(impro.assignments, index, deps, renderResults)()
     );
     resultsSection.appendChild(assignmentsList);
   }
