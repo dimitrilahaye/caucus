@@ -249,7 +249,7 @@ export async function renderCourseDetailsPage(root, params, deps) {
       if (updated) {
         // Confirmation de succès
         renameBtn.textContent = '✅';
-        title.textContent = `Cours: ${updated.name}`;
+        title.textContent = updated.name;
         setTimeout(() => {
           renameBtn.textContent = originalText;
           renameBtn.disabled = false;
