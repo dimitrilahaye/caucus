@@ -4,12 +4,12 @@
  * Minimal stub for course details page to be expanded with rename/delete/students CRUD.
  * @param {HTMLElement} root
  * @param {{ id: string }} params
- * @param {{ coursesPort: import('../../core/ports/coursesPort.js').CoursesPort }} deps
+ * @param {{ coursesUseCase: import('../../core/usecases/coursesUseCase.js').CoursesUseCase }} deps
  */
 export async function renderCourseDetailsPage(root, params, deps) {
   root.innerHTML = '';
 
-  const course = await deps.coursesPort.getById(params.id);
+  const course = await deps.coursesUseCase.getById(params.id);
   if (!course) {
     const errorCard = document.createElement('div');
     errorCard.className = 'card text-center';
@@ -62,14 +62,14 @@ export async function renderCourseDetailsPage(root, params, deps) {
   deleteCourseBtn.type = 'button';
   deleteCourseBtn.textContent = '🗑️';
   deleteCourseBtn.className = 'btn-danger btn-sm';
-  deleteCourseBtn.addEventListener('click', async () => {
-    const confirmed = window.confirm('Supprimer ce cours et tous ses élèves ?');
-    if (!confirmed) return;
-    const ok = await deps.coursesPort.remove(params.id);
-    if (ok) {
-      location.hash = '#/courses';
-    }
-  });
+          deleteCourseBtn.addEventListener('click', async () => {
+            const confirmed = window.confirm('Supprimer ce cours et tous ses élèves ?');
+            if (!confirmed) return;
+            const ok = await deps.coursesUseCase.remove(params.id);
+            if (ok) {
+              location.hash = '#/courses';
+            }
+          });
 
   actionsRow.appendChild(renameForm);
   actionsRow.appendChild(deleteCourseBtn);
@@ -88,7 +88,7 @@ export async function renderCourseDetailsPage(root, params, deps) {
   
   function updateGenerateImproButton() {
     generateImproBtn.addEventListener('click', async (e) => {
-      const currentCourse = await deps.coursesPort.getById(params.id);
+      const currentCourse = await deps.coursesUseCase.getById(params.id);
       if (!currentCourse || !currentCourse.students.length) {
         e.preventDefault();
         alert('Il faut au moins un élève pour générer une impro');
@@ -137,7 +137,7 @@ export async function renderCourseDetailsPage(root, params, deps) {
   root.appendChild(container);
 
   async function refreshStudents() {
-    const updated = await deps.coursesPort.getById(params.id);
+    const updated = await deps.coursesUseCase.getById(params.id);
     list.innerHTML = '';
     if (!updated || !updated.students.length) {
       emptyMsg.textContent = 'Ajoutez votre premier élève pour ce cours';
@@ -177,29 +177,29 @@ export async function renderCourseDetailsPage(root, params, deps) {
         renameBtn.textContent = '⏳';
         renameBtn.disabled = true;
         
-        try {
-          const changed = await deps.coursesPort.renameStudent(params.id, s.id, newName);
-          if (changed) {
-            // Confirmation de succès
-            renameBtn.textContent = '✅';
-            setTimeout(() => {
-              refreshStudents();
-            }, 500);
-          } else {
-            // Erreur
-            renameBtn.textContent = '❌';
-            setTimeout(() => {
-              renameBtn.textContent = originalText;
-              renameBtn.disabled = false;
-            }, 1000);
-          }
-        } catch (error) {
-          renameBtn.textContent = '❌';
-          setTimeout(() => {
-            renameBtn.textContent = originalText;
-            renameBtn.disabled = false;
-          }, 1000);
-        }
+                try {
+                  const changed = await deps.coursesUseCase.renameStudent(params.id, s.id, newName);
+                  if (changed) {
+                    // Confirmation de succès
+                    renameBtn.textContent = '✅';
+                    setTimeout(() => {
+                      refreshStudents();
+                    }, 500);
+                  } else {
+                    // Erreur
+                    renameBtn.textContent = '❌';
+                    setTimeout(() => {
+                      renameBtn.textContent = originalText;
+                      renameBtn.disabled = false;
+                    }, 1000);
+                  }
+                } catch (error) {
+                  renameBtn.textContent = '❌';
+                  setTimeout(() => {
+                    renameBtn.textContent = originalText;
+                    renameBtn.disabled = false;
+                  }, 1000);
+                }
       });
 
       const deleteBtn = document.createElement('button');
@@ -209,7 +209,7 @@ export async function renderCourseDetailsPage(root, params, deps) {
       deleteBtn.addEventListener('click', async () => {
         const confirmed = window.confirm(`Supprimer l'élève "${s.name}" ?`);
         if (!confirmed) return;
-        const ok = await deps.coursesPort.removeStudent(params.id, s.id);
+        const ok = await deps.coursesUseCase.removeStudent(params.id, s.id);
         if (ok) {
           refreshStudents();
           updateGenerateImproButton();
@@ -233,7 +233,7 @@ export async function renderCourseDetailsPage(root, params, deps) {
     e.preventDefault();
     const name = input.value.trim();
     if (!name) return;
-    await deps.coursesPort.addStudent(params.id, name);
+    await deps.coursesUseCase.addStudent(params.id, name);
     input.value = '';
     refreshStudents();
     updateGenerateImproButton();
@@ -250,7 +250,7 @@ export async function renderCourseDetailsPage(root, params, deps) {
     renameBtn.disabled = true;
     
     try {
-      const updated = await deps.coursesPort.rename(params.id, newName);
+      const updated = await deps.coursesUseCase.rename(params.id, newName);
       if (updated) {
         // Confirmation de succès
         renameBtn.textContent = '✅';

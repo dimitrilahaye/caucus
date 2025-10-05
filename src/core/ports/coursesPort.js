@@ -10,11 +10,11 @@ import '../entities/course.js';
  * @typedef {object} CoursesPort
  * @property {() => Promise<Course[]>} list
  * @property {(name: string) => Promise<Course>} create
- * @property {(id: string) => Promise<Course|null>} getById
- * @property {(id: string, name: string) => Promise<Course|null>} rename
+ * @property {(id: string) => Promise<Course|undefined>} getById
+ * @property {(id: string, name: string) => Promise<Course|undefined>} rename
  * @property {(id: string) => Promise<boolean>} remove
- * @property {(courseId: string, name: string) => Promise<Student>} addStudent
- * @property {(courseId: string, studentId: string, name: string) => Promise<Student|null>} renameStudent
+ * @property {(courseId: string, name: string) => Promise<Course|undefined>} addStudent
+ * @property {(courseId: string, studentId: string, name: string) => Promise<Course|undefined>} renameStudent
  * @property {(courseId: string, studentId: string) => Promise<boolean>} removeStudent
  */
 

@@ -4,7 +4,7 @@
 
 /**
  * @param {HTMLElement} root
- * @param {{ coursesPort: import('../../core/ports/coursesPort.js').CoursesPort }} deps
+ * @param {{ coursesUseCase: import('../../core/usecases/coursesUseCase.js').CoursesUseCase }} deps
  */
 export function renderCoursesPage(root, deps) {
   root.innerHTML = '';
@@ -43,7 +43,7 @@ export function renderCoursesPage(root, deps) {
   root.appendChild(container);
 
   async function refresh() {
-    const courses = await deps.coursesPort.list();
+    const courses = await deps.coursesUseCase.list();
     list.innerHTML = '';
     if (!courses.length) {
       message.textContent = 'Créez votre premier cours';
@@ -68,7 +68,7 @@ export function renderCoursesPage(root, deps) {
     e.preventDefault();
     const name = input.value.trim();
     if (!name) return;
-    await deps.coursesPort.create(name);
+    await deps.coursesUseCase.create(name);
     input.value = '';
     refresh();
   });

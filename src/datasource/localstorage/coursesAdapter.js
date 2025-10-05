@@ -57,12 +57,12 @@ export function createCoursesAdapter() {
     },
     async getById(id) {
       const courses = readAll();
-      return courses.find(c => c.id === id) || null;
+      return courses.find(c => c.id === id) || undefined;
     },
     async rename(id, name) {
       const courses = readAll();
       const idx = courses.findIndex(c => c.id === id);
-      if (idx === -1) return null;
+      if (idx === -1) return undefined;
       courses[idx] = { ...courses[idx], name };
       writeAll(courses);
       return courses[idx];
@@ -77,24 +77,24 @@ export function createCoursesAdapter() {
     async addStudent(courseId, name) {
       const courses = readAll();
       const idx = courses.findIndex(c => c.id === courseId);
-      if (idx === -1) throw new Error('Course not found');
+      if (idx === -1) return undefined;
       const student = { id: uuid(), name };
       courses[idx] = { ...courses[idx], students: [...courses[idx].students, student] };
       writeAll(courses);
-      return student;
+      return courses[idx];
     },
     async renameStudent(courseId, studentId, name) {
       const courses = readAll();
       const idx = courses.findIndex(c => c.id === courseId);
-      if (idx === -1) return null;
+      if (idx === -1) return undefined;
       const sIdx = courses[idx].students.findIndex(s => s.id === studentId);
-      if (sIdx === -1) return null;
+      if (sIdx === -1) return undefined;
       const updated = { ...courses[idx].students[sIdx], name };
       const newStudents = courses[idx].students.slice();
       newStudents[sIdx] = updated;
       courses[idx] = { ...courses[idx], students: newStudents };
       writeAll(courses);
-      return updated;
+      return courses[idx];
     },
     async removeStudent(courseId, studentId) {
       const courses = readAll();

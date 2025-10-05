@@ -49,7 +49,7 @@ export function createCharactersAdapter() {
     async rename(id, name) {
       const characters = readAll();
       const idx = characters.findIndex(c => c.id === id);
-      if (idx === -1) return null;
+      if (idx === -1) return undefined;
       characters[idx] = { ...characters[idx], name };
       writeAll(characters);
       return characters[idx];

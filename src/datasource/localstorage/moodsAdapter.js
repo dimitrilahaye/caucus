@@ -49,7 +49,7 @@ export function createMoodsAdapter() {
     async rename(id, name) {
       const moods = readAll();
       const idx = moods.findIndex(m => m.id === id);
-      if (idx === -1) return null;
+      if (idx === -1) return undefined;
       moods[idx] = { ...moods[idx], name };
       writeAll(moods);
       return moods[idx];

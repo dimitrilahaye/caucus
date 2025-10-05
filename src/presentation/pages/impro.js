@@ -4,14 +4,14 @@
  * @param {HTMLElement} root
  * @param {{ courseId: string }} params
  * @param {{
- *   coursesPort: import('../../core/ports/coursesPort.js').CoursesPort,
+ *   coursesUseCase: import('../../core/usecases/coursesUseCase.js').CoursesUseCase,
  *   improGenerationUseCase: import('../../core/usecases/generateImpro.js').ImproGenerationUseCase
  * }} deps
  */
 export async function renderImproPage(root, params, deps) {
   root.innerHTML = '';
 
-  const course = await deps.coursesPort.getById(params.courseId);
+  const course = await deps.coursesUseCase.getById(params.courseId);
   if (!course) {
     const errorCard = document.createElement('div');
     errorCard.className = 'card text-center';

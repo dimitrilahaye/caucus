@@ -2,7 +2,7 @@
 
 /**
  * @param {HTMLElement} root
- * @param {{ placesPort: import('../../core/ports/placesPort.js').PlacesPort }} deps
+ * @param {{ placesUseCase: import('../../core/usecases/placesUseCase.js').PlacesUseCase }} deps
  */
 export function renderPlacesPage(root, deps) {
   root.innerHTML = '';
@@ -41,7 +41,7 @@ export function renderPlacesPage(root, deps) {
   root.appendChild(container);
 
   async function refresh() {
-    const places = await deps.placesPort.list();
+    const places = await deps.placesUseCase.list();
     list.innerHTML = '';
     if (!places.length) {
       emptyMsg.textContent = 'Ajoutez votre premier lieu';
@@ -77,7 +77,7 @@ export function renderPlacesPage(root, deps) {
           renameBtn.disabled = true;
           
           try {
-            const changed = await deps.placesPort.rename(p.id, newName);
+            const changed = await deps.placesUseCase.rename(p.id, newName);
             if (changed) {
               // Confirmation de succès
               renameBtn.textContent = '✅';
@@ -108,7 +108,7 @@ export function renderPlacesPage(root, deps) {
         deleteBtn.addEventListener('click', async () => {
           const confirmed = window.confirm(`Supprimer le lieu "${p.name}" ?`);
           if (!confirmed) return;
-          const ok = await deps.placesPort.remove(p.id);
+          const ok = await deps.placesUseCase.remove(p.id);
           if (ok) refresh();
         });
 
@@ -130,7 +130,7 @@ export function renderPlacesPage(root, deps) {
     e.preventDefault();
     const name = input.value.trim();
     if (!name) return;
-    await deps.placesPort.create(name);
+    await deps.placesUseCase.create(name);
     input.value = '';
     refresh();
   });

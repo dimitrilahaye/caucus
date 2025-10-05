@@ -2,7 +2,7 @@
 
 /**
  * @param {HTMLElement} root
- * @param {{ charactersPort: import('../../core/ports/charactersPort.js').CharactersPort }} deps
+ * @param {{ charactersUseCase: import('../../core/usecases/charactersUseCase.js').CharactersUseCase }} deps
  */
 export function renderCharactersPage(root, deps) {
   root.innerHTML = '';
@@ -41,7 +41,7 @@ export function renderCharactersPage(root, deps) {
   root.appendChild(container);
 
   async function refresh() {
-    const characters = await deps.charactersPort.list();
+    const characters = await deps.charactersUseCase.list();
     list.innerHTML = '';
     if (!characters.length) {
       emptyMsg.textContent = 'Ajoutez votre premier personnage';
@@ -77,7 +77,7 @@ export function renderCharactersPage(root, deps) {
           renameBtn.disabled = true;
           
           try {
-            const changed = await deps.charactersPort.rename(c.id, newName);
+            const changed = await deps.charactersUseCase.rename(c.id, newName);
             if (changed) {
               // Confirmation de succès
               renameBtn.textContent = '✅';
@@ -108,7 +108,7 @@ export function renderCharactersPage(root, deps) {
         deleteBtn.addEventListener('click', async () => {
           const confirmed = window.confirm(`Supprimer le personnage "${c.name}" ?`);
           if (!confirmed) return;
-          const ok = await deps.charactersPort.remove(c.id);
+          const ok = await deps.charactersUseCase.remove(c.id);
           if (ok) refresh();
         });
 
@@ -130,7 +130,7 @@ export function renderCharactersPage(root, deps) {
     e.preventDefault();
     const name = input.value.trim();
     if (!name) return;
-    await deps.charactersPort.create(name);
+    await deps.charactersUseCase.create(name);
     input.value = '';
     refresh();
   });

@@ -49,7 +49,7 @@ export function createPlacesAdapter() {
     async rename(id, name) {
       const places = readAll();
       const idx = places.findIndex(p => p.id === id);
-      if (idx === -1) return null;
+      if (idx === -1) return undefined;
       places[idx] = { ...places[idx], name };
       writeAll(places);
       return places[idx];

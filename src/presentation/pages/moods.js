@@ -2,7 +2,7 @@
 
 /**
  * @param {HTMLElement} root
- * @param {{ moodsPort: import('../../core/ports/moodsPort.js').MoodsPort }} deps
+ * @param {{ moodsUseCase: import('../../core/usecases/moodsUseCase.js').MoodsUseCase }} deps
  */
 export function renderMoodsPage(root, deps) {
   root.innerHTML = '';
@@ -41,7 +41,7 @@ export function renderMoodsPage(root, deps) {
   root.appendChild(container);
 
   async function refresh() {
-    const moods = await deps.moodsPort.list();
+    const moods = await deps.moodsUseCase.list();
     list.innerHTML = '';
     if (!moods.length) {
       emptyMsg.textContent = 'Ajoutez votre première émotion';
@@ -77,7 +77,7 @@ export function renderMoodsPage(root, deps) {
           renameBtn.disabled = true;
           
           try {
-            const changed = await deps.moodsPort.rename(m.id, newName);
+            const changed = await deps.moodsUseCase.rename(m.id, newName);
             if (changed) {
               // Confirmation de succès
               renameBtn.textContent = '✅';
@@ -108,7 +108,7 @@ export function renderMoodsPage(root, deps) {
         deleteBtn.addEventListener('click', async () => {
           const confirmed = window.confirm(`Supprimer l'émotion "${m.name}" ?`);
           if (!confirmed) return;
-          const ok = await deps.moodsPort.remove(m.id);
+          const ok = await deps.moodsUseCase.remove(m.id);
           if (ok) refresh();
         });
 
@@ -130,7 +130,7 @@ export function renderMoodsPage(root, deps) {
     e.preventDefault();
     const name = input.value.trim();
     if (!name) return;
-    await deps.moodsPort.create(name);
+    await deps.moodsUseCase.create(name);
     input.value = '';
     refresh();
   });
