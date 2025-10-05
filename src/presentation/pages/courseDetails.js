@@ -136,22 +136,38 @@ export async function renderCourseDetailsPage(root, params, deps) {
   const improSection = document.createElement('div');
   improSection.className = 'mb-lg';
   
-  const generateImproBtn = document.createElement('a');
-  generateImproBtn.href = `#/courses/${params.id}/impro`;
+  const generateImproBtn = document.createElement('button');
+  generateImproBtn.type = 'button';
   generateImproBtn.textContent = '🎭 Générer une impro';
   generateImproBtn.className = 'btn-primary btn-lg rounded';
   
-  function updateGenerateImproButton() {
-    generateImproBtn.addEventListener('click', async (e) => {
-      const currentCourse = await deps.coursesUseCase.getById(params.id);
-      if (!currentCourse || !currentCourse.students.length) {
-        e.preventDefault();
-        alert('Il faut au moins un élève pour générer une impro');
-      }
-    });
+  async function updateGenerateImproButton() {
+    const currentCourse = await deps.coursesUseCase.getById(params.id);
+    if (!currentCourse || !currentCourse.students.length) {
+      generateImproBtn.disabled = true;
+      generateImproBtn.className = 'btn-primary btn-lg rounded';
+    } else {
+      generateImproBtn.disabled = false;
+      generateImproBtn.className = 'btn-primary btn-lg rounded';
+    }
   }
   
-  updateGenerateImproButton();
+  generateImproBtn.addEventListener('click', async (e) => {
+    if (generateImproBtn.disabled) {
+      e.preventDefault();
+      return;
+    }
+    const currentCourse = await deps.coursesUseCase.getById(params.id);
+    if (!currentCourse || !currentCourse.students.length) {
+      e.preventDefault();
+      alert('Il faut au moins un élève pour générer une impro');
+      return;
+    }
+    // Rediriger vers la page d'impro
+    location.hash = `#/courses/${params.id}/impro`;
+  });
+  
+  await updateGenerateImproButton();
   improSection.appendChild(generateImproBtn);
   
   container.appendChild(improSection);
@@ -202,6 +218,8 @@ export async function renderCourseDetailsPage(root, params, deps) {
     for (const s of updated.students) {
       const studentCard = document.createElement('div');
       studentCard.className = 'card';
+      studentCard.style.padding = '0.5rem 0.75rem';
+      studentCard.style.minHeight = 'auto';
       
       const studentContent = document.createElement('div');
       studentContent.className = 'flex items-center justify-between gap-sm';
@@ -210,13 +228,13 @@ export async function renderCourseDetailsPage(root, params, deps) {
       const editableName = document.createElement('span');
       editableName.textContent = s.name;
       editableName.contentEditable = 'true';
-      editableName.className = 'editable-name px-2 py-1 rounded hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500';
-      editableName.style.minHeight = '2rem';
+      editableName.className = 'editable-name px-1 py-0.5 rounded hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500';
+      editableName.style.minHeight = '1.5rem';
       editableName.style.display = 'inline-block';
       
       // Ajouter un padding supplémentaire en mode édition
       editableName.addEventListener('focus', () => {
-        editableName.style.padding = '8px 12px';
+        editableName.style.padding = '4px 8px';
         editableName.style.backgroundColor = '';
         editableName.style.border = '1px solid #dee2e6';
         
@@ -235,8 +253,8 @@ export async function renderCourseDetailsPage(root, params, deps) {
       
       // Gérer la sauvegarde et le style lors de la perte de focus
       editableName.addEventListener('blur', async () => {
-        // Restaurer le style normal
-        editableName.style.padding = '4px 8px';
+        // Restaurer le style normal (padding d'origine)
+        editableName.style.padding = '';
         editableName.style.backgroundColor = '';
         editableName.style.border = '';
         
@@ -285,7 +303,7 @@ export async function renderCourseDetailsPage(root, params, deps) {
         const ok = await deps.coursesUseCase.removeStudent(params.id, s.id);
         if (ok) {
           refreshStudents();
-          updateGenerateImproButton();
+          await updateGenerateImproButton();
         }
       });
 
@@ -304,7 +322,7 @@ export async function renderCourseDetailsPage(root, params, deps) {
     await deps.coursesUseCase.addStudent(params.id, name);
     input.value = '';
     refreshStudents();
-    updateGenerateImproButton();
+    await updateGenerateImproButton();
   });
 
 

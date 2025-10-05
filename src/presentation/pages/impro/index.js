@@ -44,20 +44,18 @@ export async function renderImproPage(root, params, deps) {
 
   const container = document.createElement('div');
   container.className = 'card';
+  container.style.position = 'relative';
+  container.style.paddingTop = '3rem'; // Espace pour le bouton retour
 
-  // Header
-  const header = document.createElement('div');
-  header.className = 'flex justify-between items-center mb-md';
-
-  const title = document.createElement('h1');
-  title.textContent = `Générer une impro - ${courseTyped.name}`;
-  title.className = 'mb-0 text-lg';
-  header.appendChild(title);
-
+  // Bouton retour en haut à droite
   const back = document.createElement('a');
   back.href = `#/courses/${params.courseId}`;
-  back.textContent = '← Retour';
-  back.className = 'btn-secondary btn-sm';
+  back.textContent = '← Retour au cours';
+  back.className = 'btn-secondary btn-xs';
+  back.style.position = 'absolute';
+  back.style.top = '0.5rem';
+  back.style.right = '0.5rem';
+  back.style.zIndex = '10';
   back.addEventListener('click', (e) => {
     if (hasGeneratedImpro) {
       const confirmed = window.confirm(IMPRO_MESSAGES.CONFIRMATIONS.NAVIGATE_AWAY);
@@ -66,7 +64,16 @@ export async function renderImproPage(root, params, deps) {
       }
     }
   });
-  header.appendChild(back);
+  container.appendChild(back);
+
+  // Header
+  const header = document.createElement('div');
+  header.className = 'flex justify-center items-center mb-md';
+
+  const title = document.createElement('h1');
+  title.textContent = `Impro : ${courseTyped.name}`;
+  title.className = 'mb-0 text-lg';
+  header.appendChild(title);
   container.appendChild(header);
 
   // Fonctions de mise à jour
