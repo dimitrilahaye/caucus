@@ -1,6 +1,8 @@
 import './style.css';
 import { composeApp } from './presentation/compose/index.js';
-import { renderHome } from './presentation/pages/home.js';
+import { Router } from './presentation/router.js';
+import { renderCoursesPage } from './presentation/pages/courses.js';
+import { renderCourseDetailsPage } from './presentation/pages/courseDetails.js';
 
 const counterElement = document.querySelector('#counter');
 const button = document.querySelector('#btn');
@@ -29,10 +31,14 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-// Bootstrap minimal presentation layer
+// Bootstrap router and pages
 const appRoot = document.getElementById('app');
 if (appRoot) {
-  composeApp();
-  renderHome(appRoot);
+  const deps = composeApp();
+  const router = new Router([
+    { path: '/courses', handler: () => renderCoursesPage(appRoot, deps) },
+    { path: '/courses/:id', handler: (params) => renderCourseDetailsPage(appRoot, params, deps) },
+  ]);
+  router.start();
 }
 

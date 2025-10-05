@@ -1,4 +1,5 @@
 // @ts-check
+import { createCoursesAdapter } from '../../datasource/localstorage/coursesAdapter.js';
 
 /**
  * Composition root: instantiates adapters (datasource) and injects them into core use-cases.
@@ -6,8 +7,7 @@
  */
 
 /** @typedef {{
- *  storagePort: unknown,
- *  randomPort: unknown,
+ *  coursesPort: import('../../core/ports/coursesPort.js').CoursesPort,
  * }} CompositionDeps */
 
 /**
@@ -15,11 +15,8 @@
  * @returns {CompositionDeps}
  */
 export function composeApp() {
-  // Placeholder: later, create LocalStorage adapters implementing StoragePort
-  // and an RNG adapter implementing RandomPort, then inject into use-cases.
   const deps = {
-    storagePort: undefined,
-    randomPort: undefined,
+    coursesPort: createCoursesAdapter(),
   };
   return deps;
 }
