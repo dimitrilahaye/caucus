@@ -363,7 +363,7 @@ export async function renderImproPage(root, params, deps) {
               
               const deleteStudentBtn = document.createElement('button');
               deleteStudentBtn.type = 'button';
-              deleteStudentBtn.textContent = '🗑️ Supprimer cet élève';
+              deleteStudentBtn.textContent = '🗑️ Supprimer l\'élève de l\'impro';
               deleteStudentBtn.className = 'btn-danger btn-sm';
               deleteStudentBtn.disabled = currentImpro.assignments.length <= 1;
               deleteStudentBtn.addEventListener('click', async () => {
@@ -595,7 +595,7 @@ export async function renderImproPage(root, params, deps) {
         
         const deleteStudentBtn = document.createElement('button');
         deleteStudentBtn.type = 'button';
-        deleteStudentBtn.textContent = '🗑️ Supprimer cet élève';
+        deleteStudentBtn.textContent = '🗑️ Supprimer l\'élève de l\'impro';
         deleteStudentBtn.className = 'btn-danger btn-sm';
         deleteStudentBtn.disabled = impro.assignments.length <= 1; // Désactiver s'il n'y a qu'un élève
         deleteStudentBtn.addEventListener('click', async () => {
