@@ -25,7 +25,7 @@ export function renderPlacesPage(root, deps) {
   const btn = document.createElement('button');
   btn.type = 'submit';
   btn.textContent = '+';
-  btn.className = 'btn-secondary btn-sm';
+  btn.className = 'btn-secondary btn-match-input';
   form.appendChild(input);
   form.appendChild(btn);
   container.appendChild(form);
@@ -52,20 +52,18 @@ export function renderPlacesPage(root, deps) {
         placeCard.className = 'card';
         
         const placeContent = document.createElement('div');
-        placeContent.className = 'flex justify-between items-center';
+        placeContent.className = 'inline-edit-container';
         
         const renameInput = document.createElement('input');
         renameInput.type = 'text';
         renameInput.value = p.name;
         renameInput.required = true;
-        renameInput.className = 'btn-sm';
-        renameInput.style.width = 'auto';
-        renameInput.style.minWidth = '120px';
+        renameInput.className = 'input-inline';
 
         const renameBtn = document.createElement('button');
         renameBtn.type = 'button';
         renameBtn.textContent = '✏️';
-        renameBtn.className = 'btn-secondary btn-sm';
+        renameBtn.className = 'btn-secondary btn-match-input';
         renameBtn.addEventListener('click', async (ev) => {
           ev.preventDefault();
           const newName = renameInput.value.trim();
@@ -104,7 +102,7 @@ export function renderPlacesPage(root, deps) {
         const deleteBtn = document.createElement('button');
         deleteBtn.type = 'button';
         deleteBtn.textContent = '🗑️';
-        deleteBtn.className = 'btn-danger btn-sm';
+        deleteBtn.className = 'btn-danger btn-match-input';
         deleteBtn.addEventListener('click', async () => {
           const confirmed = window.confirm(`Supprimer le lieu "${p.name}" ?`);
           if (!confirmed) return;
@@ -112,13 +110,13 @@ export function renderPlacesPage(root, deps) {
           if (ok) refresh();
         });
 
-        const actionsDiv = document.createElement('div');
-        actionsDiv.className = 'flex gap-sm';
-        actionsDiv.appendChild(renameBtn);
-        actionsDiv.appendChild(deleteBtn);
+        const btnGroup = document.createElement('div');
+        btnGroup.className = 'btn-group';
+        btnGroup.appendChild(renameBtn);
+        btnGroup.appendChild(deleteBtn);
         
         placeContent.appendChild(renameInput);
-        placeContent.appendChild(actionsDiv);
+        placeContent.appendChild(btnGroup);
         
         placeCard.appendChild(placeContent);
         list.appendChild(placeCard);

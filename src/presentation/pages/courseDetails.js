@@ -54,14 +54,14 @@ export async function renderCourseDetailsPage(root, params, deps) {
   const renameBtn = document.createElement('button');
   renameBtn.type = 'submit';
   renameBtn.textContent = '✏️';
-  renameBtn.className = 'btn-secondary btn-sm';
+  renameBtn.className = 'btn-secondary btn-match-input';
   renameForm.appendChild(renameInput);
   renameForm.appendChild(renameBtn);
 
   const deleteCourseBtn = document.createElement('button');
   deleteCourseBtn.type = 'button';
   deleteCourseBtn.textContent = '🗑️';
-  deleteCourseBtn.className = 'btn-danger btn-sm';
+  deleteCourseBtn.className = 'btn-danger btn-match-input';
           deleteCourseBtn.addEventListener('click', async () => {
             const confirmed = window.confirm('Supprimer ce cours et tous ses élèves ?');
             if (!confirmed) return;
@@ -120,7 +120,7 @@ export async function renderCourseDetailsPage(root, params, deps) {
   const submit = document.createElement('button');
   submit.type = 'submit';
   submit.textContent = '+';
-  submit.className = 'btn-secondary btn-sm';
+  submit.className = 'btn-secondary btn-match-input';
   form.appendChild(input);
   form.appendChild(submit);
   studentsSection.appendChild(form);
@@ -149,23 +149,18 @@ export async function renderCourseDetailsPage(root, params, deps) {
       studentCard.className = 'card';
       
       const studentContent = document.createElement('div');
-      studentContent.className = 'flex justify-between items-center';
+      studentContent.className = 'inline-edit-container';
       
-      const renameInlineForm = document.createElement('form');
-      renameInlineForm.className = 'flex gap-xs';
       const renameInput = document.createElement('input');
       renameInput.type = 'text';
       renameInput.value = s.name;
       renameInput.required = true;
-      renameInput.className = 'btn-sm';
-      renameInput.style.width = 'auto';
-      renameInput.style.minWidth = '120px';
+      renameInput.className = 'input-inline';
+      
       const renameBtn = document.createElement('button');
-      renameBtn.type = 'submit';
+      renameBtn.type = 'button';
       renameBtn.textContent = '✏️';
-      renameBtn.className = 'btn-secondary btn-sm';
-      renameInlineForm.appendChild(renameInput);
-      renameInlineForm.appendChild(renameBtn);
+      renameBtn.className = 'btn-secondary btn-match-input';
 
       renameBtn.addEventListener('click', async (ev) => {
         ev.preventDefault();
@@ -205,7 +200,7 @@ export async function renderCourseDetailsPage(root, params, deps) {
       const deleteBtn = document.createElement('button');
       deleteBtn.type = 'button';
       deleteBtn.textContent = '🗑️';
-      deleteBtn.className = 'btn-danger btn-sm';
+      deleteBtn.className = 'btn-danger btn-match-input';
       deleteBtn.addEventListener('click', async () => {
         const confirmed = window.confirm(`Supprimer l'élève "${s.name}" ?`);
         if (!confirmed) return;
@@ -216,13 +211,13 @@ export async function renderCourseDetailsPage(root, params, deps) {
         }
       });
 
-      const actionsDiv = document.createElement('div');
-      actionsDiv.className = 'flex gap-sm';
-      actionsDiv.appendChild(renameBtn);
-      actionsDiv.appendChild(deleteBtn);
+      const btnGroup = document.createElement('div');
+      btnGroup.className = 'btn-group';
+      btnGroup.appendChild(renameBtn);
+      btnGroup.appendChild(deleteBtn);
       
       studentContent.appendChild(renameInput);
-      studentContent.appendChild(actionsDiv);
+      studentContent.appendChild(btnGroup);
       
       studentCard.appendChild(studentContent);
       list.appendChild(studentCard);

@@ -27,7 +27,7 @@ export function renderCoursesPage(root, deps) {
   const btn = document.createElement('button');
   btn.type = 'submit';
   btn.textContent = '+';
-  btn.className = 'btn-secondary btn-sm';
+  btn.className = 'btn-secondary btn-match-input';
   form.appendChild(input);
   form.appendChild(btn);
   container.appendChild(form);
