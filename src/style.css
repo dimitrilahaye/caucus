@@ -39,3 +39,31 @@ button:hover {
   filter: brightness(1.1);
 }
 
+/* Burger menu basic styles */
+.burger-btn {
+  position: fixed;
+  top: 0.5rem;
+  left: 0.5rem;
+  z-index: 50;
+  background: #e5e7eb;
+  color: #111827;
+  border: none;
+  border-radius: 0.375rem;
+  padding: 0.25rem 0.5rem;
+}
+
+.burger-panel {
+  position: fixed;
+  top: 2.5rem;
+  left: 0.5rem;
+  background: #0b1220;
+  color: #e2e8f0;
+  border: 1px solid #1f2937;
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  z-index: 40;
+}
+
+.burger-panel a { color: #e2e8f0; text-decoration: none; }
+.burger-panel a:hover { text-decoration: underline; }
+

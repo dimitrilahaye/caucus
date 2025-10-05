@@ -3,6 +3,7 @@ import { composeApp } from './presentation/compose/index.js';
 import { Router } from './presentation/router.js';
 import { renderCoursesPage } from './presentation/pages/courses.js';
 import { renderCourseDetailsPage } from './presentation/pages/courseDetails.js';
+import { renderBurgerMenu } from './presentation/components/burgerMenu.js';
 
 const counterElement = document.querySelector('#counter');
 const button = document.querySelector('#btn');
@@ -35,6 +36,8 @@ if ('serviceWorker' in navigator) {
 const appRoot = document.getElementById('app');
 if (appRoot) {
   const deps = composeApp();
+  const menuMount = document.getElementById('menu');
+  if (menuMount) renderBurgerMenu(menuMount);
   const router = new Router([
     { path: '/courses', handler: () => renderCoursesPage(appRoot, deps) },
     { path: '/courses/:id', handler: (params) => renderCourseDetailsPage(appRoot, params, deps) },
