@@ -101,8 +101,20 @@ export async function renderCourseDetailsPage(root, params, deps) {
         }
       });
 
+      const deleteBtn = document.createElement('button');
+      deleteBtn.type = 'button';
+      deleteBtn.textContent = 'Supprimer';
+      deleteBtn.style.marginLeft = '0.5rem';
+      deleteBtn.addEventListener('click', async () => {
+        const confirmed = window.confirm(`Supprimer l'élève "${s.name}" ?`);
+        if (!confirmed) return;
+        const ok = await deps.coursesPort.removeStudent(params.id, s.id);
+        if (ok) refreshStudents();
+      });
+
       li.appendChild(nameSpan);
       li.appendChild(renameInlineForm);
+      li.appendChild(deleteBtn);
       list.appendChild(li);
     }
   }
