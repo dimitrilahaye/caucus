@@ -151,6 +151,158 @@ export async function renderImproPage(root, params, deps) {
             return moods[randomIndex];
           }
 
+          // Fonctions de re-rendu des sections
+          function renderPlacesSection(currentImpro) {
+            const placesTitle = resultsSection.querySelector('h4');
+            const placesList = placesTitle?.nextElementSibling;
+            
+            if (!placesList) return;
+            
+            placesList.innerHTML = '';
+            currentImpro.places.forEach((place, index) => {
+              const placeCard = document.createElement('div');
+              placeCard.className = 'card';
+              
+              const placeContent = document.createElement('div');
+              placeContent.className = 'inline-edit-container';
+              
+              const placeName = document.createElement('span');
+              placeName.textContent = place.name;
+              placeName.className = 'font-medium';
+              
+              const btnGroup = document.createElement('div');
+              btnGroup.className = 'btn-group';
+              
+              const regeneratePlaceBtn = document.createElement('button');
+              regeneratePlaceBtn.type = 'button';
+              regeneratePlaceBtn.textContent = '🔄';
+              regeneratePlaceBtn.className = 'btn-secondary btn-match-input';
+              regeneratePlaceBtn.addEventListener('click', async () => {
+                try {
+                  const newPlace = await regeneratePlace(currentImpro.places, index);
+                  placeName.textContent = newPlace.name;
+                  currentImpro.places[index] = newPlace;
+                } catch (error) {
+                  alert(`Erreur: ${error.message}`);
+                }
+              });
+              
+              const deletePlaceBtn = document.createElement('button');
+              deletePlaceBtn.type = 'button';
+              deletePlaceBtn.textContent = '🗑️';
+              deletePlaceBtn.className = 'btn-danger btn-match-input';
+              deletePlaceBtn.disabled = currentImpro.places.length <= 1;
+              deletePlaceBtn.addEventListener('click', async () => {
+                const confirmed = window.confirm(`Supprimer le lieu "${placeName.textContent}" de l'impro ?`);
+                if (!confirmed) return;
+                
+                currentImpro.places.splice(index, 1);
+                renderPlacesSection(currentImpro);
+              });
+              
+              btnGroup.appendChild(regeneratePlaceBtn);
+              btnGroup.appendChild(deletePlaceBtn);
+              
+              placeContent.appendChild(placeName);
+              placeContent.appendChild(btnGroup);
+              placeCard.appendChild(placeContent);
+              placesList.appendChild(placeCard);
+            });
+          }
+
+          function renderAssignmentsSection(currentImpro) {
+            const assignmentsTitle = resultsSection.querySelectorAll('h4')[1]; // Le deuxième h4
+            const assignmentsList = assignmentsTitle?.nextElementSibling;
+            
+            if (!assignmentsList) return;
+            
+            assignmentsList.innerHTML = '';
+            currentImpro.assignments.forEach((assignment, index) => {
+              const assignmentCard = document.createElement('div');
+              assignmentCard.className = 'card';
+              
+              // Nom de l'élève
+              const studentName = document.createElement('div');
+              studentName.className = 'text-lg font-semibold mb-sm';
+              studentName.textContent = assignment.student.name;
+              assignmentCard.appendChild(studentName);
+              
+              // Personnage
+              const characterContainer = document.createElement('div');
+              characterContainer.className = 'flex justify-between items-center mb-xs';
+              
+              const characterSpan = document.createElement('span');
+              characterSpan.textContent = assignment.character.name;
+              characterSpan.className = 'font-medium';
+              
+              const regenerateCharacterBtn = document.createElement('button');
+              regenerateCharacterBtn.type = 'button';
+              regenerateCharacterBtn.textContent = '🔄';
+              regenerateCharacterBtn.className = 'btn-secondary btn-match-input';
+              regenerateCharacterBtn.addEventListener('click', async () => {
+                try {
+                  const newCharacter = await regenerateCharacter(currentImpro.assignments, index);
+                  characterSpan.textContent = newCharacter.name;
+                  currentImpro.assignments[index].character = newCharacter;
+                } catch (error) {
+                  alert(`Erreur: ${error.message}`);
+                }
+              });
+              
+              characterContainer.appendChild(characterSpan);
+              characterContainer.appendChild(regenerateCharacterBtn);
+              assignmentCard.appendChild(characterContainer);
+              
+              // Émotion
+              const moodContainer = document.createElement('div');
+              moodContainer.className = 'flex justify-between items-center mb-sm';
+              
+              const moodSpan = document.createElement('span');
+              moodSpan.textContent = assignment.mood.name;
+              moodSpan.className = 'text-secondary';
+              
+              const regenerateMoodBtn = document.createElement('button');
+              regenerateMoodBtn.type = 'button';
+              regenerateMoodBtn.textContent = '🔄';
+              regenerateMoodBtn.className = 'btn-secondary btn-match-input';
+              regenerateMoodBtn.addEventListener('click', async () => {
+                try {
+                  const newMood = await regenerateMood(currentImpro.assignments, index);
+                  moodSpan.textContent = newMood.name;
+                  currentImpro.assignments[index].mood = newMood;
+                } catch (error) {
+                  alert(`Erreur: ${error.message}`);
+                }
+              });
+              
+              moodContainer.appendChild(moodSpan);
+              moodContainer.appendChild(regenerateMoodBtn);
+              assignmentCard.appendChild(moodContainer);
+              
+              // Bouton de suppression
+              const deleteStudentContainer = document.createElement('div');
+              deleteStudentContainer.className = 'flex justify-end';
+              
+              const deleteStudentBtn = document.createElement('button');
+              deleteStudentBtn.type = 'button';
+              deleteStudentBtn.textContent = '🗑️ Supprimer cet élève';
+              deleteStudentBtn.className = 'btn-danger btn-sm';
+              deleteStudentBtn.disabled = currentImpro.assignments.length <= 1;
+              deleteStudentBtn.addEventListener('click', async () => {
+                const confirmed = window.confirm(`Supprimer l'élève "${studentName.textContent}" de l'impro ?`);
+                if (!confirmed) return;
+                
+                currentImpro.assignments.splice(index, 1);
+                renderAssignmentsSection(currentImpro);
+              });
+              
+              deleteStudentContainer.appendChild(deleteStudentBtn);
+              assignmentCard.appendChild(deleteStudentContainer);
+              
+              assignmentsList.appendChild(assignmentCard);
+            });
+          }
+
   function renderStudents() {
     if (!course) return;
     
@@ -246,6 +398,9 @@ export async function renderImproPage(root, params, deps) {
         placeName.textContent = place.name;
         placeName.className = 'font-medium';
         
+        const btnGroup = document.createElement('div');
+        btnGroup.className = 'btn-group';
+        
         const regeneratePlaceBtn = document.createElement('button');
         regeneratePlaceBtn.type = 'button';
         regeneratePlaceBtn.textContent = '🔄';
@@ -260,9 +415,24 @@ export async function renderImproPage(root, params, deps) {
           }
         });
         
-        const btnGroup = document.createElement('div');
-        btnGroup.className = 'btn-group';
+        const deletePlaceBtn = document.createElement('button');
+        deletePlaceBtn.type = 'button';
+        deletePlaceBtn.textContent = '🗑️';
+        deletePlaceBtn.className = 'btn-danger btn-match-input';
+        deletePlaceBtn.disabled = impro.places.length <= 1; // Désactiver s'il n'y a qu'un lieu
+        deletePlaceBtn.addEventListener('click', async () => {
+          const confirmed = window.confirm(`Supprimer le lieu "${placeName.textContent}" de l'impro ?`);
+          if (!confirmed) return;
+          
+          // Supprimer le lieu de la liste
+          impro.places.splice(index, 1);
+          
+          // Re-render la section des lieux
+          renderPlacesSection(impro);
+        });
+        
         btnGroup.appendChild(regeneratePlaceBtn);
+        btnGroup.appendChild(deletePlaceBtn);
         
         placeContent.appendChild(placeName);
         placeContent.appendChild(btnGroup);
@@ -317,7 +487,7 @@ export async function renderImproPage(root, params, deps) {
         
         // Émotion (troisième ligne, sans parenthèses)
         const moodContainer = document.createElement('div');
-        moodContainer.className = 'flex justify-between items-center';
+        moodContainer.className = 'flex justify-between items-center mb-sm';
         
         const moodSpan = document.createElement('span');
         moodSpan.textContent = assignment.mood.name;
@@ -340,6 +510,29 @@ export async function renderImproPage(root, params, deps) {
         moodContainer.appendChild(moodSpan);
         moodContainer.appendChild(regenerateMoodBtn);
         assignmentCard.appendChild(moodContainer);
+        
+        // Bouton de suppression de l'élève (quatrième ligne)
+        const deleteStudentContainer = document.createElement('div');
+        deleteStudentContainer.className = 'flex justify-end';
+        
+        const deleteStudentBtn = document.createElement('button');
+        deleteStudentBtn.type = 'button';
+        deleteStudentBtn.textContent = '🗑️ Supprimer cet élève';
+        deleteStudentBtn.className = 'btn-danger btn-sm';
+        deleteStudentBtn.disabled = impro.assignments.length <= 1; // Désactiver s'il n'y a qu'un élève
+        deleteStudentBtn.addEventListener('click', async () => {
+          const confirmed = window.confirm(`Supprimer l'élève "${studentName.textContent}" de l'impro ?`);
+          if (!confirmed) return;
+          
+          // Supprimer l'élève de la liste
+          impro.assignments.splice(index, 1);
+          
+          // Re-render la section des attributions
+          renderAssignmentsSection(impro);
+        });
+        
+        deleteStudentContainer.appendChild(deleteStudentBtn);
+        assignmentCard.appendChild(deleteStudentContainer);
         
         assignmentsList.appendChild(assignmentCard);
       });
