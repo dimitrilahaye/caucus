@@ -1,5 +1,9 @@
 // @ts-check
 
+import { createStudentSelectionSection, createPlacesCountSection, createPlacesList, createAssignmentsList } from './improSections.js';
+import { createStudentToggleHandler, createSelectAllHandler, createPlacesCountHandler, createGenerateHandler, createPlaceRegenerateHandler, createPlaceDeleteHandler, createCharacterRegenerateHandler, createMoodRegenerateHandler, createStudentDeleteHandler, createNavigationHandler } from './improHandlers.js';
+import { IMPRO_CONFIG, IMPRO_MESSAGES, IMPRO_CLASSES } from './improConstants.js';
+
 /**
  * @param {HTMLElement} root
  * @param {{ courseId: string }} params
@@ -17,619 +21,167 @@ export async function renderImproPage(root, params, deps) {
   const course = await deps.coursesUseCase.getById(params.courseId);
   if (!course) {
     const errorCard = document.createElement('div');
-    errorCard.className = 'card text-center';
+    errorCard.className = `${IMPRO_CLASSES.CARD} ${IMPRO_CLASSES.TEXT_CENTER}`;
     errorCard.innerHTML = '<p class="text-danger">Cours introuvable</p>';
     root.appendChild(errorCard);
     return;
   }
 
-  const container = document.createElement('div');
-  container.className = 'card';
+  // État de l'application
+  let selectedStudents = new Set();
+  let placesCount = IMPRO_CONFIG.DEFAULT_PLACES_COUNT;
+  let hasGeneratedImpro = false;
+  let impro = null;
+  let maxPlaces = 1;
 
+  // Initialisation
+  const places = await deps.placesUseCase.list();
+  maxPlaces = places.length;
+
+  // Assertion de type pour TypeScript
+  /** @type {import('../../core/entities/course.js').Course} */
+  const courseTyped = course;
+
+  const container = document.createElement('div');
+  container.className = IMPRO_CLASSES.CARD;
+
+  // Header
   const header = document.createElement('div');
-  header.className = 'flex justify-between items-center mb-md';
+  header.className = `${IMPRO_CLASSES.FLEX} ${IMPRO_CLASSES.FLEX_BETWEEN} ${IMPRO_CLASSES.FLEX_CENTER} ${IMPRO_CLASSES.MARGIN_BOTTOM_MEDIUM}`;
 
   const title = document.createElement('h1');
-  title.textContent = `Générer une impro - ${course.name}`;
-  title.className = 'mb-0 text-lg'; // Plus compact sur mobile
+  title.textContent = `Générer une impro - ${courseTyped.name}`;
+  title.className = `mb-0 ${IMPRO_CLASSES.TEXT_LARGE}`;
   header.appendChild(title);
 
   const back = document.createElement('a');
   back.href = `#/courses/${params.courseId}`;
   back.textContent = '← Retour';
-  back.className = 'btn-secondary btn-sm';
-  back.addEventListener('click', (e) => {
-    if (hasGeneratedImpro) {
-      const confirmed = window.confirm('Vous allez perdre l\'impro générée. Continuer ?');
-      if (!confirmed) {
-        e.preventDefault();
-      }
-    }
-  });
+  back.className = `${IMPRO_CLASSES.BUTTON_SECONDARY} ${IMPRO_CLASSES.BUTTON_SMALL}`;
+  back.addEventListener('click', createNavigationHandler(hasGeneratedImpro, () => {}));
   header.appendChild(back);
-
   container.appendChild(header);
 
-  // Student selection section
-  const studentSection = document.createElement('div');
-  studentSection.className = 'mb-md'; // Réduit de mb-lg à mb-md
-  
-  const studentTitle = document.createElement('h3');
-  studentTitle.textContent = 'Sélectionner les élèves';
-  studentTitle.className = 'mb-sm text-base'; // Plus compact
-  studentSection.appendChild(studentTitle);
-
-  const selectAllBtn = document.createElement('button');
-  selectAllBtn.type = 'button';
-  selectAllBtn.textContent = 'Tout sélectionner';
-  selectAllBtn.className = 'btn-secondary btn-sm mb-sm'; // Réduit de mb-md à mb-sm
-  studentSection.appendChild(selectAllBtn);
-
-  const studentList = document.createElement('div');
-  studentList.className = 'flex flex-col gap-xs max-h-48 overflow-y-auto'; // Limite la hauteur et ajoute scroll
-  studentSection.appendChild(studentList);
-
-  container.appendChild(studentSection);
-
-  // Places count section
-  const placesSection = document.createElement('div');
-  placesSection.className = 'mb-md'; // Réduit de mb-lg à mb-md
-  
-  const placesLabel = document.createElement('label');
-  placesLabel.textContent = 'Nombre de lieux: ';
-  placesLabel.className = 'font-medium mb-xs block text-sm'; // Plus compact
-  
-  const placesControls = document.createElement('div');
-  placesControls.className = 'flex items-center gap-sm';
-  
-  const decrementBtn = document.createElement('button');
-  decrementBtn.type = 'button';
-  decrementBtn.textContent = '-';
-  decrementBtn.className = 'btn-secondary btn-match-input';
-  
-  const placesInput = document.createElement('input');
-  placesInput.type = 'number';
-  placesInput.min = '1';
-  placesInput.value = '1';
-  placesInput.className = 'w-auto text-center';
-  placesInput.style.width = '80px';
-  
-  const incrementBtn = document.createElement('button');
-  incrementBtn.type = 'button';
-  incrementBtn.textContent = '+';
-  incrementBtn.className = 'btn-secondary btn-match-input';
-  
-  placesControls.appendChild(decrementBtn);
-  placesControls.appendChild(placesInput);
-  placesControls.appendChild(incrementBtn);
-  
-  placesLabel.appendChild(placesControls);
-  placesSection.appendChild(placesLabel);
-
-  container.appendChild(placesSection);
-
-  // Fonction pour mettre à jour les boutons selon les limites
-  async function updatePlacesButtons() {
-    const places = await deps.placesUseCase.list();
-    const currentValue = parseInt(placesInput.value) || 1;
-    const maxPlaces = places.length;
+  // Fonctions de mise à jour
+  function updateUI() {
+    // Mise à jour de la section de sélection des élèves
+    const studentSection = container.querySelector('.student-selection-section');
+    if (studentSection) {
+      studentSection.remove();
+    }
     
-    decrementBtn.disabled = currentValue <= 1;
-    incrementBtn.disabled = currentValue >= maxPlaces;
+    const newStudentSection = createStudentSelectionSection(
+      courseTyped,
+      selectedStudents,
+      (studentId) => createStudentToggleHandler(studentId, selectedStudents, updateUI)(),
+      createSelectAllHandler(courseTyped, selectedStudents, updateUI)
+    );
+    newStudentSection.className += ' student-selection-section';
+    container.insertBefore(newStudentSection, container.querySelector('.places-section'));
     
-    // Mettre à jour les attributs min/max
-    placesInput.max = maxPlaces.toString();
+    // Mise à jour du bouton de génération
+    generateBtn.disabled = selectedStudents.size === 0;
   }
 
-  // Event listeners pour les boutons
-  decrementBtn.addEventListener('click', () => {
-    const currentValue = parseInt(placesInput.value) || 1;
-    if (currentValue > 1) {
-      placesInput.value = (currentValue - 1).toString();
-      updatePlacesButtons();
-    }
-  });
-
-  incrementBtn.addEventListener('click', () => {
-    const currentValue = parseInt(placesInput.value) || 1;
-    const maxPlaces = parseInt(placesInput.max) || 1;
-    if (currentValue < maxPlaces) {
-      placesInput.value = (currentValue + 1).toString();
-      updatePlacesButtons();
-    }
-  });
-
-  // Event listener pour l'input direct
-  placesInput.addEventListener('input', () => {
-    const value = parseInt(placesInput.value) || 1;
-    const maxPlaces = parseInt(placesInput.max) || 1;
-    
-    // Forcer les limites
-    if (value < 1) {
-      placesInput.value = '1';
-    } else if (value > maxPlaces) {
-      placesInput.value = maxPlaces.toString();
+  function updatePlacesCount(newCount) {
+    placesCount = newCount;
+    const placesSection = container.querySelector('.places-section');
+    if (placesSection) {
+      placesSection.remove();
     }
     
-    updatePlacesButtons();
-  });
+    const newPlacesSection = createPlacesCountSection(
+      placesCount,
+      updatePlacesCount,
+      maxPlaces
+    );
+    newPlacesSection.className += ' places-section';
+    container.insertBefore(newPlacesSection, generateBtn);
+  }
 
-  // Initialiser les boutons
-  updatePlacesButtons();
+  // Sections principales
+  const studentSection = createStudentSelectionSection(
+    courseTyped,
+    selectedStudents,
+    (studentId) => createStudentToggleHandler(studentId, selectedStudents, updateUI)(),
+    createSelectAllHandler(courseTyped, selectedStudents, updateUI)
+  );
+  studentSection.className += ' student-selection-section';
+  container.appendChild(studentSection);
+
+  const placesSection = createPlacesCountSection(
+    placesCount,
+    updatePlacesCount,
+    maxPlaces
+  );
+  placesSection.className += ' places-section';
+  container.appendChild(placesSection);
 
   // Generate button
   const generateBtn = document.createElement('button');
-  generateBtn.textContent = '🎭 Générer une impro';
-  generateBtn.className = 'btn-primary btn-lg mb-md'; // Réduit de mb-lg à mb-md
-  generateBtn.disabled = true; // Désactivé par défaut
+  generateBtn.textContent = IMPRO_MESSAGES.LABELS.GENERATE_IMPRO;
+  generateBtn.className = `${IMPRO_CLASSES.BUTTON_PRIMARY} ${IMPRO_CLASSES.BUTTON_LARGE} ${IMPRO_CLASSES.MARGIN_BOTTOM_MEDIUM}`;
+  generateBtn.disabled = true;
+  
+  generateBtn.addEventListener('click', createGenerateHandler(
+    selectedStudents,
+    placesCount,
+    courseTyped,
+    deps,
+    (generatedImpro) => {
+      impro = generatedImpro;
+      hasGeneratedImpro = true;
+      renderResults();
+    }
+  ));
+  
   container.appendChild(generateBtn);
 
   // Results section
   const resultsSection = document.createElement('div');
-  resultsSection.className = 'card';
+  resultsSection.className = IMPRO_CLASSES.CARD;
   resultsSection.style.display = 'none';
   container.appendChild(resultsSection);
 
   root.appendChild(container);
 
-          let selectedStudents = new Set();
-          let hasGeneratedImpro = false;
-
-          // Fonction pour mettre à jour l'état du bouton de génération
-          function updateGenerateButton() {
-            generateBtn.disabled = selectedStudents.size === 0;
-          }
-
-          // Fonctions de régénération
-          async function regeneratePlace(currentPlaces, placeIndex) {
-            const places = await deps.placesUseCase.list();
-            
-            // Exclure les lieux déjà utilisés ET le lieu actuel
-            const usedPlaceIds = currentPlaces.map(p => p.id);
-            const currentPlaceId = currentPlaces[placeIndex].id;
-            const availablePlaces = places.filter(p => !usedPlaceIds.includes(p.id) && p.id !== currentPlaceId);
-            
-            if (availablePlaces.length === 0) {
-              throw new Error('Aucun autre lieu disponible');
-            }
-            
-            // Sélectionner aléatoirement un nouveau lieu
-            const randomIndex = Math.floor(Math.random() * availablePlaces.length);
-            return availablePlaces[randomIndex];
-          }
-
-          async function regenerateCharacter(currentAssignments, assignmentIndex) {
-            const characters = await deps.charactersUseCase.list();
-            
-            // Exclure les personnages déjà utilisés ET le personnage actuel
-            const usedCharacterIds = currentAssignments.map(a => a.character.id);
-            const currentCharacterId = currentAssignments[assignmentIndex].character.id;
-            const availableCharacters = characters.filter(c => !usedCharacterIds.includes(c.id) && c.id !== currentCharacterId);
-            
-            if (availableCharacters.length === 0) {
-              throw new Error('Aucun autre personnage disponible');
-            }
-            
-            // Sélectionner aléatoirement un nouveau personnage
-            const randomIndex = Math.floor(Math.random() * availableCharacters.length);
-            return availableCharacters[randomIndex];
-          }
-
-          async function regenerateMood(currentAssignments, assignmentIndex) {
-            const moods = await deps.moodsUseCase.list();
-            
-            if (moods.length === 0) {
-              throw new Error('Aucune émotion disponible');
-            }
-            
-            // Exclure l'émotion actuelle
-            const currentMoodId = currentAssignments[assignmentIndex].mood.id;
-            const availableMoods = moods.filter(m => m.id !== currentMoodId);
-            
-            if (availableMoods.length === 0) {
-              throw new Error('Aucune autre émotion disponible');
-            }
-            
-            // Sélectionner aléatoirement une nouvelle émotion
-            const randomIndex = Math.floor(Math.random() * availableMoods.length);
-            return availableMoods[randomIndex];
-          }
-
-          // Fonctions de re-rendu des sections
-          function renderPlacesSection(currentImpro) {
-            const placesTitle = resultsSection.querySelector('h4');
-            const placesList = placesTitle?.nextElementSibling;
-            
-            if (!placesList) return;
-            
-            placesList.innerHTML = '';
-            currentImpro.places.forEach((place, index) => {
-              const placeCard = document.createElement('div');
-              placeCard.className = 'card p-sm'; // Même padding que les cartes d'élèves
-              
-              const placeContent = document.createElement('div');
-              placeContent.className = 'inline-edit-container';
-              
-              const placeName = document.createElement('span');
-              placeName.textContent = place.name;
-              placeName.className = 'font-medium text-sm'; // Plus petit
-              
-              const btnGroup = document.createElement('div');
-              btnGroup.className = 'btn-group';
-              
-              const regeneratePlaceBtn = document.createElement('button');
-              regeneratePlaceBtn.type = 'button';
-              regeneratePlaceBtn.textContent = '🔄';
-              regeneratePlaceBtn.className = 'btn-secondary btn-compact'; // Bouton plus compact
-              regeneratePlaceBtn.addEventListener('click', async () => {
-                try {
-                  const newPlace = await regeneratePlace(currentImpro.places, index);
-                  placeName.textContent = newPlace.name;
-                  currentImpro.places[index] = newPlace;
-                } catch (error) {
-                  alert(`Erreur: ${error.message}`);
-                }
-              });
-              
-              const deletePlaceBtn = document.createElement('button');
-              deletePlaceBtn.type = 'button';
-              deletePlaceBtn.textContent = '🗑️';
-              deletePlaceBtn.className = 'btn-danger btn-compact'; // Bouton plus compact
-              deletePlaceBtn.disabled = currentImpro.places.length <= 1;
-              deletePlaceBtn.addEventListener('click', async () => {
-                const confirmed = window.confirm(`Supprimer le lieu "${placeName.textContent}" de l'impro ?`);
-                if (!confirmed) return;
-                
-                currentImpro.places.splice(index, 1);
-                renderPlacesSection(currentImpro);
-              });
-              
-              btnGroup.appendChild(regeneratePlaceBtn);
-              btnGroup.appendChild(deletePlaceBtn);
-              
-              placeContent.appendChild(placeName);
-              placeContent.appendChild(btnGroup);
-              placeCard.appendChild(placeContent);
-              placesList.appendChild(placeCard);
-            });
-          }
-
-          function renderAssignmentsSection(currentImpro) {
-            const assignmentsTitle = resultsSection.querySelectorAll('h4')[1]; // Le deuxième h4
-            const assignmentsList = assignmentsTitle?.nextElementSibling;
-            
-            if (!assignmentsList) return;
-            
-            assignmentsList.innerHTML = '';
-            currentImpro.assignments.forEach((assignment, index) => {
-              const assignmentCard = document.createElement('div');
-              assignmentCard.className = 'card p-sm'; // Padding réduit
-              
-              // Nom de l'élève
-              const studentName = document.createElement('div');
-              studentName.className = 'text-base font-semibold mb-xs'; // Plus compact
-              studentName.textContent = assignment.student.name;
-              assignmentCard.appendChild(studentName);
-              
-              // Personnage
-              const characterContainer = document.createElement('div');
-              characterContainer.className = 'flex justify-between items-center mb-xs';
-              
-              const characterSpan = document.createElement('span');
-              characterSpan.textContent = assignment.character.name;
-              characterSpan.className = 'font-medium text-sm'; // Plus petit
-              
-              const regenerateCharacterBtn = document.createElement('button');
-              regenerateCharacterBtn.type = 'button';
-              regenerateCharacterBtn.textContent = '🔄';
-              regenerateCharacterBtn.className = 'btn-secondary btn-match-input';
-              regenerateCharacterBtn.addEventListener('click', async () => {
-                try {
-                  const newCharacter = await regenerateCharacter(currentImpro.assignments, index);
-                  characterSpan.textContent = newCharacter.name;
-                  currentImpro.assignments[index].character = newCharacter;
-                } catch (error) {
-                  alert(`Erreur: ${error.message}`);
-                }
-              });
-              
-              characterContainer.appendChild(characterSpan);
-              characterContainer.appendChild(regenerateCharacterBtn);
-              assignmentCard.appendChild(characterContainer);
-              
-              // Émotion
-              const moodContainer = document.createElement('div');
-              moodContainer.className = 'flex justify-between items-center mb-xs'; // Réduit de mb-sm à mb-xs
-              
-              const moodSpan = document.createElement('span');
-              moodSpan.textContent = assignment.mood.name;
-              moodSpan.className = 'text-secondary text-sm'; // Plus petit
-              
-              const regenerateMoodBtn = document.createElement('button');
-              regenerateMoodBtn.type = 'button';
-              regenerateMoodBtn.textContent = '🔄';
-              regenerateMoodBtn.className = 'btn-secondary btn-match-input';
-              regenerateMoodBtn.addEventListener('click', async () => {
-                try {
-                  const newMood = await regenerateMood(currentImpro.assignments, index);
-                  moodSpan.textContent = newMood.name;
-                  currentImpro.assignments[index].mood = newMood;
-                } catch (error) {
-                  alert(`Erreur: ${error.message}`);
-                }
-              });
-              
-              moodContainer.appendChild(moodSpan);
-              moodContainer.appendChild(regenerateMoodBtn);
-              assignmentCard.appendChild(moodContainer);
-              
-              // Bouton de suppression
-              const deleteStudentContainer = document.createElement('div');
-              deleteStudentContainer.className = 'flex justify-end mt-xs'; // Ajout d'un petit margin-top
-              
-              const deleteStudentBtn = document.createElement('button');
-              deleteStudentBtn.type = 'button';
-              deleteStudentBtn.textContent = '🗑️ Supprimer l\'élève de l\'impro';
-              deleteStudentBtn.className = 'btn-danger btn-sm';
-              deleteStudentBtn.disabled = currentImpro.assignments.length <= 1;
-              deleteStudentBtn.addEventListener('click', async () => {
-                const confirmed = window.confirm(`Supprimer l'élève "${studentName.textContent}" de l'impro ?`);
-                if (!confirmed) return;
-                
-                currentImpro.assignments.splice(index, 1);
-                renderAssignmentsSection(currentImpro);
-              });
-              
-              deleteStudentContainer.appendChild(deleteStudentBtn);
-              assignmentCard.appendChild(deleteStudentContainer);
-              
-              assignmentsList.appendChild(assignmentCard);
-            });
-          }
-
-  function renderStudents() {
-    if (!course) return;
+  // Fonction de rendu des résultats
+  function renderResults() {
+    if (!impro) return;
     
-    studentList.innerHTML = '';
-    course.students.forEach(student => {
-      const studentCard = document.createElement('div');
-      studentCard.className = 'card p-sm'; // Padding réduit
-      
-      const label = document.createElement('label');
-      label.className = 'flex items-center gap-xs cursor-pointer w-full'; // Gap réduit
-      
-      const checkbox = document.createElement('input');
-      checkbox.type = 'checkbox';
-      checkbox.value = student.id;
-      checkbox.checked = selectedStudents.has(student.id);
-      
-      checkbox.addEventListener('change', () => {
-        if (checkbox.checked) {
-          selectedStudents.add(student.id);
-        } else {
-          selectedStudents.delete(student.id);
-        }
-        // Mettre à jour le texte du bouton "Tout sélectionner"
-        if (selectedStudents.size === course.students.length) {
-          selectAllBtn.textContent = 'Tout dé-sélectionner';
-        } else {
-          selectAllBtn.textContent = 'Tout sélectionner';
-        }
-        // Mettre à jour l'état du bouton de génération
-        updateGenerateButton();
-      });
-      
-      label.appendChild(checkbox);
-      label.appendChild(document.createTextNode(student.name));
-      studentCard.appendChild(label);
-      studentList.appendChild(studentCard);
-    });
+    resultsSection.style.display = 'block';
+    resultsSection.innerHTML = '';
+    
+    const resultsTitle = document.createElement('h3');
+    resultsTitle.textContent = IMPRO_MESSAGES.LABELS.IMPRO_GENERATED_TITLE;
+    resultsTitle.className = `${IMPRO_CLASSES.TEXT_CENTER} ${IMPRO_CLASSES.MARGIN_BOTTOM_MEDIUM} ${IMPRO_CLASSES.TEXT_LARGE}`;
+    resultsSection.appendChild(resultsTitle);
+    
+    // Section des lieux
+    const placesTitle = document.createElement('h4');
+    placesTitle.textContent = IMPRO_MESSAGES.LABELS.PLACES_TITLE;
+    placesTitle.className = `${IMPRO_CLASSES.MARGIN_BOTTOM_SMALL} ${IMPRO_CLASSES.TEXT_BASE}`;
+    resultsSection.appendChild(placesTitle);
+    
+    const placesList = createPlacesList(
+      impro.places,
+      (index) => createPlaceRegenerateHandler(impro.places, index, deps, renderResults)(),
+      (index) => createPlaceDeleteHandler(impro.places, index, renderResults)()
+    );
+    resultsSection.appendChild(placesList);
+    
+    // Section des assignments
+    const assignmentsTitle = document.createElement('h4');
+    assignmentsTitle.textContent = IMPRO_MESSAGES.LABELS.ASSIGNMENTS_TITLE;
+    assignmentsTitle.className = `${IMPRO_CLASSES.MARGIN_BOTTOM_SMALL} ${IMPRO_CLASSES.TEXT_BASE}`;
+    resultsSection.appendChild(assignmentsTitle);
+    
+    const assignmentsList = createAssignmentsList(
+      impro.assignments,
+      (index) => createCharacterRegenerateHandler(impro.assignments, index, deps, renderResults)(),
+      (index) => createMoodRegenerateHandler(impro.assignments, index, deps, renderResults)(),
+      (index) => createStudentDeleteHandler(impro.assignments, index, renderResults)()
+    );
+    resultsSection.appendChild(assignmentsList);
   }
-
-  selectAllBtn.addEventListener('click', () => {
-    if (!course) return;
-    
-    if (selectedStudents.size === course.students.length) {
-      // Tout dé-sélectionner
-      selectedStudents.clear();
-      selectAllBtn.textContent = 'Tout sélectionner';
-    } else {
-      // Tout sélectionner
-      selectedStudents.clear();
-      course.students.forEach(student => selectedStudents.add(student.id));
-      selectAllBtn.textContent = 'Tout dé-sélectionner';
-    }
-    renderStudents();
-    updateGenerateButton();
-  });
-
-  generateBtn.addEventListener('click', async () => {
-    if (selectedStudents.size === 0) {
-      alert('Sélectionnez au moins un élève');
-      return;
-    }
-
-    const studentsToGenerate = course.students.filter(s => selectedStudents.has(s.id));
-    const placesCount = parseInt(placesInput.value) || 1;
-
-    try {
-      const impro = await deps.improGenerationUseCase.generate(studentsToGenerate, placesCount);
-      
-      hasGeneratedImpro = true;
-      
-      // Show results
-      resultsSection.style.display = 'block';
-      resultsSection.innerHTML = '';
-
-      const resultsTitle = document.createElement('h3');
-      resultsTitle.textContent = 'Impro générée';
-      resultsTitle.className = 'text-center mb-md text-lg'; // Plus compact
-      resultsSection.appendChild(resultsTitle);
-
-      // Places
-      const placesTitle = document.createElement('h4');
-      placesTitle.textContent = 'Lieux:';
-      placesTitle.className = 'mb-sm text-base'; // Plus compact
-      resultsSection.appendChild(placesTitle);
-      
-      const placesList = document.createElement('div');
-      placesList.className = 'flex flex-col gap-xs mb-md'; // Plus compact
-      impro.places.forEach((place, index) => {
-        const placeCard = document.createElement('div');
-        placeCard.className = 'card p-sm'; // Même padding que les cartes d'élèves
-        
-        const placeContent = document.createElement('div');
-        placeContent.className = 'inline-edit-container';
-        
-        const placeName = document.createElement('span');
-        placeName.textContent = place.name;
-        placeName.className = 'font-medium text-sm'; // Plus petit
-        
-        const btnGroup = document.createElement('div');
-        btnGroup.className = 'btn-group';
-        
-        const regeneratePlaceBtn = document.createElement('button');
-        regeneratePlaceBtn.type = 'button';
-        regeneratePlaceBtn.textContent = '🔄';
-        regeneratePlaceBtn.className = 'btn-secondary btn-compact'; // Bouton plus compact
-        regeneratePlaceBtn.addEventListener('click', async () => {
-          try {
-            const newPlace = await regeneratePlace(impro.places, index);
-            placeName.textContent = newPlace.name;
-            impro.places[index] = newPlace;
-          } catch (error) {
-            alert(`Erreur: ${error.message}`);
-          }
-        });
-        
-        const deletePlaceBtn = document.createElement('button');
-        deletePlaceBtn.type = 'button';
-        deletePlaceBtn.textContent = '🗑️';
-        deletePlaceBtn.className = 'btn-danger btn-compact'; // Bouton plus compact
-        deletePlaceBtn.disabled = impro.places.length <= 1; // Désactiver s'il n'y a qu'un lieu
-        deletePlaceBtn.addEventListener('click', async () => {
-          const confirmed = window.confirm(`Supprimer le lieu "${placeName.textContent}" de l'impro ?`);
-          if (!confirmed) return;
-          
-          // Supprimer le lieu de la liste
-          impro.places.splice(index, 1);
-          
-          // Re-render la section des lieux
-          renderPlacesSection(impro);
-        });
-        
-        btnGroup.appendChild(regeneratePlaceBtn);
-        btnGroup.appendChild(deletePlaceBtn);
-        
-        placeContent.appendChild(placeName);
-        placeContent.appendChild(btnGroup);
-        placeCard.appendChild(placeContent);
-        placesList.appendChild(placeCard);
-      });
-      resultsSection.appendChild(placesList);
-
-      // Assignments
-      const assignmentsTitle = document.createElement('h4');
-      assignmentsTitle.textContent = 'Attributions:';
-      assignmentsTitle.className = 'mb-sm text-base'; // Plus compact
-      resultsSection.appendChild(assignmentsTitle);
-
-      const assignmentsList = document.createElement('div');
-      assignmentsList.className = 'flex flex-col gap-xs'; // Plus compact
-      impro.assignments.forEach((assignment, index) => {
-        const assignmentCard = document.createElement('div');
-        assignmentCard.className = 'card p-sm'; // Padding réduit
-        
-        // Nom de l'élève (première ligne, plus gros)
-        const studentName = document.createElement('div');
-        studentName.className = 'text-base font-semibold mb-xs'; // Plus compact
-        studentName.textContent = assignment.student.name;
-        assignmentCard.appendChild(studentName);
-        
-        // Personnage (deuxième ligne)
-        const characterContainer = document.createElement('div');
-        characterContainer.className = 'flex justify-between items-center mb-xs';
-        
-        const characterSpan = document.createElement('span');
-        characterSpan.textContent = assignment.character.name;
-        characterSpan.className = 'font-medium text-sm'; // Plus petit
-        
-        const regenerateCharacterBtn = document.createElement('button');
-        regenerateCharacterBtn.type = 'button';
-        regenerateCharacterBtn.textContent = '🔄';
-        regenerateCharacterBtn.className = 'btn-secondary btn-match-input';
-        regenerateCharacterBtn.addEventListener('click', async () => {
-          try {
-            const newCharacter = await regenerateCharacter(impro.assignments, index);
-            characterSpan.textContent = newCharacter.name;
-            impro.assignments[index].character = newCharacter;
-          } catch (error) {
-            alert(`Erreur: ${error.message}`);
-          }
-        });
-        
-        characterContainer.appendChild(characterSpan);
-        characterContainer.appendChild(regenerateCharacterBtn);
-        assignmentCard.appendChild(characterContainer);
-        
-        // Émotion (troisième ligne, sans parenthèses)
-        const moodContainer = document.createElement('div');
-        moodContainer.className = 'flex justify-between items-center mb-xs'; // Réduit de mb-sm à mb-xs
-        
-        const moodSpan = document.createElement('span');
-        moodSpan.textContent = assignment.mood.name;
-        moodSpan.className = 'text-secondary text-sm'; // Plus petit
-        
-        const regenerateMoodBtn = document.createElement('button');
-        regenerateMoodBtn.type = 'button';
-        regenerateMoodBtn.textContent = '🔄';
-        regenerateMoodBtn.className = 'btn-secondary btn-match-input';
-        regenerateMoodBtn.addEventListener('click', async () => {
-          try {
-            const newMood = await regenerateMood(impro.assignments, index);
-            moodSpan.textContent = newMood.name;
-            impro.assignments[index].mood = newMood;
-          } catch (error) {
-            alert(`Erreur: ${error.message}`);
-          }
-        });
-        
-        moodContainer.appendChild(moodSpan);
-        moodContainer.appendChild(regenerateMoodBtn);
-        assignmentCard.appendChild(moodContainer);
-        
-        // Bouton de suppression de l'élève (quatrième ligne)
-        const deleteStudentContainer = document.createElement('div');
-        deleteStudentContainer.className = 'flex justify-end mt-xs'; // Ajout d'un petit margin-top
-        
-        const deleteStudentBtn = document.createElement('button');
-        deleteStudentBtn.type = 'button';
-        deleteStudentBtn.textContent = '🗑️ Supprimer l\'élève de l\'impro';
-        deleteStudentBtn.className = 'btn-danger btn-sm';
-        deleteStudentBtn.disabled = impro.assignments.length <= 1; // Désactiver s'il n'y a qu'un élève
-        deleteStudentBtn.addEventListener('click', async () => {
-          const confirmed = window.confirm(`Supprimer l'élève "${studentName.textContent}" de l'impro ?`);
-          if (!confirmed) return;
-          
-          // Supprimer l'élève de la liste
-          impro.assignments.splice(index, 1);
-          
-          // Re-render la section des attributions
-          renderAssignmentsSection(impro);
-        });
-        
-        deleteStudentContainer.appendChild(deleteStudentBtn);
-        assignmentCard.appendChild(deleteStudentContainer);
-        
-        assignmentsList.appendChild(assignmentCard);
-      });
-      resultsSection.appendChild(assignmentsList);
-
-    } catch (error) {
-      alert(`Erreur: ${error.message}`);
-    }
-  });
-
-  renderStudents();
-  updateGenerateButton();
 }
