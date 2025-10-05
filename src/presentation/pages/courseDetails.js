@@ -85,12 +85,18 @@ export async function renderCourseDetailsPage(root, params, deps) {
   generateImproBtn.href = `#/courses/${params.id}/impro`;
   generateImproBtn.textContent = '🎭 Générer une impro';
   generateImproBtn.className = 'btn-primary btn-lg';
-  generateImproBtn.addEventListener('click', (e) => {
-    if (!course.students.length) {
-      e.preventDefault();
-      alert('Il faut au moins un élève pour générer une impro');
-    }
-  });
+  
+  function updateGenerateImproButton() {
+    generateImproBtn.addEventListener('click', async (e) => {
+      const currentCourse = await deps.coursesPort.getById(params.id);
+      if (!currentCourse || !currentCourse.students.length) {
+        e.preventDefault();
+        alert('Il faut au moins un élève pour générer une impro');
+      }
+    });
+  }
+  
+  updateGenerateImproButton();
   improSection.appendChild(generateImproBtn);
   
   container.appendChild(improSection);
@@ -204,7 +210,10 @@ export async function renderCourseDetailsPage(root, params, deps) {
         const confirmed = window.confirm(`Supprimer l'élève "${s.name}" ?`);
         if (!confirmed) return;
         const ok = await deps.coursesPort.removeStudent(params.id, s.id);
-        if (ok) refreshStudents();
+        if (ok) {
+          refreshStudents();
+          updateGenerateImproButton();
+        }
       });
 
       const actionsDiv = document.createElement('div');
@@ -227,6 +236,7 @@ export async function renderCourseDetailsPage(root, params, deps) {
     await deps.coursesPort.addStudent(params.id, name);
     input.value = '';
     refreshStudents();
+    updateGenerateImproButton();
   });
 
   renameForm.addEventListener('submit', async (e) => {
