@@ -41,8 +41,11 @@ export async function renderCourseDetailsPage(root, params, deps) {
   const actionsSection = document.createElement('div');
   actionsSection.className = 'mb-lg';
 
+  const actionsRow = document.createElement('div');
+  actionsRow.className = 'flex gap-sm mb-md';
+  
   const renameForm = document.createElement('form');
-  renameForm.className = 'flex gap-sm mb-md';
+  renameForm.className = 'flex gap-sm';
   const renameInput = document.createElement('input');
   renameInput.type = 'text';
   renameInput.placeholder = 'Nouveau nom du cours';
@@ -68,8 +71,6 @@ export async function renderCourseDetailsPage(root, params, deps) {
     }
   });
 
-  const actionsRow = document.createElement('div');
-  actionsRow.className = 'flex gap-sm';
   actionsRow.appendChild(renameForm);
   actionsRow.appendChild(deleteCourseBtn);
   actionsSection.appendChild(actionsRow);

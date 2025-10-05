@@ -110,7 +110,7 @@ export async function renderImproPage(root, params, deps) {
       studentCard.className = 'card';
       
       const label = document.createElement('label');
-      label.className = 'flex items-center gap-sm cursor-pointer';
+      label.className = 'flex items-center gap-sm cursor-pointer w-full';
       
       const checkbox = document.createElement('input');
       checkbox.type = 'checkbox';
@@ -123,6 +123,12 @@ export async function renderImproPage(root, params, deps) {
         } else {
           selectedStudents.delete(student.id);
         }
+        // Mettre à jour le texte du bouton "Tout sélectionner"
+        if (selectedStudents.size === course.students.length) {
+          selectAllBtn.textContent = 'Tout dé-sélectionner';
+        } else {
+          selectAllBtn.textContent = 'Tout sélectionner';
+        }
       });
       
       label.appendChild(checkbox);
@@ -133,8 +139,16 @@ export async function renderImproPage(root, params, deps) {
   }
 
   selectAllBtn.addEventListener('click', () => {
-    selectedStudents.clear();
-    course.students.forEach(student => selectedStudents.add(student.id));
+    if (selectedStudents.size === course.students.length) {
+      // Tout dé-sélectionner
+      selectedStudents.clear();
+      selectAllBtn.textContent = 'Tout sélectionner';
+    } else {
+      // Tout sélectionner
+      selectedStudents.clear();
+      course.students.forEach(student => selectedStudents.add(student.id));
+      selectAllBtn.textContent = 'Tout dé-sélectionner';
+    }
     renderStudents();
   });
 

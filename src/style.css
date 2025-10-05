@@ -273,6 +273,16 @@ hr {
 .shadow-md { box-shadow: var(--shadow-md); }
 .shadow-lg { box-shadow: var(--shadow-lg); }
 
+.w-full { width: 100%; }
+
+/* Checkbox styling */
+input[type="checkbox"] {
+  margin: 0;
+  accent-color: var(--accent-primary);
+  width: auto;
+  flex-shrink: 0;
+}
+
 /* Burger menu */
 .burger-btn {
   position: fixed;
