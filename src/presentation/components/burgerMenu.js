@@ -30,6 +30,13 @@ export function renderBurgerMenu(mountOn) {
   linkPlaces.textContent = 'Lieux';
   liPlaces.appendChild(linkPlaces);
   list.appendChild(liPlaces);
+
+  const liMoods = document.createElement('li');
+  const linkMoods = document.createElement('a');
+  linkMoods.href = '#/moods';
+  linkMoods.textContent = 'Émotions';
+  liMoods.appendChild(linkMoods);
+  list.appendChild(liMoods);
   panel.appendChild(list);
 
   button.addEventListener('click', () => {
