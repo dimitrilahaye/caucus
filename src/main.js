@@ -1,4 +1,6 @@
 import './style.css';
+import { composeApp } from './presentation/compose/index.js';
+import { renderHome } from './presentation/pages/home.js';
 
 const counterElement = document.querySelector('#counter');
 const button = document.querySelector('#btn');
@@ -25,5 +27,12 @@ if ('serviceWorker' in navigator) {
       console.log('Service worker not ready yet');
     }
   });
+}
+
+// Bootstrap minimal presentation layer
+const appRoot = document.getElementById('app');
+if (appRoot) {
+  composeApp();
+  renderHome(appRoot);
 }
 
