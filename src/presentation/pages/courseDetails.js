@@ -25,6 +25,56 @@ export async function renderCourseDetailsPage(root, params, deps) {
   back.href = '#/courses';
   back.textContent = '← Retour aux cours';
   root.appendChild(back);
+
+  const hr = document.createElement('hr');
+  root.appendChild(hr);
+
+  // Add student form
+  const form = document.createElement('form');
+  form.style.margin = '1rem 0';
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.placeholder = 'Nom';
+  input.required = true;
+  input.name = 'studentName';
+  const submit = document.createElement('button');
+  submit.type = 'submit';
+  submit.textContent = 'Ajouter un élève';
+  form.appendChild(input);
+  form.appendChild(submit);
+  root.appendChild(form);
+
+  const emptyMsg = document.createElement('p');
+  root.appendChild(emptyMsg);
+
+  const list = document.createElement('ul');
+  root.appendChild(list);
+
+  async function refreshStudents() {
+    const updated = await deps.coursesPort.getById(params.id);
+    list.innerHTML = '';
+    if (!updated || !updated.students.length) {
+      emptyMsg.textContent = 'Ajoutez votre premier élève pour ce cours';
+      return;
+    }
+    emptyMsg.textContent = '';
+    for (const s of updated.students) {
+      const li = document.createElement('li');
+      li.textContent = s.name;
+      list.appendChild(li);
+    }
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const name = input.value.trim();
+    if (!name) return;
+    await deps.coursesPort.addStudent(params.id, name);
+    input.value = '';
+    refreshStudents();
+  });
+
+  refreshStudents();
 }
 
 
