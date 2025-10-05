@@ -75,7 +75,34 @@ export async function renderCourseDetailsPage(root, params, deps) {
     emptyMsg.textContent = '';
     for (const s of updated.students) {
       const li = document.createElement('li');
-      li.textContent = s.name;
+      const nameSpan = document.createElement('span');
+      nameSpan.textContent = s.name + ' ';
+      const renameInlineForm = document.createElement('form');
+      renameInlineForm.style.display = 'inline-flex';
+      renameInlineForm.style.gap = '0.25rem';
+      const renameInput = document.createElement('input');
+      renameInput.type = 'text';
+      renameInput.value = s.name;
+      renameInput.required = true;
+      renameInput.size = Math.max(8, s.name.length);
+      const renameBtn = document.createElement('button');
+      renameBtn.type = 'submit';
+      renameBtn.textContent = 'Renommer';
+      renameInlineForm.appendChild(renameInput);
+      renameInlineForm.appendChild(renameBtn);
+
+      renameInlineForm.addEventListener('submit', async (ev) => {
+        ev.preventDefault();
+        const newName = renameInput.value.trim();
+        if (!newName) return;
+        const changed = await deps.coursesPort.renameStudent(params.id, s.id, newName);
+        if (changed) {
+          refreshStudents();
+        }
+      });
+
+      li.appendChild(nameSpan);
+      li.appendChild(renameInlineForm);
       list.appendChild(li);
     }
   }
