@@ -195,22 +195,3 @@ export function createStudentDeleteHandler(assignments, index, deps, onUpdate) {
     }
   };
 }
-
-/**
- * Crée un gestionnaire de navigation avec confirmation
- * @param {boolean} hasGeneratedImpro
- * @param {function(): void} onNavigate
- * @returns {function(Event): void}
- */
-export function createNavigationHandler(hasGeneratedImpro, onNavigate) {
-  return (e) => {
-    if (hasGeneratedImpro) {
-      const confirmed = window.confirm(IMPRO_MESSAGES.CONFIRMATIONS.NAVIGATE_AWAY);
-      if (!confirmed) {
-        e.preventDefault();
-        return;
-      }
-    }
-    onNavigate();
-  };
-}

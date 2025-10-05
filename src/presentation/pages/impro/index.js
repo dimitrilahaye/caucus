@@ -1,7 +1,7 @@
 // @ts-check
 
 import { createStudentSelectionSection, createPlacesCountSection, createPlacesList, createAssignmentsList } from './improSections.js';
-import { createStudentToggleHandler, createSelectAllHandler, createPlacesCountHandler, createGenerateHandler, createPlaceRegenerateHandler, createPlaceDeleteHandler, createCharacterRegenerateHandler, createMoodRegenerateHandler, createStudentDeleteHandler, createNavigationHandler } from './improHandlers.js';
+import { createStudentToggleHandler, createSelectAllHandler, createPlacesCountHandler, createGenerateHandler, createPlaceRegenerateHandler, createPlaceDeleteHandler, createCharacterRegenerateHandler, createMoodRegenerateHandler, createStudentDeleteHandler } from './improHandlers.js';
 import { IMPRO_CONFIG, IMPRO_MESSAGES } from './improConstants.js';
 
 /**
@@ -58,7 +58,14 @@ export async function renderImproPage(root, params, deps) {
   back.href = `#/courses/${params.courseId}`;
   back.textContent = '← Retour';
   back.className = 'btn-secondary btn-sm';
-  back.addEventListener('click', createNavigationHandler(hasGeneratedImpro, () => {}));
+  back.addEventListener('click', (e) => {
+    if (hasGeneratedImpro) {
+      const confirmed = window.confirm(IMPRO_MESSAGES.CONFIRMATIONS.NAVIGATE_AWAY);
+      if (!confirmed) {
+        e.preventDefault();
+      }
+    }
+  });
   header.appendChild(back);
   container.appendChild(header);
 
