@@ -84,7 +84,7 @@ export async function renderCourseDetailsPage(root, params, deps) {
   const generateImproBtn = document.createElement('a');
   generateImproBtn.href = `#/courses/${params.id}/impro`;
   generateImproBtn.textContent = '🎭 Générer une impro';
-  generateImproBtn.className = 'btn-primary btn-lg';
+  generateImproBtn.className = 'btn-primary btn-lg rounded';
   
   function updateGenerateImproButton() {
     generateImproBtn.addEventListener('click', async (e) => {

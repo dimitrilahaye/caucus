@@ -192,6 +192,18 @@ button:disabled {
   justify-content: center;
 }
 
+.btn-compact {
+  padding: var(--space-xs);
+  font-size: 0.7rem;
+  height: auto;
+  width: auto;
+  min-width: 2rem;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 /* Forms */
 input, textarea, select {
   width: 100%;
@@ -410,6 +422,47 @@ input[type="checkbox"] {
   /* Prevent zoom on input focus on mobile */
   input, textarea, select {
     font-size: 16px;
+  }
+  
+  /* Classes utilitaires pour mobile */
+  .text-lg {
+    font-size: 1.125rem; /* 18px */
+  }
+  
+  .text-base {
+    font-size: 1rem; /* 16px */
+  }
+  
+  .text-sm {
+    font-size: 0.875rem; /* 14px */
+  }
+  
+  .mb-xs {
+    margin-bottom: var(--space-xs);
+  }
+  
+  .mt-xs {
+    margin-top: var(--space-xs);
+  }
+  
+  .p-sm {
+    padding: var(--space-sm);
+  }
+  
+  .p-xs {
+    padding: var(--space-xs);
+  }
+  
+  .gap-xs {
+    gap: var(--space-xs);
+  }
+  
+  .max-h-48 {
+    max-height: 12rem; /* 192px - environ 3-4 éléments */
+  }
+  
+  .overflow-y-auto {
+    overflow-y: auto;
   }
   
   .burger-btn {

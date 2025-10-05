@@ -27,16 +27,16 @@ export async function renderImproPage(root, params, deps) {
   container.className = 'card';
 
   const header = document.createElement('div');
-  header.className = 'flex justify-between items-center mb-lg';
+  header.className = 'flex justify-between items-center mb-md';
 
   const title = document.createElement('h1');
   title.textContent = `Générer une impro - ${course.name}`;
-  title.className = 'mb-0';
+  title.className = 'mb-0 text-lg'; // Plus compact sur mobile
   header.appendChild(title);
 
   const back = document.createElement('a');
   back.href = `#/courses/${params.courseId}`;
-  back.textContent = '← Retour au cours';
+  back.textContent = '← Retour';
   back.className = 'btn-secondary btn-sm';
   back.addEventListener('click', (e) => {
     if (hasGeneratedImpro) {
@@ -52,32 +52,32 @@ export async function renderImproPage(root, params, deps) {
 
   // Student selection section
   const studentSection = document.createElement('div');
-  studentSection.className = 'mb-lg';
+  studentSection.className = 'mb-md'; // Réduit de mb-lg à mb-md
   
   const studentTitle = document.createElement('h3');
   studentTitle.textContent = 'Sélectionner les élèves';
-  studentTitle.className = 'mb-md';
+  studentTitle.className = 'mb-sm text-base'; // Plus compact
   studentSection.appendChild(studentTitle);
 
   const selectAllBtn = document.createElement('button');
   selectAllBtn.type = 'button';
   selectAllBtn.textContent = 'Tout sélectionner';
-  selectAllBtn.className = 'btn-secondary btn-sm mb-md';
+  selectAllBtn.className = 'btn-secondary btn-sm mb-sm'; // Réduit de mb-md à mb-sm
   studentSection.appendChild(selectAllBtn);
 
   const studentList = document.createElement('div');
-  studentList.className = 'flex flex-col gap-sm';
+  studentList.className = 'flex flex-col gap-xs max-h-48 overflow-y-auto'; // Limite la hauteur et ajoute scroll
   studentSection.appendChild(studentList);
 
   container.appendChild(studentSection);
 
   // Places count section
   const placesSection = document.createElement('div');
-  placesSection.className = 'mb-lg';
+  placesSection.className = 'mb-md'; // Réduit de mb-lg à mb-md
   
   const placesLabel = document.createElement('label');
   placesLabel.textContent = 'Nombre de lieux: ';
-  placesLabel.className = 'font-medium mb-sm block';
+  placesLabel.className = 'font-medium mb-xs block text-sm'; // Plus compact
   
   const placesControls = document.createElement('div');
   placesControls.className = 'flex items-center gap-sm';
@@ -160,7 +160,7 @@ export async function renderImproPage(root, params, deps) {
   // Generate button
   const generateBtn = document.createElement('button');
   generateBtn.textContent = '🎭 Générer une impro';
-  generateBtn.className = 'btn-primary btn-lg mb-lg';
+  generateBtn.className = 'btn-primary btn-lg mb-md'; // Réduit de mb-lg à mb-md
   generateBtn.disabled = true; // Désactivé par défaut
   container.appendChild(generateBtn);
 
@@ -245,14 +245,14 @@ export async function renderImproPage(root, params, deps) {
             placesList.innerHTML = '';
             currentImpro.places.forEach((place, index) => {
               const placeCard = document.createElement('div');
-              placeCard.className = 'card';
+              placeCard.className = 'card p-sm'; // Même padding que les cartes d'élèves
               
               const placeContent = document.createElement('div');
               placeContent.className = 'inline-edit-container';
               
               const placeName = document.createElement('span');
               placeName.textContent = place.name;
-              placeName.className = 'font-medium';
+              placeName.className = 'font-medium text-sm'; // Plus petit
               
               const btnGroup = document.createElement('div');
               btnGroup.className = 'btn-group';
@@ -260,7 +260,7 @@ export async function renderImproPage(root, params, deps) {
               const regeneratePlaceBtn = document.createElement('button');
               regeneratePlaceBtn.type = 'button';
               regeneratePlaceBtn.textContent = '🔄';
-              regeneratePlaceBtn.className = 'btn-secondary btn-match-input';
+              regeneratePlaceBtn.className = 'btn-secondary btn-compact'; // Bouton plus compact
               regeneratePlaceBtn.addEventListener('click', async () => {
                 try {
                   const newPlace = await regeneratePlace(currentImpro.places, index);
@@ -274,7 +274,7 @@ export async function renderImproPage(root, params, deps) {
               const deletePlaceBtn = document.createElement('button');
               deletePlaceBtn.type = 'button';
               deletePlaceBtn.textContent = '🗑️';
-              deletePlaceBtn.className = 'btn-danger btn-match-input';
+              deletePlaceBtn.className = 'btn-danger btn-compact'; // Bouton plus compact
               deletePlaceBtn.disabled = currentImpro.places.length <= 1;
               deletePlaceBtn.addEventListener('click', async () => {
                 const confirmed = window.confirm(`Supprimer le lieu "${placeName.textContent}" de l'impro ?`);
@@ -303,11 +303,11 @@ export async function renderImproPage(root, params, deps) {
             assignmentsList.innerHTML = '';
             currentImpro.assignments.forEach((assignment, index) => {
               const assignmentCard = document.createElement('div');
-              assignmentCard.className = 'card';
+              assignmentCard.className = 'card p-sm'; // Padding réduit
               
               // Nom de l'élève
               const studentName = document.createElement('div');
-              studentName.className = 'text-lg font-semibold mb-sm';
+              studentName.className = 'text-base font-semibold mb-xs'; // Plus compact
               studentName.textContent = assignment.student.name;
               assignmentCard.appendChild(studentName);
               
@@ -317,7 +317,7 @@ export async function renderImproPage(root, params, deps) {
               
               const characterSpan = document.createElement('span');
               characterSpan.textContent = assignment.character.name;
-              characterSpan.className = 'font-medium';
+              characterSpan.className = 'font-medium text-sm'; // Plus petit
               
               const regenerateCharacterBtn = document.createElement('button');
               regenerateCharacterBtn.type = 'button';
@@ -339,11 +339,11 @@ export async function renderImproPage(root, params, deps) {
               
               // Émotion
               const moodContainer = document.createElement('div');
-              moodContainer.className = 'flex justify-between items-center mb-sm';
+              moodContainer.className = 'flex justify-between items-center mb-xs'; // Réduit de mb-sm à mb-xs
               
               const moodSpan = document.createElement('span');
               moodSpan.textContent = assignment.mood.name;
-              moodSpan.className = 'text-secondary';
+              moodSpan.className = 'text-secondary text-sm'; // Plus petit
               
               const regenerateMoodBtn = document.createElement('button');
               regenerateMoodBtn.type = 'button';
@@ -365,7 +365,7 @@ export async function renderImproPage(root, params, deps) {
               
               // Bouton de suppression
               const deleteStudentContainer = document.createElement('div');
-              deleteStudentContainer.className = 'flex justify-end';
+              deleteStudentContainer.className = 'flex justify-end mt-xs'; // Ajout d'un petit margin-top
               
               const deleteStudentBtn = document.createElement('button');
               deleteStudentBtn.type = 'button';
@@ -393,10 +393,10 @@ export async function renderImproPage(root, params, deps) {
     studentList.innerHTML = '';
     course.students.forEach(student => {
       const studentCard = document.createElement('div');
-      studentCard.className = 'card';
+      studentCard.className = 'card p-sm'; // Padding réduit
       
       const label = document.createElement('label');
-      label.className = 'flex items-center gap-sm cursor-pointer w-full';
+      label.className = 'flex items-center gap-xs cursor-pointer w-full'; // Gap réduit
       
       const checkbox = document.createElement('input');
       checkbox.type = 'checkbox';
@@ -463,27 +463,27 @@ export async function renderImproPage(root, params, deps) {
 
       const resultsTitle = document.createElement('h3');
       resultsTitle.textContent = 'Impro générée';
-      resultsTitle.className = 'text-center mb-lg';
+      resultsTitle.className = 'text-center mb-md text-lg'; // Plus compact
       resultsSection.appendChild(resultsTitle);
 
       // Places
       const placesTitle = document.createElement('h4');
       placesTitle.textContent = 'Lieux:';
-      placesTitle.className = 'mb-md';
+      placesTitle.className = 'mb-sm text-base'; // Plus compact
       resultsSection.appendChild(placesTitle);
       
       const placesList = document.createElement('div');
-      placesList.className = 'flex flex-col gap-sm mb-lg';
+      placesList.className = 'flex flex-col gap-xs mb-md'; // Plus compact
       impro.places.forEach((place, index) => {
         const placeCard = document.createElement('div');
-        placeCard.className = 'card';
+        placeCard.className = 'card p-sm'; // Même padding que les cartes d'élèves
         
         const placeContent = document.createElement('div');
         placeContent.className = 'inline-edit-container';
         
         const placeName = document.createElement('span');
         placeName.textContent = place.name;
-        placeName.className = 'font-medium';
+        placeName.className = 'font-medium text-sm'; // Plus petit
         
         const btnGroup = document.createElement('div');
         btnGroup.className = 'btn-group';
@@ -491,7 +491,7 @@ export async function renderImproPage(root, params, deps) {
         const regeneratePlaceBtn = document.createElement('button');
         regeneratePlaceBtn.type = 'button';
         regeneratePlaceBtn.textContent = '🔄';
-        regeneratePlaceBtn.className = 'btn-secondary btn-match-input';
+        regeneratePlaceBtn.className = 'btn-secondary btn-compact'; // Bouton plus compact
         regeneratePlaceBtn.addEventListener('click', async () => {
           try {
             const newPlace = await regeneratePlace(impro.places, index);
@@ -505,7 +505,7 @@ export async function renderImproPage(root, params, deps) {
         const deletePlaceBtn = document.createElement('button');
         deletePlaceBtn.type = 'button';
         deletePlaceBtn.textContent = '🗑️';
-        deletePlaceBtn.className = 'btn-danger btn-match-input';
+        deletePlaceBtn.className = 'btn-danger btn-compact'; // Bouton plus compact
         deletePlaceBtn.disabled = impro.places.length <= 1; // Désactiver s'il n'y a qu'un lieu
         deletePlaceBtn.addEventListener('click', async () => {
           const confirmed = window.confirm(`Supprimer le lieu "${placeName.textContent}" de l'impro ?`);
@@ -531,18 +531,18 @@ export async function renderImproPage(root, params, deps) {
       // Assignments
       const assignmentsTitle = document.createElement('h4');
       assignmentsTitle.textContent = 'Attributions:';
-      assignmentsTitle.className = 'mb-md';
+      assignmentsTitle.className = 'mb-sm text-base'; // Plus compact
       resultsSection.appendChild(assignmentsTitle);
 
       const assignmentsList = document.createElement('div');
-      assignmentsList.className = 'flex flex-col gap-sm';
+      assignmentsList.className = 'flex flex-col gap-xs'; // Plus compact
       impro.assignments.forEach((assignment, index) => {
         const assignmentCard = document.createElement('div');
-        assignmentCard.className = 'card';
+        assignmentCard.className = 'card p-sm'; // Padding réduit
         
         // Nom de l'élève (première ligne, plus gros)
         const studentName = document.createElement('div');
-        studentName.className = 'text-lg font-semibold mb-sm';
+        studentName.className = 'text-base font-semibold mb-xs'; // Plus compact
         studentName.textContent = assignment.student.name;
         assignmentCard.appendChild(studentName);
         
@@ -552,7 +552,7 @@ export async function renderImproPage(root, params, deps) {
         
         const characterSpan = document.createElement('span');
         characterSpan.textContent = assignment.character.name;
-        characterSpan.className = 'font-medium';
+        characterSpan.className = 'font-medium text-sm'; // Plus petit
         
         const regenerateCharacterBtn = document.createElement('button');
         regenerateCharacterBtn.type = 'button';
@@ -574,11 +574,11 @@ export async function renderImproPage(root, params, deps) {
         
         // Émotion (troisième ligne, sans parenthèses)
         const moodContainer = document.createElement('div');
-        moodContainer.className = 'flex justify-between items-center mb-sm';
+        moodContainer.className = 'flex justify-between items-center mb-xs'; // Réduit de mb-sm à mb-xs
         
         const moodSpan = document.createElement('span');
         moodSpan.textContent = assignment.mood.name;
-        moodSpan.className = 'text-secondary';
+        moodSpan.className = 'text-secondary text-sm'; // Plus petit
         
         const regenerateMoodBtn = document.createElement('button');
         regenerateMoodBtn.type = 'button';
@@ -600,7 +600,7 @@ export async function renderImproPage(root, params, deps) {
         
         // Bouton de suppression de l'élève (quatrième ligne)
         const deleteStudentContainer = document.createElement('div');
-        deleteStudentContainer.className = 'flex justify-end';
+        deleteStudentContainer.className = 'flex justify-end mt-xs'; // Ajout d'un petit margin-top
         
         const deleteStudentBtn = document.createElement('button');
         deleteStudentBtn.type = 'button';
