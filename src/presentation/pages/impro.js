@@ -178,9 +178,10 @@ export async function renderImproPage(root, params, deps) {
           async function regeneratePlace(currentPlaces, placeIndex) {
             const places = await deps.placesUseCase.list();
             
-            // Exclure les lieux déjà utilisés
+            // Exclure les lieux déjà utilisés ET le lieu actuel
             const usedPlaceIds = currentPlaces.map(p => p.id);
-            const availablePlaces = places.filter(p => !usedPlaceIds.includes(p.id));
+            const currentPlaceId = currentPlaces[placeIndex].id;
+            const availablePlaces = places.filter(p => !usedPlaceIds.includes(p.id) && p.id !== currentPlaceId);
             
             if (availablePlaces.length === 0) {
               throw new Error('Aucun autre lieu disponible');
@@ -194,9 +195,10 @@ export async function renderImproPage(root, params, deps) {
           async function regenerateCharacter(currentAssignments, assignmentIndex) {
             const characters = await deps.charactersUseCase.list();
             
-            // Exclure les personnages déjà utilisés
+            // Exclure les personnages déjà utilisés ET le personnage actuel
             const usedCharacterIds = currentAssignments.map(a => a.character.id);
-            const availableCharacters = characters.filter(c => !usedCharacterIds.includes(c.id));
+            const currentCharacterId = currentAssignments[assignmentIndex].character.id;
+            const availableCharacters = characters.filter(c => !usedCharacterIds.includes(c.id) && c.id !== currentCharacterId);
             
             if (availableCharacters.length === 0) {
               throw new Error('Aucun autre personnage disponible');
@@ -214,9 +216,17 @@ export async function renderImproPage(root, params, deps) {
               throw new Error('Aucune émotion disponible');
             }
             
+            // Exclure l'émotion actuelle
+            const currentMoodId = currentAssignments[assignmentIndex].mood.id;
+            const availableMoods = moods.filter(m => m.id !== currentMoodId);
+            
+            if (availableMoods.length === 0) {
+              throw new Error('Aucune autre émotion disponible');
+            }
+            
             // Sélectionner aléatoirement une nouvelle émotion
-            const randomIndex = Math.floor(Math.random() * moods.length);
-            return moods[randomIndex];
+            const randomIndex = Math.floor(Math.random() * availableMoods.length);
+            return availableMoods[randomIndex];
           }
 
           // Fonctions de re-rendu des sections
