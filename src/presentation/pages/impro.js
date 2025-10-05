@@ -77,17 +77,85 @@ export async function renderImproPage(root, params, deps) {
   
   const placesLabel = document.createElement('label');
   placesLabel.textContent = 'Nombre de lieux: ';
-  placesLabel.className = 'font-medium mb-sm';
+  placesLabel.className = 'font-medium mb-sm block';
+  
+  const placesControls = document.createElement('div');
+  placesControls.className = 'flex items-center gap-sm';
+  
+  const decrementBtn = document.createElement('button');
+  decrementBtn.type = 'button';
+  decrementBtn.textContent = '-';
+  decrementBtn.className = 'btn-secondary btn-match-input';
+  
   const placesInput = document.createElement('input');
   placesInput.type = 'number';
   placesInput.min = '1';
   placesInput.value = '1';
-  placesInput.className = 'w-auto';
+  placesInput.className = 'w-auto text-center';
   placesInput.style.width = '80px';
-  placesLabel.appendChild(placesInput);
+  
+  const incrementBtn = document.createElement('button');
+  incrementBtn.type = 'button';
+  incrementBtn.textContent = '+';
+  incrementBtn.className = 'btn-secondary btn-match-input';
+  
+  placesControls.appendChild(decrementBtn);
+  placesControls.appendChild(placesInput);
+  placesControls.appendChild(incrementBtn);
+  
+  placesLabel.appendChild(placesControls);
   placesSection.appendChild(placesLabel);
 
   container.appendChild(placesSection);
+
+  // Fonction pour mettre à jour les boutons selon les limites
+  async function updatePlacesButtons() {
+    const places = await deps.placesUseCase.list();
+    const currentValue = parseInt(placesInput.value) || 1;
+    const maxPlaces = places.length;
+    
+    decrementBtn.disabled = currentValue <= 1;
+    incrementBtn.disabled = currentValue >= maxPlaces;
+    
+    // Mettre à jour les attributs min/max
+    placesInput.max = maxPlaces.toString();
+  }
+
+  // Event listeners pour les boutons
+  decrementBtn.addEventListener('click', () => {
+    const currentValue = parseInt(placesInput.value) || 1;
+    if (currentValue > 1) {
+      placesInput.value = (currentValue - 1).toString();
+      updatePlacesButtons();
+    }
+  });
+
+  incrementBtn.addEventListener('click', () => {
+    const currentValue = parseInt(placesInput.value) || 1;
+    const maxPlaces = parseInt(placesInput.max) || 1;
+    if (currentValue < maxPlaces) {
+      placesInput.value = (currentValue + 1).toString();
+      updatePlacesButtons();
+    }
+  });
+
+  // Event listener pour l'input direct
+  placesInput.addEventListener('input', () => {
+    const value = parseInt(placesInput.value) || 1;
+    const maxPlaces = parseInt(placesInput.max) || 1;
+    
+    // Forcer les limites
+    if (value < 1) {
+      placesInput.value = '1';
+    } else if (value > maxPlaces) {
+      placesInput.value = maxPlaces.toString();
+    }
+    
+    updatePlacesButtons();
+  });
+
+  // Initialiser les boutons
+  updatePlacesButtons();
 
   // Generate button
   const generateBtn = document.createElement('button');
