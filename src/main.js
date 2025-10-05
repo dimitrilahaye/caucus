@@ -7,7 +7,7 @@ import { renderBurgerMenu } from './presentation/components/burgerMenu.js';
 import { renderPlacesPage } from './presentation/pages/places.js';
 import { renderMoodsPage } from './presentation/pages/moods.js';
 import { renderCharactersPage } from './presentation/pages/characters.js';
-import { renderImproPage } from './presentation/pages/impro.js';
+import { renderImproPage } from './presentation/pages/impro/index.js';
 
 // Optional: report that PWA service worker is ready
 if ('serviceWorker' in navigator) {

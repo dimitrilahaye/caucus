@@ -2,7 +2,7 @@
 
 import { createStudentSelectionSection, createPlacesCountSection, createPlacesList, createAssignmentsList } from './improSections.js';
 import { createStudentToggleHandler, createSelectAllHandler, createPlacesCountHandler, createGenerateHandler, createPlaceRegenerateHandler, createPlaceDeleteHandler, createCharacterRegenerateHandler, createMoodRegenerateHandler, createStudentDeleteHandler, createNavigationHandler } from './improHandlers.js';
-import { IMPRO_CONFIG, IMPRO_MESSAGES, IMPRO_CLASSES } from './improConstants.js';
+import { IMPRO_CONFIG, IMPRO_MESSAGES } from './improConstants.js';
 
 /**
  * @param {HTMLElement} root
@@ -21,7 +21,7 @@ export async function renderImproPage(root, params, deps) {
   const course = await deps.coursesUseCase.getById(params.courseId);
   if (!course) {
     const errorCard = document.createElement('div');
-    errorCard.className = `${IMPRO_CLASSES.CARD} ${IMPRO_CLASSES.TEXT_CENTER}`;
+    errorCard.className = 'card text-center';
     errorCard.innerHTML = '<p class="text-danger">Cours introuvable</p>';
     root.appendChild(errorCard);
     return;
@@ -43,21 +43,21 @@ export async function renderImproPage(root, params, deps) {
   const courseTyped = course;
 
   const container = document.createElement('div');
-  container.className = IMPRO_CLASSES.CARD;
+  container.className = 'card';
 
   // Header
   const header = document.createElement('div');
-  header.className = `${IMPRO_CLASSES.FLEX} ${IMPRO_CLASSES.FLEX_BETWEEN} ${IMPRO_CLASSES.FLEX_CENTER} ${IMPRO_CLASSES.MARGIN_BOTTOM_MEDIUM}`;
+  header.className = 'flex justify-between items-center mb-md';
 
   const title = document.createElement('h1');
   title.textContent = `Générer une impro - ${courseTyped.name}`;
-  title.className = `mb-0 ${IMPRO_CLASSES.TEXT_LARGE}`;
+  title.className = 'mb-0 text-lg';
   header.appendChild(title);
 
   const back = document.createElement('a');
   back.href = `#/courses/${params.courseId}`;
   back.textContent = '← Retour';
-  back.className = `${IMPRO_CLASSES.BUTTON_SECONDARY} ${IMPRO_CLASSES.BUTTON_SMALL}`;
+  back.className = 'btn-secondary btn-sm';
   back.addEventListener('click', createNavigationHandler(hasGeneratedImpro, () => {}));
   header.appendChild(back);
   container.appendChild(header);
@@ -120,7 +120,7 @@ export async function renderImproPage(root, params, deps) {
   // Generate button
   const generateBtn = document.createElement('button');
   generateBtn.textContent = IMPRO_MESSAGES.LABELS.GENERATE_IMPRO;
-  generateBtn.className = `${IMPRO_CLASSES.BUTTON_PRIMARY} ${IMPRO_CLASSES.BUTTON_LARGE} ${IMPRO_CLASSES.MARGIN_BOTTOM_MEDIUM}`;
+  generateBtn.className = 'btn-primary btn-lg mb-md';
   generateBtn.disabled = true;
   
   generateBtn.addEventListener('click', createGenerateHandler(
@@ -139,7 +139,7 @@ export async function renderImproPage(root, params, deps) {
 
   // Results section
   const resultsSection = document.createElement('div');
-  resultsSection.className = IMPRO_CLASSES.CARD;
+  resultsSection.className = 'card';
   resultsSection.style.display = 'none';
   container.appendChild(resultsSection);
 
@@ -154,13 +154,13 @@ export async function renderImproPage(root, params, deps) {
     
     const resultsTitle = document.createElement('h3');
     resultsTitle.textContent = IMPRO_MESSAGES.LABELS.IMPRO_GENERATED_TITLE;
-    resultsTitle.className = `${IMPRO_CLASSES.TEXT_CENTER} ${IMPRO_CLASSES.MARGIN_BOTTOM_MEDIUM} ${IMPRO_CLASSES.TEXT_LARGE}`;
+    resultsTitle.className = 'text-center mb-md text-lg';
     resultsSection.appendChild(resultsTitle);
     
     // Section des lieux
     const placesTitle = document.createElement('h4');
     placesTitle.textContent = IMPRO_MESSAGES.LABELS.PLACES_TITLE;
-    placesTitle.className = `${IMPRO_CLASSES.MARGIN_BOTTOM_SMALL} ${IMPRO_CLASSES.TEXT_BASE}`;
+    placesTitle.className = 'mb-sm text-base';
     resultsSection.appendChild(placesTitle);
     
     const placesList = createPlacesList(
@@ -173,7 +173,7 @@ export async function renderImproPage(root, params, deps) {
     // Section des assignments
     const assignmentsTitle = document.createElement('h4');
     assignmentsTitle.textContent = IMPRO_MESSAGES.LABELS.ASSIGNMENTS_TITLE;
-    assignmentsTitle.className = `${IMPRO_CLASSES.MARGIN_BOTTOM_SMALL} ${IMPRO_CLASSES.TEXT_BASE}`;
+    assignmentsTitle.className = 'mb-sm text-base';
     resultsSection.appendChild(assignmentsTitle);
     
     const assignmentsList = createAssignmentsList(
