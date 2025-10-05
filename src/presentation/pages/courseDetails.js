@@ -145,13 +145,6 @@ export async function renderCourseDetailsPage(root, params, deps) {
       const studentContent = document.createElement('div');
       studentContent.className = 'flex justify-between items-center';
       
-      const nameSpan = document.createElement('span');
-      nameSpan.textContent = s.name;
-      nameSpan.className = 'font-medium';
-      
-      const actionsDiv = document.createElement('div');
-      actionsDiv.className = 'flex gap-sm';
-      
       const renameInlineForm = document.createElement('form');
       renameInlineForm.className = 'flex gap-xs';
       const renameInput = document.createElement('input');
@@ -168,13 +161,38 @@ export async function renderCourseDetailsPage(root, params, deps) {
       renameInlineForm.appendChild(renameInput);
       renameInlineForm.appendChild(renameBtn);
 
-      renameInlineForm.addEventListener('submit', async (ev) => {
+      renameBtn.addEventListener('click', async (ev) => {
         ev.preventDefault();
         const newName = renameInput.value.trim();
         if (!newName) return;
-        const changed = await deps.coursesPort.renameStudent(params.id, s.id, newName);
-        if (changed) {
-          refreshStudents();
+        
+        // Feedback visuel pendant la sauvegarde
+        const originalText = renameBtn.textContent;
+        renameBtn.textContent = '⏳';
+        renameBtn.disabled = true;
+        
+        try {
+          const changed = await deps.coursesPort.renameStudent(params.id, s.id, newName);
+          if (changed) {
+            // Confirmation de succès
+            renameBtn.textContent = '✅';
+            setTimeout(() => {
+              refreshStudents();
+            }, 500);
+          } else {
+            // Erreur
+            renameBtn.textContent = '❌';
+            setTimeout(() => {
+              renameBtn.textContent = originalText;
+              renameBtn.disabled = false;
+            }, 1000);
+          }
+        } catch (error) {
+          renameBtn.textContent = '❌';
+          setTimeout(() => {
+            renameBtn.textContent = originalText;
+            renameBtn.disabled = false;
+          }, 1000);
         }
       });
 
@@ -189,10 +207,12 @@ export async function renderCourseDetailsPage(root, params, deps) {
         if (ok) refreshStudents();
       });
 
-      actionsDiv.appendChild(renameInlineForm);
+      const actionsDiv = document.createElement('div');
+      actionsDiv.className = 'flex gap-sm';
+      actionsDiv.appendChild(renameBtn);
       actionsDiv.appendChild(deleteBtn);
       
-      studentContent.appendChild(nameSpan);
+      studentContent.appendChild(renameInput);
       studentContent.appendChild(actionsDiv);
       
       studentCard.appendChild(studentContent);
@@ -213,9 +233,36 @@ export async function renderCourseDetailsPage(root, params, deps) {
     e.preventDefault();
     const newName = renameInput.value.trim();
     if (!newName) return;
-    const updated = await deps.coursesPort.rename(params.id, newName);
-    if (updated) {
-      title.textContent = `Cours: ${updated.name}`;
+    
+    // Feedback visuel pendant la sauvegarde
+    const originalText = renameBtn.textContent;
+    renameBtn.textContent = '⏳';
+    renameBtn.disabled = true;
+    
+    try {
+      const updated = await deps.coursesPort.rename(params.id, newName);
+      if (updated) {
+        // Confirmation de succès
+        renameBtn.textContent = '✅';
+        title.textContent = `Cours: ${updated.name}`;
+        setTimeout(() => {
+          renameBtn.textContent = originalText;
+          renameBtn.disabled = false;
+        }, 1000);
+      } else {
+        // Erreur
+        renameBtn.textContent = '❌';
+        setTimeout(() => {
+          renameBtn.textContent = originalText;
+          renameBtn.disabled = false;
+        }, 1000);
+      }
+    } catch (error) {
+      renameBtn.textContent = '❌';
+      setTimeout(() => {
+        renameBtn.textContent = originalText;
+        renameBtn.disabled = false;
+      }, 1000);
     }
   });
 
