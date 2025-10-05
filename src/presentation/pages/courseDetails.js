@@ -11,19 +11,38 @@ export async function renderCourseDetailsPage(root, params, deps) {
 
   const course = await deps.coursesPort.getById(params.id);
   if (!course) {
-    const p = document.createElement('p');
-    p.textContent = 'Cours introuvable';
-    root.appendChild(p);
+    const errorCard = document.createElement('div');
+    errorCard.className = 'card text-center';
+    errorCard.innerHTML = '<p class="text-danger">Cours introuvable</p>';
+    root.appendChild(errorCard);
     return;
   }
 
-  const title = document.createElement('h2');
-  title.textContent = `Cours: ${course.name}`;
-  root.appendChild(title);
+  const container = document.createElement('div');
+  container.className = 'card';
 
-  // Rename course form
+  const header = document.createElement('div');
+  header.className = 'flex justify-between items-center mb-lg';
+
+  const title = document.createElement('h1');
+  title.textContent = course.name;
+  title.className = 'mb-0';
+  header.appendChild(title);
+
+  const back = document.createElement('a');
+  back.href = '#/courses';
+  back.textContent = '← Retour aux cours';
+  back.className = 'btn-secondary btn-sm';
+  header.appendChild(back);
+
+  container.appendChild(header);
+
+  // Course actions section
+  const actionsSection = document.createElement('div');
+  actionsSection.className = 'mb-lg';
+
   const renameForm = document.createElement('form');
-  renameForm.style.margin = '0 0 1rem 0';
+  renameForm.className = 'flex gap-sm mb-md';
   const renameInput = document.createElement('input');
   renameInput.type = 'text';
   renameInput.placeholder = 'Nouveau nom du cours';
@@ -32,25 +51,14 @@ export async function renderCourseDetailsPage(root, params, deps) {
   const renameBtn = document.createElement('button');
   renameBtn.type = 'submit';
   renameBtn.textContent = '✏️';
-  // Style to match delete button size
-  renameBtn.style.backgroundColor = '#e5e7eb';
-  renameBtn.style.color = '#111827';
-  renameBtn.style.border = 'none';
-  renameBtn.style.borderRadius = '0.375rem';
-  renameBtn.style.padding = '0.25rem 0.5rem';
+  renameBtn.className = 'btn-secondary btn-sm';
   renameForm.appendChild(renameInput);
   renameForm.appendChild(renameBtn);
 
-  // Delete course button next to rename
   const deleteCourseBtn = document.createElement('button');
   deleteCourseBtn.type = 'button';
   deleteCourseBtn.textContent = '🗑️';
-  deleteCourseBtn.style.marginLeft = '0.5rem';
-  deleteCourseBtn.style.backgroundColor = '#dc2626';
-  deleteCourseBtn.style.color = '#fff';
-  deleteCourseBtn.style.border = 'none';
-  deleteCourseBtn.style.borderRadius = '0.375rem';
-  deleteCourseBtn.style.padding = '0.25rem 0.5rem';
+  deleteCourseBtn.className = 'btn-danger btn-sm';
   deleteCourseBtn.addEventListener('click', async () => {
     const confirmed = window.confirm('Supprimer ce cours et tous ses élèves ?');
     if (!confirmed) return;
@@ -59,59 +67,61 @@ export async function renderCourseDetailsPage(root, params, deps) {
       location.hash = '#/courses';
     }
   });
-  renameForm.appendChild(deleteCourseBtn);
-  root.appendChild(renameForm);
 
-  const back = document.createElement('a');
-  back.href = '#/courses';
-  back.textContent = '← Retour aux cours';
-  root.appendChild(back);
+  const actionsRow = document.createElement('div');
+  actionsRow.className = 'flex gap-sm';
+  actionsRow.appendChild(renameForm);
+  actionsRow.appendChild(deleteCourseBtn);
+  actionsSection.appendChild(actionsRow);
 
-  // Generate impro button
+  container.appendChild(actionsSection);
+
+  // Generate impro section
+  const improSection = document.createElement('div');
+  improSection.className = 'mb-lg';
+  
   const generateImproBtn = document.createElement('a');
   generateImproBtn.href = `#/courses/${params.id}/impro`;
   generateImproBtn.textContent = '🎭 Générer une impro';
-  generateImproBtn.style.display = 'inline-block';
-  generateImproBtn.style.marginLeft = '1rem';
-  generateImproBtn.style.backgroundColor = '#22c55e';
-  generateImproBtn.style.color = '#052e16';
-  generateImproBtn.style.textDecoration = 'none';
-  generateImproBtn.style.borderRadius = '0.5rem';
-  generateImproBtn.style.padding = '0.5rem 1rem';
-  generateImproBtn.style.fontWeight = '600';
-  root.appendChild(generateImproBtn);
+  generateImproBtn.className = 'btn-primary btn-lg';
+  improSection.appendChild(generateImproBtn);
+  
+  container.appendChild(improSection);
 
-  // (delete course button moved next to rename form)
+  // Students section
+  const studentsSection = document.createElement('div');
+  studentsSection.className = 'mb-lg';
 
-  const hr = document.createElement('hr');
-  root.appendChild(hr);
+  const studentsTitle = document.createElement('h3');
+  studentsTitle.textContent = 'Élèves';
+  studentsTitle.className = 'mb-md';
+  studentsSection.appendChild(studentsTitle);
 
-  // Add student form
   const form = document.createElement('form');
-  form.style.margin = '1rem 0';
+  form.className = 'flex gap-sm mb-md';
   const input = document.createElement('input');
   input.type = 'text';
-  input.placeholder = 'Nom';
+  input.placeholder = 'Nom de l\'élève';
   input.required = true;
   input.name = 'studentName';
   const submit = document.createElement('button');
   submit.type = 'submit';
   submit.textContent = '+';
-  // Match action button sizing used elsewhere
-  submit.style.backgroundColor = '#e5e7eb';
-  submit.style.color = '#111827';
-  submit.style.border = 'none';
-  submit.style.borderRadius = '0.375rem';
-  submit.style.padding = '0.25rem 0.5rem';
+  submit.className = 'btn-secondary btn-sm';
   form.appendChild(input);
   form.appendChild(submit);
-  root.appendChild(form);
+  studentsSection.appendChild(form);
 
   const emptyMsg = document.createElement('p');
-  root.appendChild(emptyMsg);
+  emptyMsg.className = 'text-center text-muted mb-md';
+  studentsSection.appendChild(emptyMsg);
 
-  const list = document.createElement('ul');
-  root.appendChild(list);
+  const list = document.createElement('div');
+  list.className = 'flex flex-col gap-sm';
+  studentsSection.appendChild(list);
+
+  container.appendChild(studentsSection);
+  root.appendChild(container);
 
   async function refreshStudents() {
     const updated = await deps.coursesPort.getById(params.id);
@@ -122,26 +132,32 @@ export async function renderCourseDetailsPage(root, params, deps) {
     }
     emptyMsg.textContent = '';
     for (const s of updated.students) {
-      const li = document.createElement('li');
+      const studentCard = document.createElement('div');
+      studentCard.className = 'card';
+      
+      const studentContent = document.createElement('div');
+      studentContent.className = 'flex justify-between items-center';
+      
       const nameSpan = document.createElement('span');
-      nameSpan.textContent = s.name + ' ';
+      nameSpan.textContent = s.name;
+      nameSpan.className = 'font-medium';
+      
+      const actionsDiv = document.createElement('div');
+      actionsDiv.className = 'flex gap-sm';
+      
       const renameInlineForm = document.createElement('form');
-      renameInlineForm.style.display = 'inline-flex';
-      renameInlineForm.style.gap = '0.25rem';
+      renameInlineForm.className = 'flex gap-xs';
       const renameInput = document.createElement('input');
       renameInput.type = 'text';
       renameInput.value = s.name;
       renameInput.required = true;
-      renameInput.size = Math.max(8, s.name.length);
+      renameInput.className = 'btn-sm';
+      renameInput.style.width = 'auto';
+      renameInput.style.minWidth = '120px';
       const renameBtn = document.createElement('button');
       renameBtn.type = 'submit';
       renameBtn.textContent = '✏️';
-      // Style to match delete button size
-      renameBtn.style.backgroundColor = '#e5e7eb';
-      renameBtn.style.color = '#111827';
-      renameBtn.style.border = 'none';
-      renameBtn.style.borderRadius = '0.375rem';
-      renameBtn.style.padding = '0.25rem 0.5rem';
+      renameBtn.className = 'btn-secondary btn-sm';
       renameInlineForm.appendChild(renameInput);
       renameInlineForm.appendChild(renameBtn);
 
@@ -158,12 +174,7 @@ export async function renderCourseDetailsPage(root, params, deps) {
       const deleteBtn = document.createElement('button');
       deleteBtn.type = 'button';
       deleteBtn.textContent = '🗑️';
-      deleteBtn.style.marginLeft = '0.5rem';
-      deleteBtn.style.backgroundColor = '#dc2626';
-      deleteBtn.style.color = '#fff';
-      deleteBtn.style.border = 'none';
-      deleteBtn.style.borderRadius = '0.375rem';
-      deleteBtn.style.padding = '0.25rem 0.5rem';
+      deleteBtn.className = 'btn-danger btn-sm';
       deleteBtn.addEventListener('click', async () => {
         const confirmed = window.confirm(`Supprimer l'élève "${s.name}" ?`);
         if (!confirmed) return;
@@ -171,10 +182,14 @@ export async function renderCourseDetailsPage(root, params, deps) {
         if (ok) refreshStudents();
       });
 
-      li.appendChild(nameSpan);
-      li.appendChild(renameInlineForm);
-      li.appendChild(deleteBtn);
-      list.appendChild(li);
+      actionsDiv.appendChild(renameInlineForm);
+      actionsDiv.appendChild(deleteBtn);
+      
+      studentContent.appendChild(nameSpan);
+      studentContent.appendChild(actionsDiv);
+      
+      studentCard.appendChild(studentContent);
+      list.appendChild(studentCard);
     }
   }
 
