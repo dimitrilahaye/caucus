@@ -15,8 +15,8 @@ export default defineConfig({
       includeAssets: ['favicon.svg', 'favicon.ico', 'robots.txt', 'apple-touch-icon.png'],
       manifest: {
         name: 'Cré\'Impro',
-        short_name: 'CIVC',
-        description: 'Générateur d\'impros',
+        short_name: 'Cré\'Impro',
+        description: 'Générateur d\'improvisations théâtrales pour les professeurs',
         theme_color: '#0f172a',
         background_color: '#0f172a',
         display: 'standalone',
