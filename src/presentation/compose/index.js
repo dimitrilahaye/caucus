@@ -1,5 +1,6 @@
 // @ts-check
 import { createCoursesAdapter } from '../../datasource/localstorage/coursesAdapter.js';
+import { createPlacesAdapter } from '../../datasource/localstorage/placesAdapter.js';
 
 /**
  * Composition root: instantiates adapters (datasource) and injects them into core use-cases.
@@ -8,6 +9,7 @@ import { createCoursesAdapter } from '../../datasource/localstorage/coursesAdapt
 
 /** @typedef {{
  *  coursesPort: import('../../core/ports/coursesPort.js').CoursesPort,
+ *  placesPort: import('../../core/ports/placesPort.js').PlacesPort,
  * }} CompositionDeps */
 
 /**
@@ -17,6 +19,7 @@ import { createCoursesAdapter } from '../../datasource/localstorage/coursesAdapt
 export function composeApp() {
   const deps = {
     coursesPort: createCoursesAdapter(),
+    placesPort: createPlacesAdapter(),
   };
   return deps;
 }

@@ -23,6 +23,13 @@ export function renderBurgerMenu(mountOn) {
   linkCourses.textContent = 'Cours';
   liCourses.appendChild(linkCourses);
   list.appendChild(liCourses);
+
+  const liPlaces = document.createElement('li');
+  const linkPlaces = document.createElement('a');
+  linkPlaces.href = '#/places';
+  linkPlaces.textContent = 'Lieux';
+  liPlaces.appendChild(linkPlaces);
+  list.appendChild(liPlaces);
   panel.appendChild(list);
 
   button.addEventListener('click', () => {
