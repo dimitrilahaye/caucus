@@ -50,15 +50,18 @@ export function renderCoursesPage(root, deps) {
     } else {
       message.textContent = '';
       for (const c of courses) {
-        const courseCard = document.createElement('div');
-        courseCard.className = 'card';
+        const courseCard = document.createElement('a');
+        courseCard.href = `#/courses/${encodeURIComponent(c.id)}`;
+        courseCard.className = 'card cursor-pointer';
+        courseCard.style.display = 'block';
+        courseCard.style.textDecoration = 'none';
+        courseCard.style.color = 'inherit';
         
-        const courseLink = document.createElement('a');
-        courseLink.href = `#/courses/${encodeURIComponent(c.id)}`;
-        courseLink.textContent = c.name;
-        courseLink.className = 'text-lg font-semibold';
+        const courseName = document.createElement('div');
+        courseName.textContent = c.name;
+        courseName.className = 'text-lg font-semibold';
         
-        courseCard.appendChild(courseLink);
+        courseCard.appendChild(courseName);
         list.appendChild(courseCard);
       }
     }
