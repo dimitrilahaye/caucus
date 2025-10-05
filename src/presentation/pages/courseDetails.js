@@ -41,6 +41,20 @@ export async function renderCourseDetailsPage(root, params, deps) {
   back.textContent = '← Retour aux cours';
   root.appendChild(back);
 
+  const deleteCourseBtn = document.createElement('button');
+  deleteCourseBtn.type = 'button';
+  deleteCourseBtn.textContent = 'Supprimer ce cours';
+  deleteCourseBtn.style.marginLeft = '1rem';
+  deleteCourseBtn.addEventListener('click', async () => {
+    const confirmed = window.confirm('Supprimer ce cours et tous ses élèves ?');
+    if (!confirmed) return;
+    const ok = await deps.coursesPort.remove(params.id);
+    if (ok) {
+      location.hash = '#/courses';
+    }
+  });
+  root.appendChild(deleteCourseBtn);
+
   const hr = document.createElement('hr');
   root.appendChild(hr);
 
