@@ -20,62 +20,117 @@ export async function renderCourseDetailsPage(root, params, deps) {
 
   const container = document.createElement('div');
   container.className = 'card';
+  container.style.position = 'relative';
+  container.style.paddingTop = '3rem'; // Espace pour le bouton retour
 
-  const header = document.createElement('div');
-  header.className = 'flex justify-between items-center mb-lg';
-
-  const title = document.createElement('h1');
-  title.textContent = course.name;
-  title.className = 'mb-0';
-  header.appendChild(title);
-
+  // Bouton retour en haut à droite
   const back = document.createElement('a');
   back.href = '#/courses';
-  back.textContent = '← Retour aux cours';
-  back.className = 'btn-secondary btn-sm';
-  header.appendChild(back);
+  back.textContent = '← Retour à la liste des cours';
+  back.className = 'btn-secondary btn-xs';
+  back.style.position = 'absolute';
+  back.style.top = '0.5rem';
+  back.style.right = '0.5rem';
+  back.style.zIndex = '10';
+  container.appendChild(back);
 
-  container.appendChild(header);
+  const header = document.createElement('div');
+  header.className = 'flex justify-center items-center mb-lg';
 
-  // Course actions section
-  const actionsSection = document.createElement('div');
-  actionsSection.className = 'mb-lg';
-
-  const actionsRow = document.createElement('div');
-  actionsRow.className = 'flex gap-sm mb-md';
+  // Titre éditable avec bouton trash
+  const titleSection = document.createElement('div');
+  titleSection.className = 'flex items-center gap-sm';
   
-  const renameForm = document.createElement('form');
-  renameForm.className = 'flex gap-sm';
-  const renameInput = document.createElement('input');
-  renameInput.type = 'text';
-  renameInput.placeholder = 'Nouveau nom du cours';
-  renameInput.value = course.name;
-  renameInput.required = true;
-  const renameBtn = document.createElement('button');
-  renameBtn.type = 'submit';
-  renameBtn.textContent = '✏️';
-  renameBtn.className = 'btn-secondary btn-match-input';
-  renameForm.appendChild(renameInput);
-  renameForm.appendChild(renameBtn);
-
+  const title = document.createElement('h1');
+  title.textContent = course.name;
+  title.contentEditable = 'true';
+  title.className = 'mb-0 px-2 py-1 rounded hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500';
+  title.style.minHeight = '2rem';
+  title.style.display = 'inline-flex';
+  title.style.alignItems = 'center';
+  title.style.marginBottom = '0';
+  
+  // Ajouter un padding supplémentaire en mode édition
+  title.addEventListener('focus', () => {
+    title.style.padding = '8px 12px';
+    title.style.backgroundColor = '';
+    title.style.border = '1px solid #dee2e6';
+    
+    // Positionner le curseur à la fin du texte
+    setTimeout(() => {
+      const range = document.createRange();
+      const sel = window.getSelection();
+      if (sel) {
+        range.selectNodeContents(title);
+        range.collapse(false); // false = à la fin
+        sel.removeAllRanges();
+        sel.addRange(range);
+      }
+    }, 0);
+  });
+  
+  // Gérer la sauvegarde et le style lors de la perte de focus
+  title.addEventListener('blur', async () => {
+    // Restaurer le style normal (padding d'origine)
+    title.style.padding = '';
+    title.style.backgroundColor = '';
+    title.style.border = '';
+    
+    // Gérer la sauvegarde
+    const newName = title.textContent.trim();
+    if (newName && newName !== course.name) {
+      try {
+        await deps.coursesUseCase.rename(params.id, newName);
+        course.name = newName; // Mettre à jour l'objet local
+        // Feedback visuel de succès
+        title.style.backgroundColor = '#d4edda';
+        setTimeout(() => {
+          title.style.backgroundColor = '';
+        }, 1000);
+      } catch (error) {
+        // En cas d'erreur, revenir à l'ancienne valeur
+        title.textContent = course.name;
+        title.style.backgroundColor = '#f8d7da';
+        setTimeout(() => {
+          title.style.backgroundColor = '';
+        }, 2000);
+      }
+    } else if (!newName) {
+      // Si vide, revenir à l'ancienne valeur
+      title.textContent = course.name;
+    }
+  });
+  
+  title.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      title.blur(); // Déclenche l'événement blur
+    } else if (e.key === 'Escape') {
+      e.preventDefault();
+      title.textContent = course.name;
+      title.blur();
+    }
+  });
+  
   const deleteCourseBtn = document.createElement('button');
   deleteCourseBtn.type = 'button';
   deleteCourseBtn.textContent = '🗑️';
   deleteCourseBtn.className = 'btn-danger btn-match-input';
-          deleteCourseBtn.addEventListener('click', async () => {
-            const confirmed = window.confirm('Supprimer ce cours et tous ses élèves ?');
-            if (!confirmed) return;
-            const ok = await deps.coursesUseCase.remove(params.id);
-            if (ok) {
-              location.hash = '#/courses';
-            }
-          });
+  deleteCourseBtn.addEventListener('click', async () => {
+    const confirmed = window.confirm('Supprimer ce cours et tous ses élèves ?');
+    if (!confirmed) return;
+    const ok = await deps.coursesUseCase.remove(params.id);
+    if (ok) {
+      location.hash = '#/courses';
+    }
+  });
+  
+  titleSection.appendChild(title);
+  titleSection.appendChild(deleteCourseBtn);
+  header.appendChild(titleSection);
 
-  actionsRow.appendChild(renameForm);
-  actionsRow.appendChild(deleteCourseBtn);
-  actionsSection.appendChild(actionsRow);
+  container.appendChild(header);
 
-  container.appendChild(actionsSection);
 
   // Generate impro section
   const improSection = document.createElement('div');
@@ -149,54 +204,77 @@ export async function renderCourseDetailsPage(root, params, deps) {
       studentCard.className = 'card';
       
       const studentContent = document.createElement('div');
-      studentContent.className = 'inline-edit-container';
+      studentContent.className = 'flex items-center justify-between gap-sm';
       
-      const renameInput = document.createElement('input');
-      renameInput.type = 'text';
-      renameInput.value = s.name;
-      renameInput.required = true;
-      renameInput.className = 'input-inline';
+      // Utiliser contenteditable pour l'édition inline
+      const editableName = document.createElement('span');
+      editableName.textContent = s.name;
+      editableName.contentEditable = 'true';
+      editableName.className = 'editable-name px-2 py-1 rounded hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500';
+      editableName.style.minHeight = '2rem';
+      editableName.style.display = 'inline-block';
       
-      const renameBtn = document.createElement('button');
-      renameBtn.type = 'button';
-      renameBtn.textContent = '✏️';
-      renameBtn.className = 'btn-secondary btn-match-input';
-
-      renameBtn.addEventListener('click', async (ev) => {
-        ev.preventDefault();
-        const newName = renameInput.value.trim();
-        if (!newName) return;
+      // Ajouter un padding supplémentaire en mode édition
+      editableName.addEventListener('focus', () => {
+        editableName.style.padding = '8px 12px';
+        editableName.style.backgroundColor = '';
+        editableName.style.border = '1px solid #dee2e6';
         
-        // Feedback visuel pendant la sauvegarde
-        const originalText = renameBtn.textContent;
-        renameBtn.textContent = '⏳';
-        renameBtn.disabled = true;
-        
-                try {
-                  const changed = await deps.coursesUseCase.renameStudent(params.id, s.id, newName);
-                  if (changed) {
-                    // Confirmation de succès
-                    renameBtn.textContent = '✅';
-                    setTimeout(() => {
-                      refreshStudents();
-                    }, 500);
-                  } else {
-                    // Erreur
-                    renameBtn.textContent = '❌';
-                    setTimeout(() => {
-                      renameBtn.textContent = originalText;
-                      renameBtn.disabled = false;
-                    }, 1000);
-                  }
-                } catch (error) {
-                  renameBtn.textContent = '❌';
-                  setTimeout(() => {
-                    renameBtn.textContent = originalText;
-                    renameBtn.disabled = false;
-                  }, 1000);
-                }
+        // Positionner le curseur à la fin du texte
+        setTimeout(() => {
+          const range = document.createRange();
+          const sel = window.getSelection();
+          if (sel) {
+            range.selectNodeContents(editableName);
+            range.collapse(false); // false = à la fin
+            sel.removeAllRanges();
+            sel.addRange(range);
+          }
+        }, 0);
       });
-
+      
+      // Gérer la sauvegarde et le style lors de la perte de focus
+      editableName.addEventListener('blur', async () => {
+        // Restaurer le style normal
+        editableName.style.padding = '4px 8px';
+        editableName.style.backgroundColor = '';
+        editableName.style.border = '';
+        
+        // Gérer la sauvegarde
+        const newName = editableName.textContent.trim();
+        if (newName && newName !== s.name) {
+          try {
+            await deps.coursesUseCase.renameStudent(params.id, s.id, newName);
+            // Feedback visuel de succès
+            editableName.style.backgroundColor = '#d4edda';
+            setTimeout(() => {
+              editableName.style.backgroundColor = '';
+            }, 1000);
+          } catch (error) {
+            // En cas d'erreur, revenir à l'ancienne valeur
+            editableName.textContent = s.name;
+            editableName.style.backgroundColor = '#f8d7da';
+            setTimeout(() => {
+              editableName.style.backgroundColor = '';
+            }, 2000);
+          }
+        } else if (!newName) {
+          // Si vide, revenir à l'ancienne valeur
+          editableName.textContent = s.name;
+        }
+      });
+      
+      editableName.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          editableName.blur(); // Déclenche l'événement blur
+        } else if (e.key === 'Escape') {
+          e.preventDefault();
+          editableName.textContent = s.name;
+          editableName.blur();
+        }
+      });
+      
       const deleteBtn = document.createElement('button');
       deleteBtn.type = 'button';
       deleteBtn.textContent = '🗑️';
@@ -211,13 +289,8 @@ export async function renderCourseDetailsPage(root, params, deps) {
         }
       });
 
-      const btnGroup = document.createElement('div');
-      btnGroup.className = 'btn-group';
-      btnGroup.appendChild(renameBtn);
-      btnGroup.appendChild(deleteBtn);
-      
-      studentContent.appendChild(renameInput);
-      studentContent.appendChild(btnGroup);
+      studentContent.appendChild(editableName);
+      studentContent.appendChild(deleteBtn);
       
       studentCard.appendChild(studentContent);
       list.appendChild(studentCard);
@@ -234,42 +307,6 @@ export async function renderCourseDetailsPage(root, params, deps) {
     updateGenerateImproButton();
   });
 
-  renameForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const newName = renameInput.value.trim();
-    if (!newName) return;
-    
-    // Feedback visuel pendant la sauvegarde
-    const originalText = renameBtn.textContent;
-    renameBtn.textContent = '⏳';
-    renameBtn.disabled = true;
-    
-    try {
-      const updated = await deps.coursesUseCase.rename(params.id, newName);
-      if (updated) {
-        // Confirmation de succès
-        renameBtn.textContent = '✅';
-        title.textContent = updated.name;
-        setTimeout(() => {
-          renameBtn.textContent = originalText;
-          renameBtn.disabled = false;
-        }, 1000);
-      } else {
-        // Erreur
-        renameBtn.textContent = '❌';
-        setTimeout(() => {
-          renameBtn.textContent = originalText;
-          renameBtn.disabled = false;
-        }, 1000);
-      }
-    } catch (error) {
-      renameBtn.textContent = '❌';
-      setTimeout(() => {
-        renameBtn.textContent = originalText;
-        renameBtn.disabled = false;
-      }, 1000);
-    }
-  });
 
   refreshStudents();
 }
