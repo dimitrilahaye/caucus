@@ -123,17 +123,24 @@ export async function renderImproPage(root, params, deps) {
   generateBtn.className = 'btn-primary btn-lg mb-md';
   generateBtn.disabled = true;
   
-  generateBtn.addEventListener('click', createGenerateHandler(
-    selectedStudents,
-    placesCount,
-    courseTyped,
-    deps,
-    (generatedImpro) => {
-      impro = generatedImpro;
-      hasGeneratedImpro = true;
-      renderResults();
-    }
-  ));
+  generateBtn.addEventListener('click', async () => {
+    // Récupérer la valeur actuelle du nombre de lieux
+    const currentPlacesCount = placesCount;
+    
+    const handler = createGenerateHandler(
+      selectedStudents,
+      currentPlacesCount,
+      courseTyped,
+      deps,
+      (generatedImpro) => {
+        impro = generatedImpro;
+        hasGeneratedImpro = true;
+        renderResults();
+      }
+    );
+    
+    await handler();
+  });
   
   container.appendChild(generateBtn);
 
