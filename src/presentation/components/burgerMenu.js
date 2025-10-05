@@ -55,10 +55,24 @@ export function renderBurgerMenu(mountOn) {
     }
   });
 
-  // Close menu on navigation
+  // Fonction pour vérifier si une impro est générée
+  function hasGeneratedImpro() {
+    const resultsSection = document.querySelector('.card[style*="display: block"]');
+    return resultsSection && resultsSection.querySelector('h3')?.textContent === 'Impro générée';
+  }
+
+  // Close menu on navigation avec vérification d'impro
   panel.addEventListener('click', (e) => {
     const target = /** @type {HTMLElement} */(e.target);
     if (target.tagName === 'A') {
+      // Vérifier si une impro est générée
+      if (hasGeneratedImpro()) {
+        const confirmed = window.confirm('Vous allez perdre l\'impro générée. Continuer ?');
+        if (!confirmed) {
+          e.preventDefault();
+          return;
+        }
+      }
       panel.setAttribute('hidden', '');
     }
   });
