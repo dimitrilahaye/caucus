@@ -30,6 +30,21 @@ export default defineConfig({
       },
       workbox: {
         navigateFallbackDenylist: [/^\/api\//],
+        // Fix for GitHub Pages subdirectory deployment
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,webmanifest}'],
+        runtimeCaching: [
+          {
+            urlPattern: /^https:\/\/dimitrilahaye\.github\.io\/caucus\//,
+            handler: 'StaleWhileRevalidate',
+            options: {
+              cacheName: 'caucus-cache',
+              expiration: {
+                maxEntries: 50,
+                maxAgeSeconds: 60 * 60 * 24 * 30 // 30 days
+              }
+            }
+          }
+        ]
       },
       devOptions: {
         enabled: true,
