@@ -8,7 +8,7 @@ import { createStudentCard } from './utils.js';
 
 /**
  * Crée la section de sélection des élèves
- * @param {import('../../core/entities/course.js').Course} course
+ * @param {import('../../../core/entities/course.js').Course} course
  * @param {Set<string>} selectedStudents
  * @param {function(string): void} onToggle
  * @param {function(): void} onSelectAll

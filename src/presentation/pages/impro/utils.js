@@ -6,7 +6,7 @@
 
 /**
  * Crée une carte d'élève avec checkbox
- * @param {import('../../core/entities/course.js').Student} student
+ * @param {import('../../../core/entities/course.js').Student} student
  * @param {boolean} isSelected
  * @param {function(string): void} onToggle
  * @returns {HTMLElement}
@@ -36,7 +36,7 @@ export function createStudentCard(student, isSelected, onToggle) {
 
 /**
  * Crée une carte de lieu avec boutons de régénération et suppression
- * @param {import('../../core/entities/place.js').Place} place
+ * @param {import('../../../core/entities/place.js').Place} place
  * @param {function(): Promise<void>} onRegenerate
  * @param {function(): Promise<void>} onDelete
  * @param {boolean} canDelete
@@ -71,7 +71,7 @@ export function createPlaceCard(place, onRegenerate, onDelete, canDelete) {
 
 /**
  * Crée une carte d'assignment (élève + personnage + émotion)
- * @param {import('../../core/entities/impro.js').ImproAssignment} assignment
+ * @param {import('../../../core/entities/impro.js').ImproAssignment} assignment
  * @param {function(): Promise<void>} onRegenerateCharacter
  * @param {function(): Promise<void>} onRegenerateMood
  * @param {function(): Promise<void>} onDeleteStudent
