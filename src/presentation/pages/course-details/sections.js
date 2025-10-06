@@ -1,6 +1,6 @@
 // @ts-check
 
-import { COURSE_DETAILS_MESSAGES } from './courseDetailsConstants.js';
+import { COURSE_DETAILS_MESSAGES } from './constants.js';
 
 /**
  * Sections pour la page des détails de cours

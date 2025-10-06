@@ -1,8 +1,8 @@
 // @ts-check
 
-import { createStudentSelectionSection, createPlacesCountSection, createPlacesList, createAssignmentsList } from './improSections.js';
-import { createStudentToggleHandler, createSelectAllHandler, createPlacesCountHandler, createGenerateHandler, createPlaceRegenerateHandler, createPlaceDeleteHandler, createCharacterRegenerateHandler, createMoodRegenerateHandler, createStudentDeleteHandler } from './improHandlers.js';
-import { IMPRO_CONFIG, IMPRO_MESSAGES } from './improConstants.js';
+import { createStudentSelectionSection, createPlacesCountSection, createPlacesList, createAssignmentsList } from './sections.js';
+import { createStudentToggleHandler, createSelectAllHandler, createPlacesCountHandler, createGenerateHandler, createPlaceRegenerateHandler, createPlaceDeleteHandler, createCharacterRegenerateHandler, createMoodRegenerateHandler, createStudentDeleteHandler } from './handlers.js';
+import { IMPRO_CONFIG, IMPRO_MESSAGES } from './constants.js';
 
 /**
  * @param {HTMLElement} root

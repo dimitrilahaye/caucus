@@ -4,7 +4,7 @@
  * Sections d'affichage pour la page d'impro
  */
 
-import { createStudentCard } from './improUtils.js';
+import { createStudentCard } from './utils.js';
 
 /**
  * Crée la section de sélection des élèves

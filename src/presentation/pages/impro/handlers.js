@@ -4,7 +4,7 @@
  * Gestionnaires d'événements pour la page d'impro
  */
 
-import { IMPRO_MESSAGES } from './improConstants.js';
+import { IMPRO_MESSAGES } from './constants.js';
 
 /**
  * Crée un gestionnaire de sélection d'élève

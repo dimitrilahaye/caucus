@@ -1,6 +1,6 @@
 // @ts-check
 
-import { COURSE_DETAILS_MESSAGES, COURSE_DETAILS_TIMEOUTS } from './courseDetailsConstants.js';
+import { COURSE_DETAILS_MESSAGES, COURSE_DETAILS_TIMEOUTS } from './constants.js';
 
 /**
  * Handlers pour la page des détails de cours

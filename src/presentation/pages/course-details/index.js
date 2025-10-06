@@ -1,7 +1,7 @@
 // @ts-check
 
-import { COURSE_DETAILS_MESSAGES } from './courseDetailsConstants.js';
-import { createHeaderSection, createImproSection, createStudentsSection, createStudentElement } from './courseDetailsSections.js';
+import { COURSE_DETAILS_MESSAGES } from './constants.js';
+import { createHeaderSection, createImproSection, createStudentsSection, createStudentElement } from './sections.js';
 import { 
   createTitleFocusHandlerFunction,
   createTitleBlurHandlerFunction,
@@ -11,7 +11,7 @@ import {
   createDeleteStudentHandlerFunction,
   createGenerateImproHandlerFunction,
   createAddStudentHandlerFunction
-} from './courseDetailsHandlers.js';
+} from './handlers.js';
 
 /**
  * Page des détails d'un cours avec gestion des élèves et génération d'impro
