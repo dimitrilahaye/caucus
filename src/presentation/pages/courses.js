@@ -52,14 +52,14 @@ export function renderCoursesPage(root, deps) {
       for (const c of courses) {
         const courseCard = document.createElement('a');
         courseCard.href = `#/courses/${encodeURIComponent(c.id)}`;
-        courseCard.className = 'card cursor-pointer';
+        courseCard.className = 'card-compact cursor-pointer';
         courseCard.style.display = 'block';
         courseCard.style.textDecoration = 'none';
         courseCard.style.color = 'inherit';
         
         const courseName = document.createElement('div');
         courseName.textContent = c.name;
-        courseName.className = 'text-lg font-semibold';
+        courseName.className = 'text-base font-medium';
         
         courseCard.appendChild(courseName);
         list.appendChild(courseCard);

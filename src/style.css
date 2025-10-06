@@ -236,7 +236,22 @@ input::placeholder, textarea::placeholder {
   transition: all 0.2s ease;
 }
 
+.card-compact {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: var(--space-sm) var(--space-md);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s ease;
+  min-height: auto;
+}
+
 .card:hover {
+  box-shadow: var(--shadow-md);
+  border-color: var(--border-light);
+}
+
+.card-compact:hover {
   box-shadow: var(--shadow-md);
   border-color: var(--border-light);
 }
