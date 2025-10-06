@@ -4,7 +4,7 @@ import '../../core/entities/course.js';
 /** @typedef {import('../../core/entities/course.js').Course} Course */
 /** @typedef {import('../../core/entities/course.js').Student} Student */
 
-const STORAGE_KEY = 'cre-impro~courses';
+const STORAGE_KEY = 'caucus~courses';
 
 /**
  * @returns {Course[]}

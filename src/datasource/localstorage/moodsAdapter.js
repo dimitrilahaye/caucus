@@ -3,7 +3,7 @@ import '../../core/entities/mood.js';
 
 /** @typedef {import('../../core/entities/mood.js').Mood} Mood */
 
-const STORAGE_KEY = 'cre-impro~moods';
+const STORAGE_KEY = 'caucus~moods';
 
 function readAll() {
   const raw = localStorage.getItem(STORAGE_KEY);

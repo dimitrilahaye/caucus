@@ -1,4 +1,5 @@
 import './style.css';
+import { migrateStorageKeys } from './core/utils/dataMigration.js';
 import { composeApp } from './presentation/compose/index.js';
 import { Router } from './presentation/router.js';
 import { renderCoursesPage } from './presentation/pages/courses.js';
@@ -8,6 +9,16 @@ import { renderPlacesPage } from './presentation/pages/places.js';
 import { renderMoodsPage } from './presentation/pages/moods.js';
 import { renderCharactersPage } from './presentation/pages/characters.js';
 import { renderImproPage } from './presentation/pages/impro/index.js';
+
+// Migration des données LocalStorage au démarrage
+try {
+  const migrationResult = migrateStorageKeys();
+  if (migrationResult.success && migrationResult.migratedKeys.length > 0) {
+    console.log(`✅ Migration réussie: ${migrationResult.totalItems} éléments migrés`);
+  }
+} catch (error) {
+  console.error('❌ Erreur lors de la migration des données:', error);
+}
 
 // Optional: report that PWA service worker is ready
 if ('serviceWorker' in navigator) {

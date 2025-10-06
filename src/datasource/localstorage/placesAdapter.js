@@ -3,7 +3,7 @@ import '../../core/entities/place.js';
 
 /** @typedef {import('../../core/entities/place.js').Place} Place */
 
-const STORAGE_KEY = 'cre-impro~places';
+const STORAGE_KEY = 'caucus~places';
 
 function readAll() {
   const raw = localStorage.getItem(STORAGE_KEY);

@@ -3,7 +3,7 @@ import '../../core/entities/character.js';
 
 /** @typedef {import('../../core/entities/character.js').Character} Character */
 
-const STORAGE_KEY = 'cre-impro~characters';
+const STORAGE_KEY = 'caucus~characters';
 
 function readAll() {
   const raw = localStorage.getItem(STORAGE_KEY);
