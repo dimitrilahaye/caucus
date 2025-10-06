@@ -2,7 +2,7 @@ import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
 
 // Set base to repo name for GitHub Pages when building, otherwise '/'
-const repoName = 'cre-impro-vibe-cording';
+const repoName = 'caucus';
 const isCI = process.env.CI === 'true' || process.env.GITHUB_ACTIONS === 'true';
 const isProdBuild = process.env.NODE_ENV === 'production';
 const base = isProdBuild ? `/${repoName}/` : '/';
@@ -14,8 +14,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'favicon.ico', 'robots.txt', 'apple-touch-icon.png'],
       manifest: {
-        name: 'Cré\'Impro',
-        short_name: 'Cré\'Impro',
+        name: 'Caucus',
+        short_name: 'Caucus',
         description: 'Générateur d\'improvisations théâtrales pour les professeurs',
         theme_color: '#0f172a',
         background_color: '#0f172a',

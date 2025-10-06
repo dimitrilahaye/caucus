@@ -1,4 +1,4 @@
-# cré-impro
+# Caucus
 
 # Get started
 

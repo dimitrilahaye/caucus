@@ -5,7 +5,7 @@
  */
 export function renderHome(root) {
   const info = document.createElement('p');
-  info.textContent = 'Cré-Impro — structure initialisée';
+  info.textContent = 'Caucus — structure initialisée';
   root.appendChild(info);
 }
 
