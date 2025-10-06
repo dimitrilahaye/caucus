@@ -11,9 +11,7 @@ dist/
 dev-dist/
 
 # PWA build outputs (vite-plugin-pwa)
-workbox-*.js
-workbox-*.js.map
-# Note: sw.js is needed for deployment, so we don't ignore it
+# Note: workbox-*.js and sw.js are needed for deployment
 
 # Env files
 .env
