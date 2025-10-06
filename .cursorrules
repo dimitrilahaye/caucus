@@ -1,0 +1,68 @@
+# Cré-Impro — Cursor Rules
+
+## Raison d'être
+- Application pour aider les profs de théâtre à générer des impros pour leurs cours.
+- Un prof définit ses cours (ex: « Nantes 15-18 ans », « Rennes adultes ») et leurs élèves (ex: « Marion », « Edwin »).
+- Le prof gère des listes: lieux (ex: « Une école », « Un zoo »), émotions (ex: « Joie », « Peur »), personnages (ex: « un dresseur d'ours », « une policière »).
+- Pour une impro: sélectionner un cours et un ou plusieurs élèves; pour chaque élève, tirer aléatoirement un personnage et une émotion (sans doublon de personnage). L’impro se déroule dans un ou plusieurs lieux tirés aléatoirement.
+
+## Architecture (3 couches + inversion de dépendances)
+- Dossiers sous `src/`:
+  - `core/`: règles métier pures (entités, types, services, use-cases). Aucune dépendance DOM/Storage.
+  - `datasource/`: persistance via LocalStorage. Implémente les interfaces (ports) définies par `core/`.
+  - `presentation/`: gestion du DOM (event listeners, éléments, MAJ du DOM). Consomme les interfaces `core/` via injection.
+- Inversion de dépendances:
+  - `core/` expose des interfaces (ports) pour les accès données et l’aléatoire.
+  - `datasource/` fournit les adaptateurs qui implémentent ces ports.
+  - `presentation/` compose le tout (composition root) et injecte les implémentations dans les use-cases `core/`.
+- Règles d'import:
+  - `core` → importe seulement `core`.
+  - `datasource` → peut importer `core`, jamais `presentation`.
+  - `presentation` → peut importer `core` et la composition, jamais directement `datasource`.
+- **OBLIGATOIRE**: La couche `presentation` ne doit JAMAIS importer directement les adaptateurs `datasource`.
+- **OBLIGATOIRE**: La couche `presentation` doit TOUJOURS utiliser les use-cases de `core` pour accéder aux données.
+- **OBLIGATOIRE**: Les use-cases `core` encapsulent la logique métier et injectent les ports `datasource`.
+
+## Typage strict via JSDoc (JavaScript vanilla)
+- Utiliser `// @ts-check` en tête des fichiers pertinents.
+- JSDoc systématique:
+  - `@typedef`, `@property` pour les entités (Élève, Cours, Personnage, Emotion, Impro, etc.).
+  - `@interface` pour les ports (ex: `StoragePort`, `RandomPort`), `@implements` côté adaptateurs.
+  - `@param`, `@returns` pour les fonctions publiques; `@template` si besoin.
+- Les fonctions de `core` sont pures et testables (pas de DOM/Storage).
+
+## Contraintes métier
+- Création / persistence des cours
+- Création / persistence des élèves dans un cours
+- Création / persistence des personnages
+- Création / persistence des émotions
+- Création / persistence des lieux
+- Sélection d’un cours puis d’un ou plusieurs élèves de ce cours.
+- Attribution par élève: 1 personnage + 1 émotion tirés aléatoirement.
+- Aucun doublon de personnage dans une impro.
+- Lieux: 1 ou plusieurs lieux tirés aléatoirement.
+- Aléatoire injectable via `RandomPort` dans `core` (RNG déterministe en tests).
+- Si nombre de personnages uniques < nombre d’élèves sélectionnés → erreur métier claire.
+
+## Organisation suggérée
+- `src/core/`: `entities/`, `ports/` (StoragePort, RandomPort), `usecases/` (ex: `generateImpro.js`), `utils/`.
+- `src/datasource/`: `localstorage/` (implémentations des ports `core`).
+- `src/presentation/`: `components/`, `pages/`, `compose/` (composition root qui instancie et injecte).
+
+## PWA & Build
+- Vite (vanilla JS) + `vite-plugin-pwa`.
+- GitHub Pages: respecter `base` dans `vite.config.js` (ex: `/cre-impro-vibe-cording/`).
+
+## Style de code
+- Noms explicites; éviter les abréviations obscures.
+- Retours précoces; éviter l’imbrication profonde; pas de `try/catch` superflu.
+- Commentaires concis pour invariants et décisions non évidentes.
+- Aucune dépendance au DOM/Storage dans `core`.
+
+## Par défaut, l'IA doit
+- Respecter les couches et l'inversion de dépendances.
+- **JAMAIS** permettre d'imports directs `datasource` dans `presentation`.
+- **TOUJOURS** utiliser les use-cases `core` comme intermédiaire entre `presentation` et `datasource`.
+- Écrire/mettre à jour les types via JSDoc.
+- Centraliser l'instanciation dans `presentation/compose`.
+- Garder `core` pur et indépendant de l'environnement.
