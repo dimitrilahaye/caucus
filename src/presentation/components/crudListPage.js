@@ -87,27 +87,60 @@ export function renderCrudListPage(root, config) {
 
     // Gestion du blur
     editableName.addEventListener('blur', async () => {
+      // Éviter les appels multiples pendant la sauvegarde
+      if (editableName.dataset.saving === 'true') return;
+      
+      // Ajouter une transition smooth pour les changements de couleur
+      editableName.style.transition = 'background-color 0.3s ease, color 0.3s ease';
+      
       // Restaurer le style normal
       editableName.style.padding = '4px 8px';
       editableName.style.backgroundColor = '';
       editableName.style.border = '';
+      editableName.style.color = '';
       
       // Gérer la sauvegarde
       const newName = editableName.textContent.trim();
       if (newName && newName !== initialValue) {
         try {
+          // Marquer comme en cours de sauvegarde
+          editableName.dataset.saving = 'true';
+          editableName.contentEditable = 'false';
+          
           await config.useCase.rename(itemId, newName);
-          // Feedback visuel de succès
-          editableName.style.backgroundColor = '#d4edda';
+          
+          // Mettre à jour la valeur initiale pour les prochaines comparaisons
+          initialValue = newName;
+          
+          // Feedback visuel de succès : fond vert avec texte blanc
+          editableName.style.backgroundColor = '#22c55e'; // green-500
+          editableName.style.color = 'white';
+          editableName.style.padding = '8px 12px'; // Ajouter du padding pendant la transition
+          
           setTimeout(() => {
+            // Retour à l'état normal avec transition smooth
             editableName.style.backgroundColor = '';
-          }, 1000);
+            editableName.style.color = '';
+            editableName.style.padding = ''; // Retirer le padding
+            
+            // Réactiver l'édition après la transition
+            editableName.contentEditable = 'true';
+            editableName.dataset.saving = 'false';
+          }, 500); // 0.5 secondes
+          
         } catch (error) {
           // En cas d'erreur, revenir à l'ancienne valeur
           editableName.textContent = initialValue;
-          editableName.style.backgroundColor = '#f8d7da';
+          editableName.style.backgroundColor = '#ef4444'; // red-500
+          editableName.style.color = 'white';
+          
           setTimeout(() => {
             editableName.style.backgroundColor = '';
+            editableName.style.color = '';
+            
+            // Réactiver l'édition après la transition d'erreur
+            editableName.contentEditable = 'true';
+            editableName.dataset.saving = 'false';
           }, 2000);
         }
       } else if (!newName) {

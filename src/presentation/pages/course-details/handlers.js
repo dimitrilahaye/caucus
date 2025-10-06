@@ -41,28 +41,58 @@ export function createTitleFocusHandlerFunction(titleElement) {
  */
 export function createTitleBlurHandlerFunction(titleElement, course, courseId, coursesUseCase) {
   return async () => {
+    // Éviter les appels multiples pendant la sauvegarde
+    if (titleElement.dataset.saving === 'true') return;
+    
+    // Ajouter une transition smooth pour les changements de couleur
+    titleElement.style.transition = 'background-color 0.3s ease, color 0.3s ease';
+    
     // Restaurer le style normal
     titleElement.style.padding = '';
     titleElement.style.backgroundColor = '';
     titleElement.style.border = '';
+    titleElement.style.color = '';
     
     // Gérer la sauvegarde
     const newName = titleElement.textContent.trim();
     if (newName && newName !== course.name) {
       try {
+        // Marquer comme en cours de sauvegarde
+        titleElement.dataset.saving = 'true';
+        titleElement.contentEditable = 'false';
+        
         await coursesUseCase.rename(courseId, newName);
         course.name = newName; // Mettre à jour l'objet local
-        // Feedback visuel de succès
-        titleElement.style.backgroundColor = '#d4edda';
+        
+        // Feedback visuel de succès : fond vert avec texte blanc
+        titleElement.style.backgroundColor = '#22c55e'; // green-500
+        titleElement.style.color = 'white';
+        titleElement.style.padding = '8px 12px'; // Ajouter du padding pendant la transition
+        
         setTimeout(() => {
+          // Retour à l'état normal avec transition smooth
           titleElement.style.backgroundColor = '';
-        }, COURSE_DETAILS_TIMEOUTS.SUCCESS_FEEDBACK);
+          titleElement.style.color = '';
+          titleElement.style.padding = ''; // Retirer le padding
+          
+          // Réactiver l'édition après la transition
+          titleElement.contentEditable = 'true';
+          titleElement.dataset.saving = 'false';
+        }, 500); // 0.5 secondes
+        
       } catch (error) {
         // En cas d'erreur, revenir à l'ancienne valeur
         titleElement.textContent = course.name;
-        titleElement.style.backgroundColor = '#f8d7da';
+        titleElement.style.backgroundColor = '#ef4444'; // red-500
+        titleElement.style.color = 'white';
+        
         setTimeout(() => {
           titleElement.style.backgroundColor = '';
+          titleElement.style.color = '';
+          
+          // Réactiver l'édition après la transition d'erreur
+          titleElement.contentEditable = 'true';
+          titleElement.dataset.saving = 'false';
         }, COURSE_DETAILS_TIMEOUTS.ERROR_FEEDBACK);
       }
     } else if (!newName) {
@@ -176,27 +206,60 @@ export function createStudentEditHandlerFunction(editableElement, student, cours
   
   // Gestion du blur
   editableElement.addEventListener('blur', async () => {
+    // Éviter les appels multiples pendant la sauvegarde
+    if (editableElement.dataset.saving === 'true') return;
+    
+    // Ajouter une transition smooth pour les changements de couleur
+    editableElement.style.transition = 'background-color 0.3s ease, color 0.3s ease';
+    
     // Restaurer le style normal
     editableElement.style.padding = '';
     editableElement.style.backgroundColor = '';
     editableElement.style.border = '';
+    editableElement.style.color = '';
     
     // Gérer la sauvegarde
     const newName = editableElement.textContent.trim();
     if (newName && newName !== student.name) {
       try {
+        // Marquer comme en cours de sauvegarde
+        editableElement.dataset.saving = 'true';
+        editableElement.contentEditable = 'false';
+        
         await coursesUseCase.renameStudent(courseId, student.id, newName);
-        // Feedback visuel de succès
-        editableElement.style.backgroundColor = '#d4edda';
+        
+        // Mettre à jour le nom de l'élève pour les prochaines comparaisons
+        student.name = newName;
+        
+        // Feedback visuel de succès : fond vert avec texte blanc
+        editableElement.style.backgroundColor = '#22c55e'; // green-500
+        editableElement.style.color = 'white';
+        editableElement.style.padding = '8px 12px'; // Ajouter du padding pendant la transition
+        
         setTimeout(() => {
+          // Retour à l'état normal avec transition smooth
           editableElement.style.backgroundColor = '';
-        }, COURSE_DETAILS_TIMEOUTS.SUCCESS_FEEDBACK);
+          editableElement.style.color = '';
+          editableElement.style.padding = ''; // Retirer le padding
+          
+          // Réactiver l'édition après la transition
+          editableElement.contentEditable = 'true';
+          editableElement.dataset.saving = 'false';
+        }, 500); // 0.5 secondes
+        
       } catch (error) {
         // En cas d'erreur, revenir à l'ancienne valeur
         editableElement.textContent = student.name;
-        editableElement.style.backgroundColor = '#f8d7da';
+        editableElement.style.backgroundColor = '#ef4444'; // red-500
+        editableElement.style.color = 'white';
+        
         setTimeout(() => {
           editableElement.style.backgroundColor = '';
+          editableElement.style.color = '';
+          
+          // Réactiver l'édition après la transition d'erreur
+          editableElement.contentEditable = 'true';
+          editableElement.dataset.saving = 'false';
         }, COURSE_DETAILS_TIMEOUTS.ERROR_FEEDBACK);
       }
     } else if (!newName) {
