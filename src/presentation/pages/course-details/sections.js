@@ -15,10 +15,7 @@ import { COURSE_DETAILS_MESSAGES } from './constants.js';
  */
 export function createHeaderSection(course, courseId, coursesUseCase) {
   const header = document.createElement('div');
-  header.className = 'flex justify-center items-center mb-lg';
-
-  const titleSection = document.createElement('div');
-  titleSection.className = 'flex items-center gap-sm';
+  header.className = 'flex justify-between items-center mb-lg';
   
   const title = document.createElement('h1');
   title.textContent = course.name;
@@ -36,9 +33,8 @@ export function createHeaderSection(course, courseId, coursesUseCase) {
   
   // Les handlers seront attachés dans index.js
   
-  titleSection.appendChild(title);
-  titleSection.appendChild(deleteCourseBtn);
-  header.appendChild(titleSection);
+  header.appendChild(title);
+  header.appendChild(deleteCourseBtn);
 
   return { section: header, title, deleteBtn: deleteCourseBtn };
 }
