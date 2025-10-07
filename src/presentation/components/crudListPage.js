@@ -60,8 +60,8 @@ export function renderCrudListPage({ root, config }) {
     const editableName = document.createElement('span');
     editableName.textContent = initialValue;
     editableName.contentEditable = 'true';
-    editableName.className = 'editable-name px-2 py-1 rounded hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500';
-    editableName.style.minHeight = '2rem';
+    editableName.className = 'editable-name px-1 py-0.5 rounded hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500';
+    editableName.style.minHeight = '1.5rem';
     editableName.style.display = 'inline-block';
 
     // Gestion du focus
@@ -194,6 +194,8 @@ export function renderCrudListPage({ root, config }) {
       for (const item of items) {
         const itemCard = document.createElement('div');
         itemCard.className = 'card';
+        itemCard.style.padding = '0.5rem 0.75rem';
+        itemCard.style.minHeight = 'auto';
         
         const itemContent = document.createElement('div');
         itemContent.className = 'flex items-center justify-between gap-sm';
