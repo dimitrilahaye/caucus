@@ -6,14 +6,10 @@
 
 /**
  * Crée la section de sélection des élèves
- * @param {import('../../../core/entities/course.js').Course} course
- * @param {Set<string>} selectedStudents
- * @param {function(string): void} onToggle
- * @param {function(): void} onSelectAll
- * @param {function(import('../../../core/entities/course.js').Student, boolean, function(string): void): HTMLElement} createStudentCard
+ * @param {{ course: import('../../../core/entities/course.js').Course, selectedStudents: Set<string>, onToggle: function(string): void, onSelectAll: function(): void, createStudentCard: function(import('../../../core/entities/course.js').Student, boolean, function(string): void): HTMLElement }} params
  * @returns {HTMLElement}
  */
-export function createStudentSelectionSection(course, selectedStudents, onToggle, onSelectAll, createStudentCard) {
+export function createStudentSelectionSection({ course, selectedStudents, onToggle, onSelectAll, createStudentCard }) {
   const section = document.createElement('div');
   section.className = 'mb-md';
   
@@ -45,12 +41,10 @@ export function createStudentSelectionSection(course, selectedStudents, onToggle
 
 /**
  * Crée la section de comptage des lieux
- * @param {number} placesCount
- * @param {function(number): void} onPlacesCountChange
- * @param {number} maxPlaces
+ * @param {{ placesCount: number, onPlacesCountChange: function(number): void, maxPlaces: number }} params
  * @returns {HTMLElement}
  */
-export function createPlacesCountSection(placesCount, onPlacesCountChange, maxPlaces) {
+export function createPlacesCountSection({ placesCount, onPlacesCountChange, maxPlaces }) {
   const section = document.createElement('div');
   section.className = 'mb-md';
   
@@ -108,12 +102,10 @@ export function createPlacesCountSection(placesCount, onPlacesCountChange, maxPl
 
 /**
  * Crée la liste des lieux générés
- * @param {Array} places
- * @param {function(number): Promise<void>} onRegenerate
- * @param {function(number): Promise<void>} onDelete
+ * @param {{ places: Array, onRegenerate: function(number): Promise<void>, onDelete: function(number): Promise<void> }} params
  * @returns {HTMLElement}
  */
-export function createPlacesList(places, onRegenerate, onDelete) {
+export function createPlacesList({ places, onRegenerate, onDelete }) {
   const list = document.createElement('div');
   list.className = 'flex flex-col gap-xs mb-md';
   
@@ -158,13 +150,10 @@ export function createPlacesList(places, onRegenerate, onDelete) {
 
 /**
  * Crée la liste des assignments générés
- * @param {Array} assignments
- * @param {function(number): Promise<void>} onRegenerateCharacter
- * @param {function(number): Promise<void>} onRegenerateMood
- * @param {function(number): Promise<void>} onDeleteStudent
+ * @param {{ assignments: Array, onRegenerateCharacter: function(number): Promise<void>, onRegenerateMood: function(number): Promise<void>, onDeleteStudent: function(number): Promise<void> }} params
  * @returns {HTMLElement}
  */
-export function createAssignmentsList(assignments, onRegenerateCharacter, onRegenerateMood, onDeleteStudent) {
+export function createAssignmentsList({ assignments, onRegenerateCharacter, onRegenerateMood, onDeleteStudent }) {
   const list = document.createElement('div');
   list.className = 'flex flex-col gap-xs';
   

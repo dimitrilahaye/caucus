@@ -6,12 +6,10 @@
 
 /**
  * Crée une carte d'élève avec checkbox
- * @param {import('../../../core/entities/course.js').Student} student
- * @param {boolean} isSelected
- * @param {function(string): void} onToggle
+ * @param {{ student: import('../../../core/entities/course.js').Student, isSelected: boolean, onToggle: function(string): void }} params
  * @returns {HTMLElement}
  */
-export function createStudentCard(student, isSelected, onToggle) {
+export function createStudentCard({ student, isSelected, onToggle }) {
   const studentCard = document.createElement('div');
   studentCard.className = 'card p-sm';
   
@@ -36,13 +34,10 @@ export function createStudentCard(student, isSelected, onToggle) {
 
 /**
  * Crée une carte de lieu avec boutons de régénération et suppression
- * @param {import('../../../core/entities/place.js').Place} place
- * @param {function(): Promise<void>} onRegenerate
- * @param {function(): Promise<void>} onDelete
- * @param {boolean} canDelete
+ * @param {{ place: import('../../../core/entities/place.js').Place, onRegenerate: function(): Promise<void>, onDelete: function(): Promise<void>, canDelete: boolean }} params
  * @returns {HTMLElement}
  */
-export function createPlaceCard(place, onRegenerate, onDelete, canDelete) {
+export function createPlaceCard({ place, onRegenerate, onDelete, canDelete }) {
   const placeCard = document.createElement('div');
   placeCard.className = 'card p-sm';
   
@@ -56,8 +51,8 @@ export function createPlaceCard(place, onRegenerate, onDelete, canDelete) {
   const btnGroup = document.createElement('div');
   btnGroup.className = 'btn-group';
   
-  const regenerateBtn = createRegenerateButton('🔄', onRegenerate, 'btn-secondary btn-compact');
-  const deleteBtn = createDeleteButton('🗑️', onDelete, 'btn-danger btn-compact', canDelete);
+  const regenerateBtn = createRegenerateButton({ text: '🔄', onClick: onRegenerate, className: 'btn-secondary btn-compact' });
+  const deleteBtn = createDeleteButton({ text: '🗑️', onClick: onDelete, className: 'btn-danger btn-compact', disabled: !canDelete });
   
   btnGroup.appendChild(regenerateBtn);
   btnGroup.appendChild(deleteBtn);
@@ -71,14 +66,10 @@ export function createPlaceCard(place, onRegenerate, onDelete, canDelete) {
 
 /**
  * Crée une carte d'assignment (élève + personnage + émotion)
- * @param {import('../../../core/entities/impro.js').ImproAssignment} assignment
- * @param {function(): Promise<void>} onRegenerateCharacter
- * @param {function(): Promise<void>} onRegenerateMood
- * @param {function(): Promise<void>} onDeleteStudent
- * @param {boolean} canDeleteStudent
+ * @param {{ assignment: import('../../../core/entities/impro.js').ImproAssignment, onRegenerateCharacter: function(): Promise<void>, onRegenerateMood: function(): Promise<void>, onDeleteStudent: function(): Promise<void>, canDeleteStudent: boolean }} params
  * @returns {HTMLElement}
  */
-export function createAssignmentCard(assignment, onRegenerateCharacter, onRegenerateMood, onDeleteStudent, canDeleteStudent) {
+export function createAssignmentCard({ assignment, onRegenerateCharacter, onRegenerateMood, onDeleteStudent, canDeleteStudent }) {
   const assignmentCard = document.createElement('div');
   assignmentCard.className = 'card p-sm';
   
@@ -96,7 +87,7 @@ export function createAssignmentCard(assignment, onRegenerateCharacter, onRegene
   characterSpan.textContent = assignment.character.name;
   characterSpan.className = 'font-medium text-sm';
   
-  const regenerateCharacterBtn = createRegenerateButton('🔄', onRegenerateCharacter, 'btn-secondary btn-match-input');
+  const regenerateCharacterBtn = createRegenerateButton({ text: '🔄', onClick: onRegenerateCharacter, className: 'btn-secondary btn-match-input' });
   
   characterContainer.appendChild(characterSpan);
   characterContainer.appendChild(regenerateCharacterBtn);
@@ -110,7 +101,7 @@ export function createAssignmentCard(assignment, onRegenerateCharacter, onRegene
   moodSpan.textContent = assignment.mood.name;
   moodSpan.className = 'text-secondary text-sm';
   
-  const regenerateMoodBtn = createRegenerateButton('🔄', onRegenerateMood, 'btn-secondary btn-match-input');
+  const regenerateMoodBtn = createRegenerateButton({ text: '🔄', onClick: onRegenerateMood, className: 'btn-secondary btn-match-input' });
   
   moodContainer.appendChild(moodSpan);
   moodContainer.appendChild(regenerateMoodBtn);
@@ -120,7 +111,7 @@ export function createAssignmentCard(assignment, onRegenerateCharacter, onRegene
   const deleteStudentContainer = document.createElement('div');
   deleteStudentContainer.className = 'flex justify-end mt-xs';
   
-  const deleteStudentBtn = createDeleteButton('🗑️ Supprimer l\'élève de l\'impro', onDeleteStudent, 'btn-danger btn-sm', canDeleteStudent);
+  const deleteStudentBtn = createDeleteButton({ text: '🗑️ Supprimer l\'élève de l\'impro', onClick: onDeleteStudent, className: 'btn-danger btn-sm', disabled: !canDeleteStudent });
   
   deleteStudentContainer.appendChild(deleteStudentBtn);
   assignmentCard.appendChild(deleteStudentContainer);
@@ -130,12 +121,10 @@ export function createAssignmentCard(assignment, onRegenerateCharacter, onRegene
 
 /**
  * Crée un bouton de régénération générique
- * @param {string} text
- * @param {function(): Promise<void>} onClick
- * @param {string} className
+ * @param {{ text: string, onClick: function(): Promise<void>, className?: string }} params
  * @returns {HTMLElement}
  */
-export function createRegenerateButton(text, onClick, className = 'btn-secondary btn-match-input') {
+export function createRegenerateButton({ text, onClick, className = 'btn-secondary btn-match-input' }) {
   const button = document.createElement('button');
   button.type = 'button';
   button.textContent = text;
@@ -154,13 +143,10 @@ export function createRegenerateButton(text, onClick, className = 'btn-secondary
 
 /**
  * Crée un bouton de suppression générique
- * @param {string} text
- * @param {function(): Promise<void>} onClick
- * @param {string} className
- * @param {boolean} disabled
+ * @param {{ text: string, onClick: function(): Promise<void>, className?: string, disabled?: boolean }} params
  * @returns {HTMLElement}
  */
-export function createDeleteButton(text, onClick, className = 'btn-danger btn-match-input', disabled = false) {
+export function createDeleteButton({ text, onClick, className = 'btn-danger btn-match-input', disabled = false }) {
   const button = document.createElement('button');
   button.type = 'button';
   button.textContent = text;
@@ -180,13 +166,9 @@ export function createDeleteButton(text, onClick, className = 'btn-danger btn-ma
 
 /**
  * Affiche un feedback visuel sur un bouton
- * @param {HTMLButtonElement} button
- * @param {string} originalText
- * @param {string} successText
- * @param {string} errorText
- * @param {function(): Promise<boolean>} action
+ * @param {{ button: HTMLButtonElement, originalText: string, successText: string, errorText: string, action: function(): Promise<boolean> }} params
  */
-export async function showFeedback(button, originalText, successText, errorText, action) {
+export async function showFeedback({ button, originalText, successText, errorText, action }) {
   button.textContent = '⏳';
   button.disabled = true;
   

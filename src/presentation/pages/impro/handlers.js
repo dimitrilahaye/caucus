@@ -6,12 +6,10 @@
 
 /**
  * Crée un gestionnaire de sélection d'élève
- * @param {string} studentId
- * @param {Set<string>} selectedStudents
- * @param {function(): void} onUpdate
+ * @param {{ studentId: string, selectedStudents: Set<string>, onUpdate: function(): void }} params
  * @returns {function(): void}
  */
-export function createStudentToggleHandler(studentId, selectedStudents, onUpdate) {
+export function createStudentToggleHandler({ studentId, selectedStudents, onUpdate }) {
   return () => {
     if (selectedStudents.has(studentId)) {
       selectedStudents.delete(studentId);
@@ -24,12 +22,10 @@ export function createStudentToggleHandler(studentId, selectedStudents, onUpdate
 
 /**
  * Crée un gestionnaire "Tout sélectionner/dé-sélectionner"
- * @param {import('../../../core/entities/course.js').Course} course
- * @param {Set<string>} selectedStudents
- * @param {function(): void} onUpdate
+ * @param {{ course: import('../../../core/entities/course.js').Course, selectedStudents: Set<string>, onUpdate: function(): void }} params
  * @returns {function(): void}
  */
-export function createSelectAllHandler(course, selectedStudents, onUpdate) {
+export function createSelectAllHandler({ course, selectedStudents, onUpdate }) {
   return () => {
     if (selectedStudents.size === course.students.length) {
       // Tout dé-sélectionner
@@ -45,10 +41,10 @@ export function createSelectAllHandler(course, selectedStudents, onUpdate) {
 
 /**
  * Crée un gestionnaire de changement du nombre de lieux
- * @param {function(number): void} onPlacesCountChange
+ * @param {{ onPlacesCountChange: function(number): void }} params
  * @returns {function(number): void}
  */
-export function createPlacesCountHandler(onPlacesCountChange) {
+export function createPlacesCountHandler({ onPlacesCountChange }) {
   return (newCount) => {
     onPlacesCountChange(newCount);
   };
@@ -56,15 +52,10 @@ export function createPlacesCountHandler(onPlacesCountChange) {
 
 /**
  * Crée un gestionnaire de génération d'impro
- * @param {Set<string>} selectedStudents
- * @param {number} placesCount
- * @param {import('../../../core/entities/course.js').Course} course
- * @param {Object} deps
- * @param {function(any): void} onImproGenerated
- * @param {Object} messages
+ * @param {{ selectedStudents: Set<string>, placesCount: number, course: import('../../../core/entities/course.js').Course, deps: Object, onImproGenerated: function(any): void, messages: Object }} params
  * @returns {function(): Promise<void>}
  */
-export function createGenerateHandler(selectedStudents, placesCount, course, deps, onImproGenerated, messages) {
+export function createGenerateHandler({ selectedStudents, placesCount, course, deps, onImproGenerated, messages }) {
   return async () => {
     // Validation des élèves
     const studentError = deps.validationUseCase.validateStudentSelection(selectedStudents, course);
@@ -93,14 +84,10 @@ export function createGenerateHandler(selectedStudents, placesCount, course, dep
 
 /**
  * Crée un gestionnaire de régénération de lieu
- * @param {Array} places
- * @param {number} index
- * @param {Object} deps
- * @param {function(): void} onUpdate
- * @param {Object} messages
+ * @param {{ places: Array, index: number, deps: Object, onUpdate: function(): void, messages: Object }} params
  * @returns {function(): Promise<void>}
  */
-export function createPlaceRegenerateHandler(places, index, deps, onUpdate, messages) {
+export function createPlaceRegenerateHandler({ places, index, deps, onUpdate, messages }) {
   return async () => {
     try {
       const newPlace = await deps.regenerationUseCase.regeneratePlace(places, index);
@@ -114,14 +101,10 @@ export function createPlaceRegenerateHandler(places, index, deps, onUpdate, mess
 
 /**
  * Crée un gestionnaire de suppression de lieu
- * @param {Array} places
- * @param {number} index
- * @param {Object} deps
- * @param {function(): void} onUpdate
- * @param {Object} messages
+ * @param {{ places: Array, index: number, deps: Object, onUpdate: function(): void, messages: Object }} params
  * @returns {function(): Promise<void>}
  */
-export function createPlaceDeleteHandler(places, index, deps, onUpdate, messages) {
+export function createPlaceDeleteHandler({ places, index, deps, onUpdate, messages }) {
   return async () => {
     const placeName = places[index].name;
     const confirmed = await deps.deletionUseCase.confirmDeletion(
@@ -137,14 +120,10 @@ export function createPlaceDeleteHandler(places, index, deps, onUpdate, messages
 
 /**
  * Crée un gestionnaire de régénération de personnage
- * @param {Array} assignments
- * @param {number} index
- * @param {Object} deps
- * @param {function(): void} onUpdate
- * @param {Object} messages
+ * @param {{ assignments: Array, index: number, deps: Object, onUpdate: function(): void, messages: Object }} params
  * @returns {function(): Promise<void>}
  */
-export function createCharacterRegenerateHandler(assignments, index, deps, onUpdate, messages) {
+export function createCharacterRegenerateHandler({ assignments, index, deps, onUpdate, messages }) {
   return async () => {
     try {
       const newCharacter = await deps.regenerationUseCase.regenerateCharacter(assignments, index);
@@ -158,14 +137,10 @@ export function createCharacterRegenerateHandler(assignments, index, deps, onUpd
 
 /**
  * Crée un gestionnaire de régénération d'émotion
- * @param {Array} assignments
- * @param {number} index
- * @param {Object} deps
- * @param {function(): void} onUpdate
- * @param {Object} messages
+ * @param {{ assignments: Array, index: number, deps: Object, onUpdate: function(): void, messages: Object }} params
  * @returns {function(): Promise<void>}
  */
-export function createMoodRegenerateHandler(assignments, index, deps, onUpdate, messages) {
+export function createMoodRegenerateHandler({ assignments, index, deps, onUpdate, messages }) {
   return async () => {
     try {
       const newMood = await deps.regenerationUseCase.regenerateMood(assignments, index);
@@ -179,14 +154,10 @@ export function createMoodRegenerateHandler(assignments, index, deps, onUpdate, 
 
 /**
  * Crée un gestionnaire de suppression d'élève de l'impro
- * @param {Array} assignments
- * @param {number} index
- * @param {Object} deps
- * @param {function(): void} onUpdate
- * @param {Object} messages
+ * @param {{ assignments: Array, index: number, deps: Object, onUpdate: function(): void, messages: Object }} params
  * @returns {function(): Promise<void>}
  */
-export function createStudentDeleteHandler(assignments, index, deps, onUpdate, messages) {
+export function createStudentDeleteHandler({ assignments, index, deps, onUpdate, messages }) {
   return async () => {
     const studentName = assignments[index].student.name;
     const confirmed = await deps.deletionUseCase.confirmDeletion(

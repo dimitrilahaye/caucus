@@ -6,10 +6,10 @@
 
 /**
  * Crée un handler pour le focus du titre du cours (retourne une fonction)
- * @param {HTMLElement} titleElement
+ * @param {{ titleElement: HTMLElement }} params
  * @returns {function(): void}
  */
-export function createTitleFocusHandlerFunction(titleElement) {
+export function createTitleFocusHandlerFunction({ titleElement }) {
   return () => {
     titleElement.style.padding = '8px 12px';
     titleElement.style.backgroundColor = '';
@@ -31,15 +31,10 @@ export function createTitleFocusHandlerFunction(titleElement) {
 
 /**
  * Crée un handler pour le blur du titre du cours (retourne une fonction)
- * @param {HTMLElement} titleElement
- * @param {import('../../../core/entities/course.js').Course} course
- * @param {string} courseId
- * @param {import('../../../core/usecases/coursesUseCase.js').CoursesUseCase} coursesUseCase
- * @param {Object} messages
- * @param {Object} timeouts
+ * @param {{ titleElement: HTMLElement, course: import('../../../core/entities/course.js').Course, courseId: string, coursesUseCase: import('../../../core/usecases/coursesUseCase.js').CoursesUseCase, messages: Object, timeouts: Object }} params
  * @returns {function(): Promise<void>}
  */
-export function createTitleBlurHandlerFunction(titleElement, course, courseId, coursesUseCase, messages, timeouts) {
+export function createTitleBlurHandlerFunction({ titleElement, course, courseId, coursesUseCase, messages, timeouts }) {
   return async () => {
     // Éviter les appels multiples pendant la sauvegarde
     if (titleElement.dataset.saving === 'true') return;
@@ -104,11 +99,10 @@ export function createTitleBlurHandlerFunction(titleElement, course, courseId, c
 
 /**
  * Crée un handler pour les touches du titre du cours (retourne une fonction)
- * @param {HTMLElement} titleElement
- * @param {import('../../../core/entities/course.js').Course} course
+ * @param {{ titleElement: HTMLElement, course: import('../../../core/entities/course.js').Course }} params
  * @returns {function(KeyboardEvent): void}
  */
-export function createTitleKeydownHandlerFunction(titleElement, course) {
+export function createTitleKeydownHandlerFunction({ titleElement, course }) {
   return (e) => {
     if (e.key === 'Enter') {
       e.preventDefault();
@@ -123,12 +117,10 @@ export function createTitleKeydownHandlerFunction(titleElement, course) {
 
 /**
  * Crée un handler pour la suppression du cours (retourne une fonction)
- * @param {string} courseId
- * @param {import('../../../core/usecases/coursesUseCase.js').CoursesUseCase} coursesUseCase
- * @param {Object} messages
+ * @param {{ courseId: string, coursesUseCase: import('../../../core/usecases/coursesUseCase.js').CoursesUseCase, messages: Object }} params
  * @returns {function(): Promise<void>}
  */
-export function createDeleteCourseHandlerFunction(courseId, coursesUseCase, messages) {
+export function createDeleteCourseHandlerFunction({ courseId, coursesUseCase, messages }) {
   return async () => {
     const confirmed = window.confirm(messages.CONFIRMATIONS.DELETE_COURSE);
     if (!confirmed) return;
@@ -141,12 +133,10 @@ export function createDeleteCourseHandlerFunction(courseId, coursesUseCase, mess
 
 /**
  * Crée un handler pour le bouton de génération d'impro (retourne une fonction)
- * @param {string} courseId
- * @param {import('../../../core/usecases/coursesUseCase.js').CoursesUseCase} coursesUseCase
- * @param {Object} messages
+ * @param {{ courseId: string, coursesUseCase: import('../../../core/usecases/coursesUseCase.js').CoursesUseCase, messages: Object }} params
  * @returns {function(): Promise<void>}
  */
-export function createGenerateImproHandlerFunction(courseId, coursesUseCase, messages) {
+export function createGenerateImproHandlerFunction({ courseId, coursesUseCase, messages }) {
   return async () => {
     const currentCourse = await coursesUseCase.getById(courseId);
     if (!currentCourse || !currentCourse.students.length) {
@@ -160,14 +150,10 @@ export function createGenerateImproHandlerFunction(courseId, coursesUseCase, mes
 
 /**
  * Crée un handler pour l'ajout d'élève (retourne une fonction)
- * @param {HTMLElement} input
- * @param {string} courseId
- * @param {import('../../../core/usecases/coursesUseCase.js').CoursesUseCase} coursesUseCase
- * @param {() => Promise<void>} refreshStudents
- * @param {() => Promise<void>} updateGenerateImproButton
+ * @param {{ input: HTMLElement, courseId: string, coursesUseCase: import('../../../core/usecases/coursesUseCase.js').CoursesUseCase, refreshStudents: () => Promise<void>, updateGenerateImproButton: () => Promise<void> }} params
  * @returns {function(): Promise<void>}
  */
-export function createAddStudentHandlerFunction(input, courseId, coursesUseCase, refreshStudents, updateGenerateImproButton) {
+export function createAddStudentHandlerFunction({ input, courseId, coursesUseCase, refreshStudents, updateGenerateImproButton }) {
   return async () => {
     const name = /** @type {HTMLInputElement} */ (input).value.trim();
     if (!name) return;
@@ -180,13 +166,10 @@ export function createAddStudentHandlerFunction(input, courseId, coursesUseCase,
 
 /**
  * Crée un handler pour l'édition d'un élève (retourne une fonction)
- * @param {HTMLElement} editableElement
- * @param {import('../../../core/entities/course.js').Student} student
- * @param {string} courseId
- * @param {import('../../../core/usecases/coursesUseCase.js').CoursesUseCase} coursesUseCase
+ * @param {{ editableElement: HTMLElement, student: import('../../../core/entities/course.js').Student, courseId: string, coursesUseCase: import('../../../core/usecases/coursesUseCase.js').CoursesUseCase, timeouts: Object }} params
  * @returns {void}
  */
-export function createStudentEditHandlerFunction(editableElement, student, courseId, coursesUseCase) {
+export function createStudentEditHandlerFunction({ editableElement, student, courseId, coursesUseCase, timeouts }) {
   // Gestion du focus
   editableElement.addEventListener('focus', () => {
     editableElement.style.padding = '4px 8px';
@@ -285,15 +268,10 @@ export function createStudentEditHandlerFunction(editableElement, student, cours
 
 /**
  * Crée un handler pour la suppression d'un élève (retourne une fonction)
- * @param {import('../../../core/entities/course.js').Student} student
- * @param {string} courseId
- * @param {import('../../../core/usecases/coursesUseCase.js').CoursesUseCase} coursesUseCase
- * @param {() => Promise<void>} refreshStudents
- * @param {() => Promise<void>} updateGenerateImproButton
- * @param {Object} messages
+ * @param {{ student: import('../../../core/entities/course.js').Student, courseId: string, coursesUseCase: import('../../../core/usecases/coursesUseCase.js').CoursesUseCase, refreshStudents: () => Promise<void>, updateGenerateImproButton: () => Promise<void>, messages: Object }} params
  * @returns {function(): Promise<void>}
  */
-export function createDeleteStudentHandlerFunction(student, courseId, coursesUseCase, refreshStudents, updateGenerateImproButton, messages) {
+export function createDeleteStudentHandlerFunction({ student, courseId, coursesUseCase, refreshStudents, updateGenerateImproButton, messages }) {
   return async () => {
     const confirmed = window.confirm(messages.CONFIRMATIONS.DELETE_STUDENT(student.name));
     if (!confirmed) return;

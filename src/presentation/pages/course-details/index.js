@@ -15,11 +15,9 @@ import {
 
 /**
  * Page des détails d'un cours avec gestion des élèves et génération d'impro
- * @param {HTMLElement} root
- * @param {{ id: string }} params
- * @param {{ coursesUseCase: import('../../../core/usecases/coursesUseCase.js').CoursesUseCase }} deps
+ * @param {{ root: HTMLElement, params: { id: string }, deps: { coursesUseCase: import('../../../core/usecases/coursesUseCase.js').CoursesUseCase } }} params
  */
-export async function renderCourseDetailsPage(root, params, deps) {
+export async function renderCourseDetailsPage({ root, params, deps }) {
   root.innerHTML = '';
 
   const course = await deps.coursesUseCase.getById(params.id);
@@ -48,12 +46,24 @@ export async function renderCourseDetailsPage(root, params, deps) {
   container.appendChild(back);
 
   // Header avec titre éditable
-  const { section: header, title, deleteBtn: deleteCourseBtn } = createHeaderSection(course, params.id, deps.coursesUseCase, COURSE_DETAILS_MESSAGES);
+  const { section: header, title, deleteBtn: deleteCourseBtn } = createHeaderSection({ 
+    course, 
+    courseId: params.id, 
+    coursesUseCase: deps.coursesUseCase, 
+    messages: COURSE_DETAILS_MESSAGES 
+  });
   
   // Attacher les handlers du titre
-  const titleFocusHandler = createTitleFocusHandlerFunction(title);
-  const titleBlurHandler = createTitleBlurHandlerFunction(title, course, params.id, deps.coursesUseCase, COURSE_DETAILS_MESSAGES, COURSE_DETAILS_TIMEOUTS);
-  const titleKeydownHandler = createTitleKeydownHandlerFunction(title, course);
+  const titleFocusHandler = createTitleFocusHandlerFunction({ titleElement: title });
+  const titleBlurHandler = createTitleBlurHandlerFunction({ 
+    titleElement: title, 
+    course, 
+    courseId: params.id, 
+    coursesUseCase: deps.coursesUseCase, 
+    messages: COURSE_DETAILS_MESSAGES, 
+    timeouts: COURSE_DETAILS_TIMEOUTS 
+  });
+  const titleKeydownHandler = createTitleKeydownHandlerFunction({ titleElement: title, course });
   
   title.addEventListener('focus', titleFocusHandler);
   title.addEventListener('blur', titleBlurHandler);
@@ -61,17 +71,29 @@ export async function renderCourseDetailsPage(root, params, deps) {
   
   // Attacher le handler de suppression du cours
   if (deleteCourseBtn) {
-    const deleteCourseHandler = createDeleteCourseHandlerFunction(params.id, deps.coursesUseCase, COURSE_DETAILS_MESSAGES);
+    const deleteCourseHandler = createDeleteCourseHandlerFunction({ 
+      courseId: params.id, 
+      coursesUseCase: deps.coursesUseCase, 
+      messages: COURSE_DETAILS_MESSAGES 
+    });
     deleteCourseBtn.addEventListener('click', deleteCourseHandler);
   }
   
   container.appendChild(header);
 
   // Section génération d'impro
-  const { section: improSection, button: generateImproBtn } = createImproSection(params.id, deps.coursesUseCase, COURSE_DETAILS_MESSAGES);
+  const { section: improSection, button: generateImproBtn } = createImproSection({ 
+    courseId: params.id, 
+    coursesUseCase: deps.coursesUseCase, 
+    messages: COURSE_DETAILS_MESSAGES 
+  });
   
   // Attacher le handler de génération d'impro
-  const generateImproHandler = createGenerateImproHandlerFunction(params.id, deps.coursesUseCase, COURSE_DETAILS_MESSAGES);
+  const generateImproHandler = createGenerateImproHandlerFunction({ 
+    courseId: params.id, 
+    coursesUseCase: deps.coursesUseCase, 
+    messages: COURSE_DETAILS_MESSAGES 
+  });
   generateImproBtn.addEventListener('click', async (e) => {
     if (/** @type {HTMLButtonElement} */ (generateImproBtn).disabled) {
       e.preventDefault();
@@ -95,16 +117,22 @@ export async function renderCourseDetailsPage(root, params, deps) {
   container.appendChild(improSection);
 
   // Section des élèves
-  const { section: studentsSection, emptyMsg, list, form, input } = createStudentsSection(
-    params.id, 
-    deps.coursesUseCase, 
+  const { section: studentsSection, emptyMsg, list, form, input } = createStudentsSection({
+    courseId: params.id, 
+    coursesUseCase: deps.coursesUseCase, 
     refreshStudents, 
     updateGenerateImproButton,
-    COURSE_DETAILS_MESSAGES
-  );
+    messages: COURSE_DETAILS_MESSAGES
+  });
   
   // Attacher le handler d'ajout d'élève
-  const addStudentHandler = createAddStudentHandlerFunction(input, params.id, deps.coursesUseCase, refreshStudents, updateGenerateImproButton);
+  const addStudentHandler = createAddStudentHandlerFunction({ 
+    input, 
+    courseId: params.id, 
+    coursesUseCase: deps.coursesUseCase, 
+    refreshStudents, 
+    updateGenerateImproButton 
+  });
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     await addStudentHandler();
@@ -119,17 +147,30 @@ export async function renderCourseDetailsPage(root, params, deps) {
     }
     emptyMsg.textContent = '';
     for (const student of updated.students) {
-      const { element: studentElement, editableName, deleteBtn } = createStudentElement(
+      const { element: studentElement, editableName, deleteBtn } = createStudentElement({
         student, 
-        params.id, 
-        deps.coursesUseCase, 
+        courseId: params.id, 
+        coursesUseCase: deps.coursesUseCase, 
         refreshStudents, 
         updateGenerateImproButton
-      );
+      });
       
       // Attacher les handlers
-      createStudentEditHandlerFunction(editableName, student, params.id, deps.coursesUseCase, COURSE_DETAILS_MESSAGES, COURSE_DETAILS_TIMEOUTS);
-      const deleteStudentHandler = createDeleteStudentHandlerFunction(student, params.id, deps.coursesUseCase, refreshStudents, updateGenerateImproButton, COURSE_DETAILS_MESSAGES);
+      createStudentEditHandlerFunction({ 
+        editableElement: editableName, 
+        student, 
+        courseId: params.id, 
+        coursesUseCase: deps.coursesUseCase,
+        timeouts: COURSE_DETAILS_TIMEOUTS
+      });
+      const deleteStudentHandler = createDeleteStudentHandlerFunction({ 
+        student, 
+        courseId: params.id, 
+        coursesUseCase: deps.coursesUseCase, 
+        refreshStudents, 
+        updateGenerateImproButton, 
+        messages: COURSE_DETAILS_MESSAGES 
+      });
       deleteBtn.addEventListener('click', deleteStudentHandler);
       
       list.appendChild(studentElement);

@@ -5,10 +5,9 @@ import { createCourseFormSubmitHandler } from './handlers.js';
 import { COURSES_MESSAGES } from './constants.js';
 
 /**
- * @param {HTMLElement} root
- * @param {{ coursesUseCase: import('../../../core/usecases/coursesUseCase.js').CoursesUseCase }} deps
+ * @param {{ root: HTMLElement, deps: { coursesUseCase: import('../../../core/usecases/coursesUseCase.js').CoursesUseCase } }} params
  */
-export function renderCoursesPage(root, deps) {
+export function renderCoursesPage({ root, deps }) {
   root.innerHTML = '';
 
   // État de l'application
@@ -34,7 +33,7 @@ export function renderCoursesPage(root, deps) {
       listElement.remove();
     }
     
-    const newList = createCoursesList(courses);
+    const newList = createCoursesList({ courses });
     newList.className += ' courses-list';
     container.appendChild(newList);
     
@@ -44,14 +43,20 @@ export function renderCoursesPage(root, deps) {
       messageElement.remove();
     }
     
-    const newMessage = createCoursesMessage(courses);
+    const newMessage = createCoursesMessage({ courses });
     newMessage.className += ' courses-message';
     container.appendChild(newMessage);
   }
 
   // Création de la section principale
-  const formSubmitHandler = createCourseFormSubmitHandler(deps.coursesUseCase, refresh);
-  const mainSection = createCoursesPageSection(courses, formSubmitHandler);
+  const formSubmitHandler = createCourseFormSubmitHandler({ 
+    coursesUseCase: deps.coursesUseCase, 
+    onRefresh: refresh 
+  });
+  const mainSection = createCoursesPageSection({ 
+    courses, 
+    onSubmitHandler: formSubmitHandler 
+  });
   root.appendChild(mainSection);
 
   // Initialisation

@@ -6,17 +6,15 @@ import { IMPRO_CONFIG, IMPRO_MESSAGES } from './constants.js';
 import { createStudentCard } from './utils.js';
 
 /**
- * @param {HTMLElement} root
- * @param {{ courseId: string }} params
- * @param {{
+ * @param {{ root: HTMLElement, params: { courseId: string }, deps: {
  *   coursesUseCase: import('../../../core/usecases/coursesUseCase.js').CoursesUseCase,
  *   placesUseCase: import('../../../core/usecases/placesUseCase.js').PlacesUseCase,
  *   moodsUseCase: import('../../../core/usecases/moodsUseCase.js').MoodsUseCase,
  *   charactersUseCase: import('../../../core/usecases/charactersUseCase.js').CharactersUseCase,
  *   improGenerationUseCase: import('../../../core/usecases/generateImpro.js').ImproGenerationUseCase
- * }} deps
+ * } }} params
  */
-export async function renderImproPage(root, params, deps) {
+export async function renderImproPage({ root, params, deps }) {
   root.innerHTML = '';
 
   const course = await deps.coursesUseCase.getById(params.courseId);
@@ -77,6 +75,11 @@ export async function renderImproPage(root, params, deps) {
   header.appendChild(title);
   container.appendChild(header);
 
+  // Wrapper pour createStudentCard avec la nouvelle signature
+  const createStudentCardWrapper = (student, isSelected, onToggle) => {
+    return createStudentCard({ student, isSelected, onToggle });
+  };
+
   // Fonctions de mise à jour
   function updateUI() {
     // Mise à jour de la section de sélection des élèves
@@ -85,13 +88,13 @@ export async function renderImproPage(root, params, deps) {
       studentSection.remove();
     }
     
-    const newStudentSection = createStudentSelectionSection(
-      courseTyped,
+    const newStudentSection = createStudentSelectionSection({
+      course: courseTyped,
       selectedStudents,
-      (studentId) => createStudentToggleHandler(studentId, selectedStudents, updateUI)(),
-      createSelectAllHandler(courseTyped, selectedStudents, updateUI),
-      createStudentCard
-    );
+      onToggle: (studentId) => createStudentToggleHandler({ studentId, selectedStudents, onUpdate: updateUI })(),
+      onSelectAll: createSelectAllHandler({ course: courseTyped, selectedStudents, onUpdate: updateUI }),
+      createStudentCard: createStudentCardWrapper
+    });
     newStudentSection.className += ' student-selection-section';
     container.insertBefore(newStudentSection, container.querySelector('.places-section'));
     
@@ -106,31 +109,31 @@ export async function renderImproPage(root, params, deps) {
       placesSection.remove();
     }
     
-    const newPlacesSection = createPlacesCountSection(
+    const newPlacesSection = createPlacesCountSection({
       placesCount,
-      updatePlacesCount,
+      onPlacesCountChange: updatePlacesCount,
       maxPlaces
-    );
+    });
     newPlacesSection.className += ' places-section';
     container.insertBefore(newPlacesSection, generateBtn);
   }
 
   // Sections principales
-  const studentSection = createStudentSelectionSection(
-    courseTyped,
+  const studentSection = createStudentSelectionSection({
+    course: courseTyped,
     selectedStudents,
-    (studentId) => createStudentToggleHandler(studentId, selectedStudents, updateUI)(),
-    createSelectAllHandler(courseTyped, selectedStudents, updateUI),
-    createStudentCard
-  );
+    onToggle: (studentId) => createStudentToggleHandler({ studentId, selectedStudents, onUpdate: updateUI })(),
+    onSelectAll: createSelectAllHandler({ course: courseTyped, selectedStudents, onUpdate: updateUI }),
+    createStudentCard: createStudentCardWrapper
+  });
   studentSection.className += ' student-selection-section';
   container.appendChild(studentSection);
 
-  const placesSection = createPlacesCountSection(
+  const placesSection = createPlacesCountSection({
     placesCount,
-    updatePlacesCount,
+    onPlacesCountChange: updatePlacesCount,
     maxPlaces
-  );
+  });
   placesSection.className += ' places-section';
   container.appendChild(placesSection);
 
@@ -144,18 +147,18 @@ export async function renderImproPage(root, params, deps) {
     // Récupérer la valeur actuelle du nombre de lieux
     const currentPlacesCount = placesCount;
     
-    const handler = createGenerateHandler(
+    const handler = createGenerateHandler({
       selectedStudents,
-      currentPlacesCount,
-      courseTyped,
+      placesCount: currentPlacesCount,
+      course: courseTyped,
       deps,
-      (generatedImpro) => {
+      onImproGenerated: (generatedImpro) => {
         impro = generatedImpro;
         hasGeneratedImpro = true;
         renderResults();
       },
-      IMPRO_MESSAGES
-    );
+      messages: IMPRO_MESSAGES
+    });
     
     await handler();
   });
@@ -188,11 +191,11 @@ export async function renderImproPage(root, params, deps) {
     placesTitle.className = 'mb-sm text-base';
     resultsSection.appendChild(placesTitle);
     
-    const placesList = createPlacesList(
-      impro.places,
-      (index) => createPlaceRegenerateHandler(impro.places, index, deps, renderResults, IMPRO_MESSAGES)(),
-      (index) => createPlaceDeleteHandler(impro.places, index, deps, renderResults, IMPRO_MESSAGES)()
-    );
+    const placesList = createPlacesList({
+      places: impro.places,
+      onRegenerate: (index) => createPlaceRegenerateHandler({ places: impro.places, index, deps, onUpdate: renderResults, messages: IMPRO_MESSAGES })(),
+      onDelete: (index) => createPlaceDeleteHandler({ places: impro.places, index, deps, onUpdate: renderResults, messages: IMPRO_MESSAGES })()
+    });
     resultsSection.appendChild(placesList);
     
     // Section des assignments
@@ -201,12 +204,12 @@ export async function renderImproPage(root, params, deps) {
     assignmentsTitle.className = 'mb-sm text-base';
     resultsSection.appendChild(assignmentsTitle);
     
-    const assignmentsList = createAssignmentsList(
-      impro.assignments,
-      (index) => createCharacterRegenerateHandler(impro.assignments, index, deps, renderResults, IMPRO_MESSAGES)(),
-      (index) => createMoodRegenerateHandler(impro.assignments, index, deps, renderResults, IMPRO_MESSAGES)(),
-      (index) => createStudentDeleteHandler(impro.assignments, index, deps, renderResults, IMPRO_MESSAGES)()
-    );
+    const assignmentsList = createAssignmentsList({
+      assignments: impro.assignments,
+      onRegenerateCharacter: (index) => createCharacterRegenerateHandler({ assignments: impro.assignments, index, deps, onUpdate: renderResults, messages: IMPRO_MESSAGES })(),
+      onRegenerateMood: (index) => createMoodRegenerateHandler({ assignments: impro.assignments, index, deps, onUpdate: renderResults, messages: IMPRO_MESSAGES })(),
+      onDeleteStudent: (index) => createStudentDeleteHandler({ assignments: impro.assignments, index, deps, onUpdate: renderResults, messages: IMPRO_MESSAGES })()
+    });
     resultsSection.appendChild(assignmentsList);
   }
 }

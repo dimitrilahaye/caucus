@@ -6,10 +6,10 @@
 
 /**
  * Crée une carte de cours
- * @param {import('../../../core/entities/course.js').Course} course
+ * @param {{ course: import('../../../core/entities/course.js').Course }} params
  * @returns {HTMLElement}
  */
-export function createCourseCard(course) {
+export function createCourseCard({ course }) {
   const courseCard = document.createElement('a');
   courseCard.href = `#/courses/${encodeURIComponent(course.id)}`;
   courseCard.className = 'card-compact cursor-pointer';
@@ -27,10 +27,10 @@ export function createCourseCard(course) {
 
 /**
  * Crée un formulaire de création de cours
- * @param {function(Event): Promise<void>} onSubmitHandler
+ * @param {{ onSubmitHandler: function(Event): Promise<void> }} params
  * @returns {HTMLElement}
  */
-export function createCourseForm(onSubmitHandler) {
+export function createCourseForm({ onSubmitHandler }) {
   const form = document.createElement('form');
   form.className = 'flex gap-sm mb-lg';
   
@@ -55,11 +55,10 @@ export function createCourseForm(onSubmitHandler) {
 
 /**
  * Crée un message d'état
- * @param {string} text
- * @param {string} className
+ * @param {{ text: string, className?: string }} params
  * @returns {HTMLElement}
  */
-export function createMessage(text, className = 'text-center text-muted mb-md') {
+export function createMessage({ text, className = 'text-center text-muted mb-md' }) {
   const message = document.createElement('p');
   message.textContent = text;
   message.className = className;

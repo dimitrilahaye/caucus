@@ -6,13 +6,10 @@
 
 /**
  * Crée la section header avec titre éditable et bouton de suppression
- * @param {import('../../../core/entities/course.js').Course} course
- * @param {string} courseId
- * @param {import('../../../core/usecases/coursesUseCase.js').CoursesUseCase} coursesUseCase
- * @param {Object} messages
+ * @param {{ course: import('../../../core/entities/course.js').Course, courseId: string, coursesUseCase: import('../../../core/usecases/coursesUseCase.js').CoursesUseCase, messages: Object }} params
  * @returns {{ section: HTMLElement, title: HTMLElement, deleteBtn: HTMLElement }}
  */
-export function createHeaderSection(course, courseId, coursesUseCase, messages) {
+export function createHeaderSection({ course, courseId, coursesUseCase, messages }) {
   const header = document.createElement('div');
   header.className = 'flex justify-between items-center mb-lg';
   
@@ -40,12 +37,10 @@ export function createHeaderSection(course, courseId, coursesUseCase, messages) 
 
 /**
  * Crée la section de génération d'impro
- * @param {string} courseId
- * @param {import('../../../core/usecases/coursesUseCase.js').CoursesUseCase} coursesUseCase
- * @param {Object} messages
+ * @param {{ courseId: string, coursesUseCase: import('../../../core/usecases/coursesUseCase.js').CoursesUseCase, messages: Object }} params
  * @returns {{ section: HTMLElement, button: HTMLElement }}
  */
-export function createImproSection(courseId, coursesUseCase, messages) {
+export function createImproSection({ courseId, coursesUseCase, messages }) {
   const improSection = document.createElement('div');
   improSection.className = 'mb-lg';
   
@@ -63,14 +58,10 @@ export function createImproSection(courseId, coursesUseCase, messages) {
 
 /**
  * Crée la section des élèves
- * @param {string} courseId
- * @param {import('../../../core/usecases/coursesUseCase.js').CoursesUseCase} coursesUseCase
- * @param {() => Promise<void>} refreshStudents
- * @param {() => Promise<void>} updateGenerateImproButton
- * @param {Object} messages
+ * @param {{ courseId: string, coursesUseCase: import('../../../core/usecases/coursesUseCase.js').CoursesUseCase, refreshStudents: () => Promise<void>, updateGenerateImproButton: () => Promise<void>, messages: Object }} params
  * @returns {{ section: HTMLElement, emptyMsg: HTMLElement, list: HTMLElement, form: HTMLElement, input: HTMLElement }}
  */
-export function createStudentsSection(courseId, coursesUseCase, refreshStudents, updateGenerateImproButton, messages) {
+export function createStudentsSection({ courseId, coursesUseCase, refreshStudents, updateGenerateImproButton, messages }) {
   const studentsSection = document.createElement('div');
   studentsSection.className = 'mb-lg';
 
@@ -112,14 +103,10 @@ export function createStudentsSection(courseId, coursesUseCase, refreshStudents,
 
 /**
  * Crée un élément élève avec édition inline
- * @param {import('../../../core/entities/course.js').Student} student
- * @param {string} courseId
- * @param {import('../../../core/usecases/coursesUseCase.js').CoursesUseCase} coursesUseCase
- * @param {() => Promise<void>} refreshStudents
- * @param {() => Promise<void>} updateGenerateImproButton
+ * @param {{ student: import('../../../core/entities/course.js').Student, courseId: string, coursesUseCase: import('../../../core/usecases/coursesUseCase.js').CoursesUseCase, refreshStudents: () => Promise<void>, updateGenerateImproButton: () => Promise<void> }} params
  * @returns {{ element: HTMLElement, editableName: HTMLElement, deleteBtn: HTMLElement }}
  */
-export function createStudentElement(student, courseId, coursesUseCase, refreshStudents, updateGenerateImproButton) {
+export function createStudentElement({ student, courseId, coursesUseCase, refreshStudents, updateGenerateImproButton }) {
   const studentCard = document.createElement('div');
   studentCard.className = 'card';
   studentCard.style.padding = '0.5rem 0.75rem';

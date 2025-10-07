@@ -6,11 +6,10 @@
 
 /**
  * Crée un gestionnaire de soumission du formulaire de cours
- * @param {import('../../../core/usecases/coursesUseCase.js').CoursesUseCase} coursesUseCase
- * @param {function(): Promise<void>} onRefresh
+ * @param {{ coursesUseCase: import('../../../core/usecases/coursesUseCase.js').CoursesUseCase, onRefresh: function(): Promise<void> }} params
  * @returns {function(Event): Promise<void>}
  */
-export function createCourseFormSubmitHandler(coursesUseCase, onRefresh) {
+export function createCourseFormSubmitHandler({ coursesUseCase, onRefresh }) {
   return async (e) => {
     e.preventDefault();
     const form = /** @type {HTMLFormElement} */ (e.target);

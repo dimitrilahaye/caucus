@@ -2,8 +2,7 @@
 
 /**
  * Composant générique pour les pages CRUD avec édition inline
- * @param {HTMLElement} root
- * @param {{
+ * @param {{ root: HTMLElement, config: {
  *   title: string,
  *   placeholder: string,
  *   emptyMessage: string,
@@ -14,9 +13,9 @@
  *     rename: (id: string, name: string) => Promise<{id: string, name: string} | undefined>,
  *     remove: (id: string) => Promise<boolean>
  *   }
- * }} config
+ * } }} params
  */
-export function renderCrudListPage(root, config) {
+export function renderCrudListPage({ root, config }) {
   root.innerHTML = '';
 
   const container = document.createElement('div');

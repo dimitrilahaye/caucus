@@ -39,12 +39,12 @@ if (appRoot) {
   const menuMount = document.getElementById('menu');
   if (menuMount) renderBurgerMenu(menuMount);
   const router = new Router([
-    { path: '/courses', handler: () => renderCoursesPage(appRoot, deps) },
-    { path: '/courses/:id', handler: (params) => renderCourseDetailsPage(appRoot, params, deps) },
-    { path: '/courses/:courseId/impro', handler: (params) => renderImproPage(appRoot, params, deps) },
-    { path: '/places', handler: () => renderPlacesPage(appRoot, deps) },
-    { path: '/moods', handler: () => renderMoodsPage(appRoot, deps) },
-    { path: '/characters', handler: () => renderCharactersPage(appRoot, deps) },
+    { path: '/courses', handler: () => renderCoursesPage({ root: appRoot, deps }) },
+    { path: '/courses/:id', handler: (params) => renderCourseDetailsPage({ root: appRoot, params, deps }) },
+    { path: '/courses/:courseId/impro', handler: (params) => renderImproPage({ root: appRoot, params, deps }) },
+    { path: '/places', handler: () => renderPlacesPage({ root: appRoot, deps }) },
+    { path: '/moods', handler: () => renderMoodsPage({ root: appRoot, deps }) },
+    { path: '/characters', handler: () => renderCharactersPage({ root: appRoot, deps }) },
   ]);
   router.start();
 }

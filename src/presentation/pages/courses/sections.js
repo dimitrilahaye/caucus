@@ -8,11 +8,10 @@ import { createCourseCard, createCourseForm, createMessage } from './utils.js';
 
 /**
  * Crée la section principale de la page des cours
- * @param {Array<import('../../../core/entities/course.js').Course>} courses
- * @param {function(Event): Promise<void>} onSubmitHandler
+ * @param {{ courses: Array<import('../../../core/entities/course.js').Course>, onSubmitHandler: function(Event): Promise<void> }} params
  * @returns {HTMLElement}
  */
-export function createCoursesPageSection(courses, onSubmitHandler) {
+export function createCoursesPageSection({ courses, onSubmitHandler }) {
   const container = document.createElement('div');
   container.className = 'card';
 
@@ -23,13 +22,13 @@ export function createCoursesPageSection(courses, onSubmitHandler) {
   container.appendChild(title);
 
   // Formulaire de création
-  const form = createCourseForm(onSubmitHandler);
+  const form = createCourseForm({ onSubmitHandler });
   container.appendChild(form);
 
   // Message d'état
-  const message = createMessage(
-    courses.length === 0 ? 'Créez votre premier cours' : ''
-  );
+  const message = createMessage({
+    text: courses.length === 0 ? 'Créez votre premier cours' : ''
+  });
   container.appendChild(message);
 
   // Liste des cours
@@ -37,7 +36,7 @@ export function createCoursesPageSection(courses, onSubmitHandler) {
   list.className = 'flex flex-col gap-sm';
   
   courses.forEach(course => {
-    const courseCard = createCourseCard(course);
+    const courseCard = createCourseCard({ course });
     list.appendChild(courseCard);
   });
   
@@ -47,15 +46,15 @@ export function createCoursesPageSection(courses, onSubmitHandler) {
 
 /**
  * Crée la liste des cours
- * @param {Array<import('../../../core/entities/course.js').Course>} courses
+ * @param {{ courses: Array<import('../../../core/entities/course.js').Course> }} params
  * @returns {HTMLElement}
  */
-export function createCoursesList(courses) {
+export function createCoursesList({ courses }) {
   const list = document.createElement('div');
   list.className = 'flex flex-col gap-sm';
   
   courses.forEach(course => {
-    const courseCard = createCourseCard(course);
+    const courseCard = createCourseCard({ course });
     list.appendChild(courseCard);
   });
   
@@ -64,10 +63,10 @@ export function createCoursesList(courses) {
 
 /**
  * Crée le message d'état des cours
- * @param {Array<import('../../../core/entities/course.js').Course>} courses
+ * @param {{ courses: Array<import('../../../core/entities/course.js').Course> }} params
  * @returns {HTMLElement}
  */
-export function createCoursesMessage(courses) {
+export function createCoursesMessage({ courses }) {
   const text = courses.length === 0 ? 'Créez votre premier cours' : '';
-  return createMessage(text);
+  return createMessage({ text });
 }
