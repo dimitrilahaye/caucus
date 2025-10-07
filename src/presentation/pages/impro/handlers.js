@@ -170,3 +170,19 @@ export function createStudentDeleteHandler({ assignments, index, deps, onUpdate,
     }
   };
 }
+
+/**
+ * Crée le gestionnaire de clic sur le bouton retour
+ * @param {{ getHasGeneratedImpro: () => boolean, messages: Object }} params
+ * @returns {(e: Event) => void}
+ */
+export function createBackClickHandler({ getHasGeneratedImpro, messages }) {
+  return (e) => {
+    if (getHasGeneratedImpro()) {
+      const confirmed = window.confirm(messages.CONFIRMATIONS.NAVIGATE_AWAY);
+      if (!confirmed) {
+        e.preventDefault();
+      }
+    }
+  };
+}

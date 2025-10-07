@@ -165,13 +165,13 @@ export function createAddStudentHandlerFunction({ input, courseId, coursesUseCas
 }
 
 /**
- * Crée un handler pour l'édition d'un élève (retourne une fonction)
+ * Crée un handler pour l'édition d'un élève (retourne des fonctions handlers)
  * @param {{ editableElement: HTMLElement, student: import('../../../core/entities/course.js').Student, courseId: string, coursesUseCase: import('../../../core/usecases/coursesUseCase.js').CoursesUseCase, timeouts: Object }} params
- * @returns {void}
+ * @returns {{ focusHandler: function(): void, blurHandler: function(): Promise<void>, keydownHandler: function(KeyboardEvent): void }}
  */
 export function createStudentEditHandlerFunction({ editableElement, student, courseId, coursesUseCase, timeouts }) {
-  // Gestion du focus
-  editableElement.addEventListener('focus', () => {
+  // Handler pour le focus
+  const focusHandler = () => {
     editableElement.style.padding = '4px 8px';
     editableElement.style.backgroundColor = '';
     editableElement.style.border = '1px solid #dee2e6';
@@ -187,10 +187,10 @@ export function createStudentEditHandlerFunction({ editableElement, student, cou
         sel.addRange(range);
       }
     }, 0);
-  });
+  };
   
-  // Gestion du blur
-  editableElement.addEventListener('blur', async () => {
+  // Handler pour le blur
+  const blurHandler = async () => {
     // Éviter les appels multiples pendant la sauvegarde
     if (editableElement.dataset.saving === 'true') return;
     
@@ -251,10 +251,10 @@ export function createStudentEditHandlerFunction({ editableElement, student, cou
       // Si vide, revenir à l'ancienne valeur
       editableElement.textContent = student.name;
     }
-  });
+  };
   
-  // Gestion des touches
-  editableElement.addEventListener('keydown', (e) => {
+  // Handler pour les touches
+  const keydownHandler = (e) => {
     if (e.key === 'Enter') {
       e.preventDefault();
       editableElement.blur();
@@ -263,7 +263,9 @@ export function createStudentEditHandlerFunction({ editableElement, student, cou
       editableElement.textContent = student.name;
       editableElement.blur();
     }
-  });
+  };
+
+  return { focusHandler, blurHandler, keydownHandler };
 }
 
 /**

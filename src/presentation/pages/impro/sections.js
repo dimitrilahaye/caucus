@@ -7,7 +7,7 @@
 /**
  * Crée la section de sélection des élèves
  * @param {{ course: import('../../../core/entities/course.js').Course, selectedStudents: Set<string>, onToggle: function(string): void, onSelectAll: function(): void, createStudentCard: function(import('../../../core/entities/course.js').Student, boolean, function(string): void): HTMLElement }} params
- * @returns {HTMLElement}
+ * @returns {{ section: HTMLElement, selectAllBtn: HTMLElement }}
  */
 export function createStudentSelectionSection({ course, selectedStudents, onToggle, onSelectAll, createStudentCard }) {
   const section = document.createElement('div');
@@ -24,7 +24,6 @@ export function createStudentSelectionSection({ course, selectedStudents, onTogg
     ? 'Tout dé-sélectionner' 
     : 'Tout sélectionner';
   selectAllBtn.className = 'btn-secondary btn-sm mb-sm';
-  selectAllBtn.addEventListener('click', onSelectAll);
   section.appendChild(selectAllBtn);
 
   const studentList = document.createElement('div');
@@ -36,13 +35,13 @@ export function createStudentSelectionSection({ course, selectedStudents, onTogg
   });
   
   section.appendChild(studentList);
-  return section;
+  return { section, selectAllBtn };
 }
 
 /**
  * Crée la section de comptage des lieux
  * @param {{ placesCount: number, onPlacesCountChange: function(number): void, maxPlaces: number }} params
- * @returns {HTMLElement}
+ * @returns {{ section: HTMLElement, decrementBtn: HTMLElement, placesInput: HTMLElement, incrementBtn: HTMLElement }}
  */
 export function createPlacesCountSection({ placesCount, onPlacesCountChange, maxPlaces }) {
   const section = document.createElement('div');
@@ -60,11 +59,6 @@ export function createPlacesCountSection({ placesCount, onPlacesCountChange, max
   decrementBtn.textContent = '-';
   decrementBtn.className = 'btn-secondary btn-match-input';
   decrementBtn.disabled = placesCount <= 1;
-  decrementBtn.addEventListener('click', () => {
-    if (placesCount > 1) {
-      onPlacesCountChange(placesCount - 1);
-    }
-  });
   
   const placesInput = document.createElement('input');
   placesInput.type = 'number';
@@ -73,22 +67,12 @@ export function createPlacesCountSection({ placesCount, onPlacesCountChange, max
   placesInput.value = placesCount.toString();
   placesInput.className = 'w-auto text-center';
   placesInput.style.width = '80px';
-  placesInput.addEventListener('input', () => {
-    const value = parseInt(placesInput.value) || 1;
-    const clampedValue = Math.max(1, Math.min(maxPlaces, value));
-    onPlacesCountChange(clampedValue);
-  });
   
   const incrementBtn = document.createElement('button');
   incrementBtn.type = 'button';
   incrementBtn.textContent = '+';
   incrementBtn.className = 'btn-secondary btn-match-input';
   incrementBtn.disabled = placesCount >= maxPlaces;
-  incrementBtn.addEventListener('click', () => {
-    if (placesCount < maxPlaces) {
-      onPlacesCountChange(placesCount + 1);
-    }
-  });
   
   controls.appendChild(decrementBtn);
   controls.appendChild(placesInput);
@@ -97,17 +81,20 @@ export function createPlacesCountSection({ placesCount, onPlacesCountChange, max
   label.appendChild(controls);
   section.appendChild(label);
   
-  return section;
+  return { section, decrementBtn, placesInput, incrementBtn };
 }
 
 /**
  * Crée la liste des lieux générés
  * @param {{ places: Array, onRegenerate: function(number): Promise<void>, onDelete: function(number): Promise<void> }} params
- * @returns {HTMLElement}
+ * @returns {{ list: HTMLElement, regenerateButtons: HTMLElement[], deleteButtons: HTMLElement[] }}
  */
 export function createPlacesList({ places, onRegenerate, onDelete }) {
   const list = document.createElement('div');
   list.className = 'flex flex-col gap-xs mb-md';
+  
+  const regenerateButtons = [];
+  const deleteButtons = [];
   
   places.forEach((place, index) => {
     const placeCard = document.createElement('div');
@@ -127,14 +114,12 @@ export function createPlacesList({ places, onRegenerate, onDelete }) {
     regenerateBtn.type = 'button';
     regenerateBtn.textContent = '🔄';
     regenerateBtn.className = 'btn-secondary btn-compact';
-    regenerateBtn.addEventListener('click', () => onRegenerate(index));
     
     const deleteBtn = document.createElement('button');
     deleteBtn.type = 'button';
     deleteBtn.textContent = '🗑️';
     deleteBtn.className = 'btn-danger btn-compact';
     deleteBtn.disabled = places.length <= 1;
-    deleteBtn.addEventListener('click', () => onDelete(index));
     
     btnGroup.appendChild(regenerateBtn);
     btnGroup.appendChild(deleteBtn);
@@ -143,19 +128,26 @@ export function createPlacesList({ places, onRegenerate, onDelete }) {
     placeContent.appendChild(btnGroup);
     placeCard.appendChild(placeContent);
     list.appendChild(placeCard);
+    
+    regenerateButtons.push(regenerateBtn);
+    deleteButtons.push(deleteBtn);
   });
   
-  return list;
+  return { list, regenerateButtons, deleteButtons };
 }
 
 /**
  * Crée la liste des assignments générés
- * @param {{ assignments: Array, onRegenerateCharacter: function(number): Promise<void>, onRegenerateMood: function(number): Promise<void>, onDeleteStudent: function(number): Promise<void> }} params
- * @returns {HTMLElement}
+ * @param {{ assignments: Array }} params
+ * @returns {{ list: HTMLElement, regenerateCharacterButtons: HTMLElement[], regenerateMoodButtons: HTMLElement[], deleteStudentButtons: HTMLElement[] }}
  */
-export function createAssignmentsList({ assignments, onRegenerateCharacter, onRegenerateMood, onDeleteStudent }) {
+export function createAssignmentsList({ assignments }) {
   const list = document.createElement('div');
   list.className = 'flex flex-col gap-xs';
+  
+  const regenerateCharacterButtons = [];
+  const regenerateMoodButtons = [];
+  const deleteStudentButtons = [];
   
   assignments.forEach((assignment, index) => {
     const assignmentCard = document.createElement('div');
@@ -179,7 +171,6 @@ export function createAssignmentsList({ assignments, onRegenerateCharacter, onRe
     regenerateCharacterBtn.type = 'button';
     regenerateCharacterBtn.textContent = '🔄';
     regenerateCharacterBtn.className = 'btn-secondary btn-match-input';
-    regenerateCharacterBtn.addEventListener('click', () => onRegenerateCharacter(index));
     
     characterContainer.appendChild(characterSpan);
     characterContainer.appendChild(regenerateCharacterBtn);
@@ -197,7 +188,6 @@ export function createAssignmentsList({ assignments, onRegenerateCharacter, onRe
     regenerateMoodBtn.type = 'button';
     regenerateMoodBtn.textContent = '🔄';
     regenerateMoodBtn.className = 'btn-secondary btn-match-input';
-    regenerateMoodBtn.addEventListener('click', () => onRegenerateMood(index));
     
     moodContainer.appendChild(moodSpan);
     moodContainer.appendChild(regenerateMoodBtn);
@@ -212,13 +202,16 @@ export function createAssignmentsList({ assignments, onRegenerateCharacter, onRe
     deleteStudentBtn.textContent = '🗑️ Supprimer l\'élève de l\'impro';
     deleteStudentBtn.className = 'btn-danger btn-sm';
     deleteStudentBtn.disabled = assignments.length <= 1;
-    deleteStudentBtn.addEventListener('click', () => onDeleteStudent(index));
     
     deleteStudentContainer.appendChild(deleteStudentBtn);
     assignmentCard.appendChild(deleteStudentContainer);
     
     list.appendChild(assignmentCard);
+    
+    regenerateCharacterButtons.push(regenerateCharacterBtn);
+    regenerateMoodButtons.push(regenerateMoodBtn);
+    deleteStudentButtons.push(deleteStudentBtn);
   });
   
-  return list;
+  return { list, regenerateCharacterButtons, regenerateMoodButtons, deleteStudentButtons };
 }

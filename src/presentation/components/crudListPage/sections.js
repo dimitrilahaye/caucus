@@ -2,10 +2,10 @@
 
 /**
  * Crée la section principale du composant CRUD List Page
- * @param {{ title: string, placeholder: string, emptyMessage: string, onSubmitHandler: () => Promise<void>, createEmptyMessage: (params: { text: string, className?: string }) => HTMLElement }} params
+ * @param {{ title: string, placeholder: string, emptyMessage: string, createEmptyMessage: (params: { text: string, className?: string }) => HTMLElement }} params
  * @returns {{ container: HTMLElement, form: HTMLElement, input: HTMLInputElement, emptyMsg: HTMLElement, list: HTMLElement }}
  */
-export function createCrudListPageSection({ title, placeholder, emptyMessage, onSubmitHandler, createEmptyMessage }) {
+export function createCrudListPageSection({ title, placeholder, emptyMessage, createEmptyMessage }) {
   const container = document.createElement('div');
   container.className = 'card';
 
@@ -35,12 +35,6 @@ export function createCrudListPageSection({ title, placeholder, emptyMessage, on
   const list = document.createElement('div');
   list.className = 'flex flex-col gap-sm';
   container.appendChild(list);
-
-  // Attacher le gestionnaire de soumission
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    await onSubmitHandler();
-  });
 
   return { container, form, input, emptyMsg, list };
 }

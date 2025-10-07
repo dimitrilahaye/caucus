@@ -5,7 +5,10 @@ import { createCrudListPageSection } from './sections.js';
 import { 
   createEditableFocusHandler, 
   createEditableBlurHandler, 
-  createEditableKeydownHandler
+  createEditableKeydownHandler,
+  createFormSubmitHandler,
+  createFormSubmitClickHandler,
+  createBlurWrapper
 } from './handlers.js';
 import { createDeleteButton, createItemCard, createEmptyMessage } from './utils.js';
 
@@ -72,8 +75,10 @@ export function renderCrudListPage({ root, config }) {
     });
 
     // Attacher les gestionnaires
+    const blurWrapperHandler = createBlurWrapper({ editableElement, blurHandler });
+    
     editableElement.addEventListener('focus', focusHandler);
-    editableElement.addEventListener('blur', () => blurHandler(editableElement.textContent.trim()));
+    editableElement.addEventListener('blur', blurWrapperHandler);
     editableElement.addEventListener('keydown', keydownHandler);
 
     return createItemCard({ item, editableElement, deleteButton });
@@ -101,15 +106,19 @@ export function renderCrudListPage({ root, config }) {
     title: config.title,
     placeholder: config.placeholder,
     emptyMessage: config.emptyMessage,
-    onSubmitHandler: async () => {
-      const name = input.value.trim();
-      if (!name) return;
-      await config.useCase.create({ name });
-      input.value = '';
-      refresh();
-    },
     createEmptyMessage: createEmptyMessage
   });
+
+  // Créer et attacher le gestionnaire de soumission
+  const formSubmitHandler = createFormSubmitHandler({ 
+    input, 
+    useCase: config.useCase, 
+    onSuccess: refresh 
+  });
+  
+  const formSubmitClickHandler = createFormSubmitClickHandler({ formSubmitHandler });
+
+  form.addEventListener('submit', formSubmitClickHandler);
 
   root.appendChild(container);
   refresh();

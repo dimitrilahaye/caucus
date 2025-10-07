@@ -1,7 +1,7 @@
 // @ts-check
 
 import { createStudentSelectionSection, createPlacesCountSection, createPlacesList, createAssignmentsList } from './sections.js';
-import { createStudentToggleHandler, createSelectAllHandler, createPlacesCountHandler, createGenerateHandler, createPlaceRegenerateHandler, createPlaceDeleteHandler, createCharacterRegenerateHandler, createMoodRegenerateHandler, createStudentDeleteHandler } from './handlers.js';
+import { createStudentToggleHandler, createSelectAllHandler, createPlacesCountHandler, createGenerateHandler, createPlaceRegenerateHandler, createPlaceDeleteHandler, createCharacterRegenerateHandler, createMoodRegenerateHandler, createStudentDeleteHandler, createBackClickHandler } from './handlers.js';
 import { IMPRO_CONFIG, IMPRO_MESSAGES } from './constants.js';
 import { createStudentCard } from './utils.js';
 
@@ -55,14 +55,12 @@ export async function renderImproPage({ root, params, deps }) {
   back.style.top = '0.5rem';
   back.style.right = '0.5rem';
   back.style.zIndex = '10';
-  back.addEventListener('click', (e) => {
-    if (hasGeneratedImpro) {
-      const confirmed = window.confirm(IMPRO_MESSAGES.CONFIRMATIONS.NAVIGATE_AWAY);
-      if (!confirmed) {
-        e.preventDefault();
-      }
-    }
+  const backClickHandler = createBackClickHandler({ 
+    getHasGeneratedImpro: () => hasGeneratedImpro, 
+    messages: IMPRO_MESSAGES 
   });
+  
+  back.addEventListener('click', backClickHandler);
   container.appendChild(back);
 
   // Header
@@ -84,7 +82,7 @@ export async function renderImproPage({ root, params, deps }) {
       studentSection.remove();
     }
     
-    const newStudentSection = createStudentSelectionSection({
+    const { section: newStudentSection, selectAllBtn } = createStudentSelectionSection({
       course: courseTyped,
       selectedStudents,
       onToggle: (studentId) => createStudentToggleHandler({ studentId, selectedStudents, onUpdate: updateUI })(),
@@ -92,6 +90,7 @@ export async function renderImproPage({ root, params, deps }) {
       createStudentCard: (student, isSelected, onToggle) => createStudentCard({ student, isSelected, onToggle })
     });
     newStudentSection.className += ' student-selection-section';
+    selectAllBtn.addEventListener('click', createSelectAllHandler({ course: courseTyped, selectedStudents, onUpdate: updateUI }));
     container.insertBefore(newStudentSection, container.querySelector('.places-section'));
     
     // Mise à jour du bouton de génération
@@ -105,17 +104,41 @@ export async function renderImproPage({ root, params, deps }) {
       placesSection.remove();
     }
     
-    const newPlacesSection = createPlacesCountSection({
+    const { section: newPlacesSection, decrementBtn, placesInput, incrementBtn } = createPlacesCountSection({
       placesCount,
       onPlacesCountChange: updatePlacesCount,
       maxPlaces
     });
     newPlacesSection.className += ' places-section';
+    
+    // Attacher les event listeners
+    const decrementHandler = () => {
+      if (placesCount > 1) {
+        updatePlacesCount(placesCount - 1);
+      }
+    };
+    
+    const inputHandler = () => {
+      const value = parseInt(/** @type {HTMLInputElement} */ (placesInput).value) || 1;
+      const clampedValue = Math.max(1, Math.min(maxPlaces, value));
+      updatePlacesCount(clampedValue);
+    };
+    
+    const incrementHandler = () => {
+      if (placesCount < maxPlaces) {
+        updatePlacesCount(placesCount + 1);
+      }
+    };
+
+    decrementBtn.addEventListener('click', decrementHandler);
+    placesInput.addEventListener('input', inputHandler);
+    incrementBtn.addEventListener('click', incrementHandler);
+    
     container.insertBefore(newPlacesSection, generateBtn);
   }
 
   // Sections principales
-  const studentSection = createStudentSelectionSection({
+  const { section: studentSection, selectAllBtn: initialSelectAllBtn } = createStudentSelectionSection({
     course: courseTyped,
     selectedStudents,
     onToggle: (studentId) => createStudentToggleHandler({ studentId, selectedStudents, onUpdate: updateUI })(),
@@ -123,14 +146,39 @@ export async function renderImproPage({ root, params, deps }) {
     createStudentCard: (student, isSelected, onToggle) => createStudentCard({ student, isSelected, onToggle })
   });
   studentSection.className += ' student-selection-section';
+  initialSelectAllBtn.addEventListener('click', createSelectAllHandler({ course: courseTyped, selectedStudents, onUpdate: updateUI }));
   container.appendChild(studentSection);
 
-  const placesSection = createPlacesCountSection({
+  const { section: placesSection, decrementBtn: initialDecrementBtn, placesInput: initialPlacesInput, incrementBtn: initialIncrementBtn } = createPlacesCountSection({
     placesCount,
     onPlacesCountChange: updatePlacesCount,
     maxPlaces
   });
   placesSection.className += ' places-section';
+  
+  // Attacher les event listeners pour la section initiale
+  const initialDecrementHandler = () => {
+    if (placesCount > 1) {
+      updatePlacesCount(placesCount - 1);
+    }
+  };
+  
+  const initialInputHandler = () => {
+    const value = parseInt(/** @type {HTMLInputElement} */ (initialPlacesInput).value) || 1;
+    const clampedValue = Math.max(1, Math.min(maxPlaces, value));
+    updatePlacesCount(clampedValue);
+  };
+  
+  const initialIncrementHandler = () => {
+    if (placesCount < maxPlaces) {
+      updatePlacesCount(placesCount + 1);
+    }
+  };
+
+  initialDecrementBtn.addEventListener('click', initialDecrementHandler);
+  initialPlacesInput.addEventListener('input', initialInputHandler);
+  initialIncrementBtn.addEventListener('click', initialIncrementHandler);
+  
   container.appendChild(placesSection);
 
   // Generate button
@@ -139,25 +187,20 @@ export async function renderImproPage({ root, params, deps }) {
   generateBtn.className = 'btn-primary btn-lg mb-md';
   generateBtn.disabled = true;
   
-  generateBtn.addEventListener('click', async () => {
-    // Récupérer la valeur actuelle du nombre de lieux
-    const currentPlacesCount = placesCount;
-    
-    const handler = createGenerateHandler({
-      selectedStudents,
-      placesCount: currentPlacesCount,
-      course: courseTyped,
-      deps,
-      onImproGenerated: (generatedImpro) => {
-        impro = generatedImpro;
-        hasGeneratedImpro = true;
-        renderResults();
-      },
-      messages: IMPRO_MESSAGES
-    });
-    
-    await handler();
+  const generateHandler = createGenerateHandler({
+    selectedStudents,
+    placesCount,
+    course: courseTyped,
+    deps,
+    onImproGenerated: (generatedImpro) => {
+      impro = generatedImpro;
+      hasGeneratedImpro = true;
+      renderResults();
+    },
+    messages: IMPRO_MESSAGES
   });
+
+  generateBtn.addEventListener('click', generateHandler);
   
   container.appendChild(generateBtn);
 
@@ -187,11 +230,21 @@ export async function renderImproPage({ root, params, deps }) {
     placesTitle.className = 'mb-sm text-base';
     resultsSection.appendChild(placesTitle);
     
-    const placesList = createPlacesList({
+    const { list: placesList, regenerateButtons, deleteButtons } = createPlacesList({
       places: impro.places,
       onRegenerate: (index) => createPlaceRegenerateHandler({ places: impro.places, index, deps, onUpdate: renderResults, messages: IMPRO_MESSAGES })(),
       onDelete: (index) => createPlaceDeleteHandler({ places: impro.places, index, deps, onUpdate: renderResults, messages: IMPRO_MESSAGES })()
     });
+    
+    // Attacher les event listeners aux boutons
+    regenerateButtons.forEach((btn, index) => {
+      btn.addEventListener('click', () => createPlaceRegenerateHandler({ places: impro.places, index, deps, onUpdate: renderResults, messages: IMPRO_MESSAGES })());
+    });
+    
+    deleteButtons.forEach((btn, index) => {
+      btn.addEventListener('click', () => createPlaceDeleteHandler({ places: impro.places, index, deps, onUpdate: renderResults, messages: IMPRO_MESSAGES })());
+    });
+    
     resultsSection.appendChild(placesList);
     
     // Section des assignments
@@ -200,12 +253,23 @@ export async function renderImproPage({ root, params, deps }) {
     assignmentsTitle.className = 'mb-sm text-base';
     resultsSection.appendChild(assignmentsTitle);
     
-    const assignmentsList = createAssignmentsList({
+    const { list: assignmentsList, regenerateCharacterButtons, regenerateMoodButtons, deleteStudentButtons } = createAssignmentsList({
       assignments: impro.assignments,
-      onRegenerateCharacter: (index) => createCharacterRegenerateHandler({ assignments: impro.assignments, index, deps, onUpdate: renderResults, messages: IMPRO_MESSAGES })(),
-      onRegenerateMood: (index) => createMoodRegenerateHandler({ assignments: impro.assignments, index, deps, onUpdate: renderResults, messages: IMPRO_MESSAGES })(),
-      onDeleteStudent: (index) => createStudentDeleteHandler({ assignments: impro.assignments, index, deps, onUpdate: renderResults, messages: IMPRO_MESSAGES })()
     });
+    
+    // Attacher les event listeners aux boutons
+    regenerateCharacterButtons.forEach((btn, index) => {
+      btn.addEventListener('click', () => createCharacterRegenerateHandler({ assignments: impro.assignments, index, deps, onUpdate: renderResults, messages: IMPRO_MESSAGES })());
+    });
+    
+    regenerateMoodButtons.forEach((btn, index) => {
+      btn.addEventListener('click', () => createMoodRegenerateHandler({ assignments: impro.assignments, index, deps, onUpdate: renderResults, messages: IMPRO_MESSAGES })());
+    });
+    
+    deleteStudentButtons.forEach((btn, index) => {
+      btn.addEventListener('click', () => createStudentDeleteHandler({ assignments: impro.assignments, index, deps, onUpdate: renderResults, messages: IMPRO_MESSAGES })());
+    });
+    
     resultsSection.appendChild(assignmentsList);
   }
 }

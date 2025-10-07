@@ -4,7 +4,7 @@ import { composeApp } from './presentation/compose/index.js';
 import { Router } from './presentation/router.js';
 import { renderCoursesPage } from './presentation/pages/courses/index.js';
 import { renderCourseDetailsPage } from './presentation/pages/course-details/index.js';
-import { renderBurgerMenu } from './presentation/components/burgerMenu.js';
+import { renderBurgerMenu } from './presentation/components/burgerMenu/index.js';
 import { renderPlacesPage } from './presentation/pages/places.js';
 import { renderMoodsPage } from './presentation/pages/moods.js';
 import { renderCharactersPage } from './presentation/pages/characters.js';

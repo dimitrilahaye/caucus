@@ -21,9 +21,11 @@ export function createStudentCard({ student, isSelected, onToggle }) {
   checkbox.value = student.id;
   checkbox.checked = isSelected;
   
-  checkbox.addEventListener('change', () => {
+  const toggleHandler = () => {
     onToggle(student.id);
-  });
+  };
+
+  checkbox.addEventListener('change', toggleHandler);
   
   label.appendChild(checkbox);
   label.appendChild(document.createTextNode(student.name));

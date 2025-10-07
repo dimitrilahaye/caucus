@@ -115,3 +115,39 @@ export function createEditableKeydownHandler({ editableElement, initialValue }) 
   };
 }
 
+/**
+ * Crée le gestionnaire de soumission du formulaire
+ * @param {{ input: HTMLInputElement, useCase: Object, onSuccess: () => void }} params
+ * @returns {() => Promise<void>}
+ */
+export function createFormSubmitHandler({ input, useCase, onSuccess }) {
+  return async () => {
+    const name = input.value.trim();
+    if (!name) return;
+    await useCase.create({ name });
+    input.value = '';
+    onSuccess();
+  };
+}
+
+/**
+ * Crée le gestionnaire de soumission du formulaire pour l'event listener
+ * @param {{ formSubmitHandler: () => Promise<void> }} params
+ * @returns {(e: Event) => Promise<void>}
+ */
+export function createFormSubmitClickHandler({ formSubmitHandler }) {
+  return async (e) => {
+    e.preventDefault();
+    await formSubmitHandler();
+  };
+}
+
+/**
+ * Crée un wrapper pour le gestionnaire de blur
+ * @param {{ editableElement: HTMLElement, blurHandler: (newName: string) => Promise<void> }} params
+ * @returns {() => void}
+ */
+export function createBlurWrapper({ editableElement, blurHandler }) {
+  return () => blurHandler(editableElement.textContent.trim());
+}
+

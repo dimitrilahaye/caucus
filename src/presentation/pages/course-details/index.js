@@ -89,13 +89,15 @@ export async function renderCourseDetailsPage({ root, params, deps }) {
     coursesUseCase: deps.coursesUseCase, 
     messages: COURSE_DETAILS_MESSAGES 
   });
-  generateImproBtn.addEventListener('click', async (e) => {
+  const generateImproClickHandler = async (e) => {
     if (/** @type {HTMLButtonElement} */ (generateImproBtn).disabled) {
       e.preventDefault();
       return;
     }
     await generateImproHandler();
-  });
+  };
+
+  generateImproBtn.addEventListener('click', generateImproClickHandler);
   
   async function updateGenerateImproButton() {
     const currentCourse = await deps.coursesUseCase.getById({ id: params.id });
@@ -124,10 +126,12 @@ export async function renderCourseDetailsPage({ root, params, deps }) {
     refreshStudents, 
     updateGenerateImproButton 
   });
-  form.addEventListener('submit', async (e) => {
+  const formSubmitHandler = async (e) => {
     e.preventDefault();
     await addStudentHandler();
-  });
+  };
+
+  form.addEventListener('submit', formSubmitHandler);
 
   async function refreshStudents() {
     const updated = await deps.coursesUseCase.getById({ id: params.id });
@@ -143,13 +147,17 @@ export async function renderCourseDetailsPage({ root, params, deps }) {
       });
       
       // Attacher les handlers
-      createStudentEditHandlerFunction({ 
+      const { focusHandler, blurHandler, keydownHandler } = createStudentEditHandlerFunction({ 
         editableElement: editableName, 
         student, 
         courseId: params.id, 
         coursesUseCase: deps.coursesUseCase,
         timeouts: COURSE_DETAILS_TIMEOUTS
       });
+      
+      editableName.addEventListener('focus', focusHandler);
+      editableName.addEventListener('blur', blurHandler);
+      editableName.addEventListener('keydown', keydownHandler);
       const deleteStudentHandler = createDeleteStudentHandlerFunction({ 
         student, 
         courseId: params.id, 
