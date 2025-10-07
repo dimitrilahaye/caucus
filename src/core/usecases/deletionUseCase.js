@@ -6,7 +6,7 @@
 
 /**
  * @typedef {object} DeletionUseCase
- * @property {(confirmationMessage: string) => Promise<boolean>} confirmDeletion
+ * @property {(params: {confirmationMessage: string}) => Promise<boolean>} confirmDeletion
  */
 
 /**
@@ -15,7 +15,7 @@
  */
 export function createDeletionUseCase() {
   return {
-    async confirmDeletion(confirmationMessage) {
+    async confirmDeletion({ confirmationMessage }) {
       const confirmed = window.confirm(confirmationMessage);
       return confirmed;
     }

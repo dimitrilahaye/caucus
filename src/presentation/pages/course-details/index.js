@@ -20,7 +20,7 @@ import {
 export async function renderCourseDetailsPage({ root, params, deps }) {
   root.innerHTML = '';
 
-  const course = await deps.coursesUseCase.getById(params.id);
+  const course = await deps.coursesUseCase.getById({ id: params.id });
   if (!course) {
     const errorCard = document.createElement('div');
     errorCard.className = 'card text-center';
@@ -98,7 +98,7 @@ export async function renderCourseDetailsPage({ root, params, deps }) {
   });
   
   async function updateGenerateImproButton() {
-    const currentCourse = await deps.coursesUseCase.getById(params.id);
+    const currentCourse = await deps.coursesUseCase.getById({ id: params.id });
     if (!currentCourse || !currentCourse.students.length) {
       /** @type {HTMLButtonElement} */ (generateImproBtn).disabled = true;
       generateImproBtn.className = 'btn-primary btn-lg rounded';
@@ -130,7 +130,7 @@ export async function renderCourseDetailsPage({ root, params, deps }) {
   });
 
   async function refreshStudents() {
-    const updated = await deps.coursesUseCase.getById(params.id);
+    const updated = await deps.coursesUseCase.getById({ id: params.id });
     list.innerHTML = '';
     if (!updated || !updated.students.length) {
       emptyMsg.textContent = COURSE_DETAILS_MESSAGES.LABELS.EMPTY_STUDENTS_MESSAGE;

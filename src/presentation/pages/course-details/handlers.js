@@ -56,7 +56,7 @@ export function createTitleBlurHandlerFunction({ titleElement, course, courseId,
         titleElement.dataset.saving = 'true';
         titleElement.contentEditable = 'false';
         
-        await coursesUseCase.rename(courseId, newName);
+        await coursesUseCase.rename({ id: courseId, newName });
         course.name = newName; // Mettre à jour l'objet local
         
         // Feedback visuel de succès : fond vert avec texte blanc
@@ -124,7 +124,7 @@ export function createDeleteCourseHandlerFunction({ courseId, coursesUseCase, me
   return async () => {
     const confirmed = window.confirm(messages.CONFIRMATIONS.DELETE_COURSE);
     if (!confirmed) return;
-    const ok = await coursesUseCase.remove(courseId);
+    const ok = await coursesUseCase.remove({ id: courseId });
     if (ok) {
       location.hash = '#/courses';
     }
@@ -138,7 +138,7 @@ export function createDeleteCourseHandlerFunction({ courseId, coursesUseCase, me
  */
 export function createGenerateImproHandlerFunction({ courseId, coursesUseCase, messages }) {
   return async () => {
-    const currentCourse = await coursesUseCase.getById(courseId);
+    const currentCourse = await coursesUseCase.getById({ id: courseId });
     if (!currentCourse || !currentCourse.students.length) {
       alert(messages.ERRORS.NO_STUDENTS_FOR_IMPRO);
       return;
@@ -157,7 +157,7 @@ export function createAddStudentHandlerFunction({ input, courseId, coursesUseCas
   return async () => {
     const name = /** @type {HTMLInputElement} */ (input).value.trim();
     if (!name) return;
-    await coursesUseCase.addStudent(courseId, name);
+    await coursesUseCase.addStudent({ courseId, studentName: name });
     /** @type {HTMLInputElement} */ (input).value = '';
     refreshStudents();
     await updateGenerateImproButton();
@@ -211,7 +211,7 @@ export function createStudentEditHandlerFunction({ editableElement, student, cou
         editableElement.dataset.saving = 'true';
         editableElement.contentEditable = 'false';
         
-        await coursesUseCase.renameStudent(courseId, student.id, newName);
+        await coursesUseCase.renameStudent({ courseId, studentId: student.id, newName });
         
         // Mettre à jour le nom de l'élève pour les prochaines comparaisons
         student.name = newName;
@@ -275,7 +275,7 @@ export function createDeleteStudentHandlerFunction({ student, courseId, coursesU
   return async () => {
     const confirmed = window.confirm(messages.CONFIRMATIONS.DELETE_STUDENT(student.name));
     if (!confirmed) return;
-    const ok = await coursesUseCase.removeStudent(courseId, student.id);
+    const ok = await coursesUseCase.removeStudent({ courseId, studentId: student.id });
     if (ok) {
       refreshStudents();
       await updateGenerateImproButton();

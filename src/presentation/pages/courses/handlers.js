@@ -19,7 +19,7 @@ export function createCourseFormSubmitHandler({ coursesUseCase, onRefresh }) {
     if (!name) return;
     
     try {
-      await coursesUseCase.create(name);
+      await coursesUseCase.create({ name });
       input.value = '';
       await onRefresh();
     } catch (error) {

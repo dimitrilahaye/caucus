@@ -6,8 +6,8 @@
 
 /**
  * @typedef {object} ValidationUseCase
- * @property {(selectedStudents: Set<string>, course: import('../entities/course.js').Course) => string|null} validateStudentSelection
- * @property {(placesCount: number, availablePlaces: number) => string|null} validatePlacesCount
+ * @property {(params: {selectedStudents: Set<string>, course: import('../entities/course.js').Course}) => string|null} validateStudentSelection
+ * @property {(params: {placesCount: number, availablePlaces: number}) => string|null} validatePlacesCount
  */
 
 /**
@@ -16,7 +16,7 @@
  */
 export function createValidationUseCase() {
   return {
-    validateStudentSelection(selectedStudents, course) {
+    validateStudentSelection({ selectedStudents, course }) {
       if (selectedStudents.size === 0) {
         return 'Sélectionnez au moins un élève';
       }
@@ -28,7 +28,7 @@ export function createValidationUseCase() {
       return null;
     },
 
-    validatePlacesCount(placesCount, availablePlaces) {
+    validatePlacesCount({ placesCount, availablePlaces }) {
       if (placesCount < 1) {
         return 'Au moins un lieu est requis';
       }

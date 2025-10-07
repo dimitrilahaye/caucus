@@ -6,9 +6,9 @@
 
 /**
  * @typedef {object} RegenerationUseCase
- * @property {(currentPlaces: Array, placeIndex: number) => Promise<any>} regeneratePlace
- * @property {(currentAssignments: Array, assignmentIndex: number) => Promise<any>} regenerateCharacter
- * @property {(currentAssignments: Array, assignmentIndex: number) => Promise<any>} regenerateMood
+ * @property {(params: {currentPlaces: Array, placeIndex: number}) => Promise<any>} regeneratePlace
+ * @property {(params: {currentAssignments: Array, assignmentIndex: number}) => Promise<any>} regenerateCharacter
+ * @property {(params: {currentAssignments: Array, assignmentIndex: number}) => Promise<any>} regenerateMood
  */
 
 /**
@@ -18,7 +18,7 @@
  */
 export function createRegenerationUseCase({ deps }) {
   return {
-    async regeneratePlace(currentPlaces, placeIndex) {
+    async regeneratePlace({ currentPlaces, placeIndex }) {
       const places = await deps.placesPort.list();
       
       // Exclure les lieux déjà utilisés ET le lieu actuel
@@ -35,7 +35,7 @@ export function createRegenerationUseCase({ deps }) {
       return availablePlaces[randomIndex];
     },
 
-    async regenerateCharacter(currentAssignments, assignmentIndex) {
+    async regenerateCharacter({ currentAssignments, assignmentIndex }) {
       const characters = await deps.charactersPort.list();
       
       // Exclure les personnages déjà utilisés ET le personnage actuel
@@ -52,7 +52,7 @@ export function createRegenerationUseCase({ deps }) {
       return availableCharacters[randomIndex];
     },
 
-    async regenerateMood(currentAssignments, assignmentIndex) {
+    async regenerateMood({ currentAssignments, assignmentIndex }) {
       const moods = await deps.moodsPort.list();
       
       if (moods.length === 0) {

@@ -17,7 +17,7 @@ import { createStudentCard } from './utils.js';
 export async function renderImproPage({ root, params, deps }) {
   root.innerHTML = '';
 
-  const course = await deps.coursesUseCase.getById(params.courseId);
+  const course = await deps.coursesUseCase.getById({ id: params.courseId });
   if (!course) {
     const errorCard = document.createElement('div');
     errorCard.className = 'card text-center';

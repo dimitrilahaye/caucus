@@ -6,9 +6,9 @@ import '../entities/mood.js';
 /**
  * @typedef {object} MoodsPort
  * @property {() => Promise<Mood[]>} list
- * @property {(name: string) => Promise<Mood>} create
- * @property {(id: string, name: string) => Promise<Mood|undefined>} rename
- * @property {(id: string) => Promise<boolean>} remove
+ * @property {(params: {name: string}) => Promise<Mood>} create
+ * @property {(params: {id: string, newName: string}) => Promise<Mood|undefined>} rename
+ * @property {(params: {id: string}) => Promise<boolean>} remove
  */
 
 export {};

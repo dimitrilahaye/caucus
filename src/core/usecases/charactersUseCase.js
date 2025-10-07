@@ -8,9 +8,9 @@ import '../entities/character.js';
 /**
  * @typedef {object} CharactersUseCase
  * @property {() => Promise<Character[]>} list
- * @property {(name: string) => Promise<Character>} create
- * @property {(id: string, newName: string) => Promise<Character | undefined>} rename
- * @property {(id: string) => Promise<boolean>} remove
+ * @property {(params: {name: string}) => Promise<Character>} create
+ * @property {(params: {id: string, newName: string}) => Promise<Character | undefined>} rename
+ * @property {(params: {id: string}) => Promise<boolean>} remove
  */
 
 /**
@@ -24,16 +24,16 @@ export function createCharactersUseCase({ deps }) {
       return await deps.charactersPort.list();
     },
 
-    async create(name) {
-      return await deps.charactersPort.create(name);
+    async create({ name }) {
+      return await deps.charactersPort.create({ name });
     },
 
-    async rename(id, newName) {
-      return await deps.charactersPort.rename(id, newName);
+    async rename({ id, newName }) {
+      return await deps.charactersPort.rename({ id, newName });
     },
 
-    async remove(id) {
-      return await deps.charactersPort.remove(id);
+    async remove({ id }) {
+      return await deps.charactersPort.remove({ id });
     }
   };
 }

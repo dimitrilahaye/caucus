@@ -2,6 +2,7 @@
 
 import { createCoursesPageSection, createCoursesList, createCoursesMessage } from './sections.js';
 import { createCourseFormSubmitHandler } from './handlers.js';
+import { createCourseCard, createCourseForm, createMessage } from './utils.js';
 import { COURSES_MESSAGES } from './constants.js';
 
 /**
@@ -33,7 +34,7 @@ export function renderCoursesPage({ root, deps }) {
       listElement.remove();
     }
     
-    const newList = createCoursesList({ courses });
+    const newList = createCoursesList({ courses, createCourseCard });
     newList.className += ' courses-list';
     container.appendChild(newList);
     
@@ -43,7 +44,7 @@ export function renderCoursesPage({ root, deps }) {
       messageElement.remove();
     }
     
-    const newMessage = createCoursesMessage({ courses });
+    const newMessage = createCoursesMessage({ courses, createMessage });
     newMessage.className += ' courses-message';
     container.appendChild(newMessage);
   }
@@ -55,7 +56,10 @@ export function renderCoursesPage({ root, deps }) {
   });
   const mainSection = createCoursesPageSection({ 
     courses, 
-    onSubmitHandler: formSubmitHandler 
+    onSubmitHandler: formSubmitHandler,
+    createCourseCard,
+    createCourseForm,
+    createMessage
   });
   root.appendChild(mainSection);
 

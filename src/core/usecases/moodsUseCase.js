@@ -8,9 +8,9 @@ import '../entities/mood.js';
 /**
  * @typedef {object} MoodsUseCase
  * @property {() => Promise<Mood[]>} list
- * @property {(name: string) => Promise<Mood>} create
- * @property {(id: string, newName: string) => Promise<Mood | undefined>} rename
- * @property {(id: string) => Promise<boolean>} remove
+ * @property {(params: {name: string}) => Promise<Mood>} create
+ * @property {(params: {id: string, newName: string}) => Promise<Mood | undefined>} rename
+ * @property {(params: {id: string}) => Promise<boolean>} remove
  */
 
 /**
@@ -24,16 +24,16 @@ export function createMoodsUseCase({ deps }) {
       return await deps.moodsPort.list();
     },
 
-    async create(name) {
-      return await deps.moodsPort.create(name);
+    async create({ name }) {
+      return await deps.moodsPort.create({ name });
     },
 
-    async rename(id, newName) {
-      return await deps.moodsPort.rename(id, newName);
+    async rename({ id, newName }) {
+      return await deps.moodsPort.rename({ id, newName });
     },
 
-    async remove(id) {
-      return await deps.moodsPort.remove(id);
+    async remove({ id }) {
+      return await deps.moodsPort.remove({ id });
     }
   };
 }

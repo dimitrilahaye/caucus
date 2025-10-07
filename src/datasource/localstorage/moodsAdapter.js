@@ -40,21 +40,30 @@ export function createMoodsAdapter() {
     async list() {
       return readAll();
     },
-    async create(name) {
+    /**
+     * @param {{ name: string }} params
+     */
+    async create({ name }) {
       const moods = readAll();
       const mood = { id: uuid(), name };
       writeAll({ moods: [mood, ...moods] });
       return mood;
     },
-    async rename(id, name) {
+    /**
+     * @param {{ id: string, newName: string }} params
+     */
+    async rename({ id, newName }) {
       const moods = readAll();
       const idx = moods.findIndex(m => m.id === id);
       if (idx === -1) return undefined;
-      moods[idx] = { ...moods[idx], name };
+      moods[idx] = { ...moods[idx], name: newName };
       writeAll({ moods });
       return moods[idx];
     },
-    async remove(id) {
+    /**
+     * @param {{ id: string }} params
+     */
+    async remove({ id }) {
       const moods = readAll();
       const before = moods.length;
       const filtered = moods.filter(m => m.id !== id);

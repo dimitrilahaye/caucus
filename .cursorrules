@@ -172,14 +172,16 @@ const formSubmitHandler = createCourseFormSubmitHandler({ coursesUseCase: deps.c
 const form = createCourseForm({ onSubmitHandler: formSubmitHandler });
 ```
 
-## Arguments nommés (OBLIGATOIRE - TOUS LES FICHIERS)
-- **TOUTES** les fonctions du projet doivent utiliser des arguments nommés
+## Arguments nommés (OBLIGATOIRE - TOUTES LES FONCTIONS)
+- **TOUTES** les fonctions déclarées dans le projet doivent utiliser des arguments nommés
 - **Pattern** : `function name({ param1, param2, param3 })` au lieu de `function name(param1, param2, param3)`
 - **JSDoc** : `@param {{ param1: Type1, param2: Type2, param3: Type3 }} params`
 - **Appels** : `functionName({ param1: value1, param2: value2, param3: value3 })`
 - **S'applique à** :
   - ✅ Toutes les fonctions exportées
   - ✅ Toutes les fonctions internes
+  - ✅ Toutes les fonctions déclarées dans les objets retournés par les use-cases
+  - ✅ Toutes les fonctions déclarées dans les objets retournés par les adapters
   - ✅ Tous les use-cases (`core/usecases/`)
   - ✅ Tous les adapters (`datasource/`)
   - ✅ Tous les composants (`presentation/components/`)
@@ -223,6 +225,38 @@ writeAll([character, ...characters]);
 // ✅ APRÈS - Adapter avec arguments nommés
 function writeAll({ characters }) { ... }
 writeAll({ characters: [character, ...characters] });
+
+// ❌ AVANT - Fonction retournée par use-case avec arguments positionnels
+export function createCharactersUseCase({ deps }) {
+  return {
+    async create(name) { ... },
+    async rename(id, newName) { ... }
+  };
+}
+
+// ✅ APRÈS - Fonction retournée par use-case avec arguments nommés
+export function createCharactersUseCase({ deps }) {
+  return {
+    async create({ name }) { ... },
+    async rename({ id, newName }) { ... }
+  };
+}
+
+// ❌ AVANT - Fonction retournée par adapter avec arguments positionnels
+export function createCharactersAdapter() {
+  return {
+    async create(name) { ... },
+    async rename(id, newName) { ... }
+  };
+}
+
+// ✅ APRÈS - Fonction retournée par adapter avec arguments nommés
+export function createCharactersAdapter() {
+  return {
+    async create({ name }) { ... },
+    async rename({ id, newName }) { ... }
+  };
+}
 
 // ❌ AVANT - Handler avec arguments positionnels
 export function createCourseFormSubmitHandler(coursesUseCase, onRefresh) { ... }

@@ -8,9 +8,9 @@ import '../entities/place.js';
 /**
  * @typedef {object} PlacesUseCase
  * @property {() => Promise<Place[]>} list
- * @property {(name: string) => Promise<Place>} create
- * @property {(id: string, newName: string) => Promise<Place | undefined>} rename
- * @property {(id: string) => Promise<boolean>} remove
+ * @property {(params: {name: string}) => Promise<Place>} create
+ * @property {(params: {id: string, newName: string}) => Promise<Place | undefined>} rename
+ * @property {(params: {id: string}) => Promise<boolean>} remove
  */
 
 /**
@@ -24,16 +24,16 @@ export function createPlacesUseCase({ deps }) {
       return await deps.placesPort.list();
     },
 
-    async create(name) {
-      return await deps.placesPort.create(name);
+    async create({ name }) {
+      return await deps.placesPort.create({ name });
     },
 
-    async rename(id, newName) {
-      return await deps.placesPort.rename(id, newName);
+    async rename({ id, newName }) {
+      return await deps.placesPort.rename({ id, newName });
     },
 
-    async remove(id) {
-      return await deps.placesPort.remove(id);
+    async remove({ id }) {
+      return await deps.placesPort.remove({ id });
     }
   };
 }

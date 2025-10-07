@@ -40,21 +40,30 @@ export function createPlacesAdapter() {
     async list() {
       return readAll();
     },
-    async create(name) {
+    /**
+     * @param {{ name: string }} params
+     */
+    async create({ name }) {
       const places = readAll();
       const place = { id: uuid(), name };
       writeAll({ places: [place, ...places] });
       return place;
     },
-    async rename(id, name) {
+    /**
+     * @param {{ id: string, newName: string }} params
+     */
+    async rename({ id, newName }) {
       const places = readAll();
       const idx = places.findIndex(p => p.id === id);
       if (idx === -1) return undefined;
-      places[idx] = { ...places[idx], name };
+      places[idx] = { ...places[idx], name: newName };
       writeAll({ places });
       return places[idx];
     },
-    async remove(id) {
+    /**
+     * @param {{ id: string }} params
+     */
+    async remove({ id }) {
       const places = readAll();
       const before = places.length;
       const filtered = places.filter(p => p.id !== id);

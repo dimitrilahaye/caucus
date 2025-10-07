@@ -18,9 +18,9 @@ import { createDeleteButton, createItemCard, createEmptyMessage } from './utils.
  *   entityName: string,
  *   useCase: {
  *     list: () => Promise<Array<{id: string, name: string}>>,
- *     create: (name: string) => Promise<{id: string, name: string}>,
- *     rename: (id: string, name: string) => Promise<{id: string, name: string} | undefined>,
- *     remove: (id: string) => Promise<boolean>
+ *     create: (params: {name: string}) => Promise<{id: string, name: string}>,
+ *     rename: (params: {id: string, newName: string}) => Promise<{id: string, name: string} | undefined>,
+ *     remove: (params: {id: string}) => Promise<boolean>
  *   }
  * } }} params
  */
@@ -50,7 +50,7 @@ export function renderCrudListPage({ root, config }) {
       onClick: async () => {
         const confirmed = window.confirm(`Supprimer ${config.entityName} "${item.name}" ?`);
         if (!confirmed) return;
-        const ok = await config.useCase.remove(item.id);
+        const ok = await config.useCase.remove({ id: item.id });
         if (ok) refresh();
       }
     });
@@ -104,7 +104,7 @@ export function renderCrudListPage({ root, config }) {
     onSubmitHandler: async () => {
       const name = input.value.trim();
       if (!name) return;
-      await config.useCase.create(name);
+      await config.useCase.create({ name });
       input.value = '';
       refresh();
     },

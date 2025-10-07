@@ -49,54 +49,75 @@ export function createCoursesAdapter() {
     async list() {
       return readAll();
     },
-    async create(name) {
+    /**
+     * @param {{ name: string }} params
+     */
+    async create({ name }) {
       const courses = readAll();
       const course = { id: uuid(), name, students: [] };
       writeAll({ courses: [course, ...courses] });
       return course;
     },
-    async getById(id) {
+    /**
+     * @param {{ id: string }} params
+     */
+    async getById({ id }) {
       const courses = readAll();
       return courses.find(c => c.id === id) || undefined;
     },
-    async rename(id, name) {
+    /**
+     * @param {{ id: string, newName: string }} params
+     */
+    async rename({ id, newName }) {
       const courses = readAll();
       const idx = courses.findIndex(c => c.id === id);
       if (idx === -1) return undefined;
-      courses[idx] = { ...courses[idx], name };
+      courses[idx] = { ...courses[idx], name: newName };
       writeAll({ courses });
       return courses[idx];
     },
-    async remove(id) {
+    /**
+     * @param {{ id: string }} params
+     */
+    async remove({ id }) {
       const courses = readAll();
       const lenBefore = courses.length;
       const filtered = courses.filter(c => c.id !== id);
       writeAll({ courses: filtered });
       return filtered.length !== lenBefore;
     },
-    async addStudent(courseId, name) {
+    /**
+     * @param {{ courseId: string, studentName: string }} params
+     */
+    async addStudent({ courseId, studentName }) {
       const courses = readAll();
       const idx = courses.findIndex(c => c.id === courseId);
       if (idx === -1) return undefined;
-      const student = { id: uuid(), name };
+      const student = { id: uuid(), name: studentName };
       courses[idx] = { ...courses[idx], students: [...courses[idx].students, student] };
       writeAll({ courses });
       return courses[idx];
     },
-    async renameStudent(courseId, studentId, name) {
+    /**
+     * @param {{ courseId: string, studentId: string, newName: string }} params
+     */
+    async renameStudent({ courseId, studentId, newName }) {
       const courses = readAll();
       const idx = courses.findIndex(c => c.id === courseId);
       if (idx === -1) return undefined;
       const sIdx = courses[idx].students.findIndex(s => s.id === studentId);
       if (sIdx === -1) return undefined;
-      const updated = { ...courses[idx].students[sIdx], name };
+      const updated = { ...courses[idx].students[sIdx], name: newName };
       const newStudents = courses[idx].students.slice();
       newStudents[sIdx] = updated;
       courses[idx] = { ...courses[idx], students: newStudents };
       writeAll({ courses });
       return courses[idx];
     },
-    async removeStudent(courseId, studentId) {
+    /**
+     * @param {{ courseId: string, studentId: string }} params
+     */
+    async removeStudent({ courseId, studentId }) {
       const courses = readAll();
       const idx = courses.findIndex(c => c.id === courseId);
       if (idx === -1) return false;

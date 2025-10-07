@@ -55,7 +55,7 @@ export function createEditableBlurHandler({ editableElement, initialValue, itemI
         editableElement.dataset.saving = 'true';
         editableElement.contentEditable = 'false';
         
-        await useCase.rename(itemId, newName);
+        await useCase.rename({ id: itemId, newName });
         
         // Feedback visuel de succès : fond vert avec texte blanc
         editableElement.style.backgroundColor = colors.SUCCESS_COLOR;

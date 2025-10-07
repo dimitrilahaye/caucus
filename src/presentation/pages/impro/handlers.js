@@ -58,7 +58,7 @@ export function createPlacesCountHandler({ onPlacesCountChange }) {
 export function createGenerateHandler({ selectedStudents, placesCount, course, deps, onImproGenerated, messages }) {
   return async () => {
     // Validation des élèves
-    const studentError = deps.validationUseCase.validateStudentSelection(selectedStudents, course);
+    const studentError = deps.validationUseCase.validateStudentSelection({ selectedStudents, course });
     if (studentError) {
       alert(studentError);
       return;
@@ -66,7 +66,7 @@ export function createGenerateHandler({ selectedStudents, placesCount, course, d
 
     // Validation du nombre de lieux
     const places = await deps.placesUseCase.list();
-    const placesError = deps.validationUseCase.validatePlacesCount(placesCount, places.length);
+    const placesError = deps.validationUseCase.validatePlacesCount({ placesCount, availablePlaces: places.length });
     if (placesError) {
       alert(placesError);
       return;
@@ -74,7 +74,7 @@ export function createGenerateHandler({ selectedStudents, placesCount, course, d
 
     try {
       const studentsToGenerate = course.students.filter(s => selectedStudents.has(s.id));
-      const impro = await deps.improGenerationUseCase.generate(studentsToGenerate, placesCount);
+      const impro = await deps.improGenerationUseCase.generate({ students: studentsToGenerate, placesCount });
       onImproGenerated(impro);
     } catch (error) {
       alert(`${messages.ERRORS.GENERATION_FAILED}: ${error.message}`);
@@ -90,7 +90,7 @@ export function createGenerateHandler({ selectedStudents, placesCount, course, d
 export function createPlaceRegenerateHandler({ places, index, deps, onUpdate, messages }) {
   return async () => {
     try {
-      const newPlace = await deps.regenerationUseCase.regeneratePlace(places, index);
+      const newPlace = await deps.regenerationUseCase.regeneratePlace({ currentPlaces: places, placeIndex: index });
       places[index] = newPlace;
       onUpdate();
     } catch (error) {
@@ -107,9 +107,9 @@ export function createPlaceRegenerateHandler({ places, index, deps, onUpdate, me
 export function createPlaceDeleteHandler({ places, index, deps, onUpdate, messages }) {
   return async () => {
     const placeName = places[index].name;
-    const confirmed = await deps.deletionUseCase.confirmDeletion(
-      messages.CONFIRMATIONS.DELETE_PLACE(placeName)
-    );
+    const confirmed = await deps.deletionUseCase.confirmDeletion({
+      confirmationMessage: messages.CONFIRMATIONS.DELETE_PLACE(placeName)
+    });
     
     if (confirmed) {
       places.splice(index, 1);
@@ -126,7 +126,7 @@ export function createPlaceDeleteHandler({ places, index, deps, onUpdate, messag
 export function createCharacterRegenerateHandler({ assignments, index, deps, onUpdate, messages }) {
   return async () => {
     try {
-      const newCharacter = await deps.regenerationUseCase.regenerateCharacter(assignments, index);
+      const newCharacter = await deps.regenerationUseCase.regenerateCharacter({ currentAssignments: assignments, assignmentIndex: index });
       assignments[index].character = newCharacter;
       onUpdate();
     } catch (error) {
@@ -143,7 +143,7 @@ export function createCharacterRegenerateHandler({ assignments, index, deps, onU
 export function createMoodRegenerateHandler({ assignments, index, deps, onUpdate, messages }) {
   return async () => {
     try {
-      const newMood = await deps.regenerationUseCase.regenerateMood(assignments, index);
+      const newMood = await deps.regenerationUseCase.regenerateMood({ currentAssignments: assignments, assignmentIndex: index });
       assignments[index].mood = newMood;
       onUpdate();
     } catch (error) {
@@ -160,9 +160,9 @@ export function createMoodRegenerateHandler({ assignments, index, deps, onUpdate
 export function createStudentDeleteHandler({ assignments, index, deps, onUpdate, messages }) {
   return async () => {
     const studentName = assignments[index].student.name;
-    const confirmed = await deps.deletionUseCase.confirmDeletion(
-      messages.CONFIRMATIONS.DELETE_STUDENT(studentName)
-    );
+    const confirmed = await deps.deletionUseCase.confirmDeletion({
+      confirmationMessage: messages.CONFIRMATIONS.DELETE_STUDENT(studentName)
+    });
     
     if (confirmed) {
       assignments.splice(index, 1);

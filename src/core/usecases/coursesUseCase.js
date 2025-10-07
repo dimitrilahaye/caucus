@@ -9,13 +9,13 @@ import '../entities/course.js';
 /**
  * @typedef {object} CoursesUseCase
  * @property {() => Promise<Course[]>} list
- * @property {(id: string) => Promise<Course | undefined>} getById
- * @property {(name: string) => Promise<Course>} create
- * @property {(id: string, newName: string) => Promise<Course | undefined>} rename
- * @property {(id: string) => Promise<boolean>} remove
- * @property {(courseId: string, studentName: string) => Promise<Course | undefined>} addStudent
- * @property {(courseId: string, studentId: string, newName: string) => Promise<Course | undefined>} renameStudent
- * @property {(courseId: string, studentId: string) => Promise<boolean>} removeStudent
+ * @property {(params: {id: string}) => Promise<Course | undefined>} getById
+ * @property {(params: {name: string}) => Promise<Course>} create
+ * @property {(params: {id: string, newName: string}) => Promise<Course | undefined>} rename
+ * @property {(params: {id: string}) => Promise<boolean>} remove
+ * @property {(params: {courseId: string, studentName: string}) => Promise<Course | undefined>} addStudent
+ * @property {(params: {courseId: string, studentId: string, newName: string}) => Promise<Course | undefined>} renameStudent
+ * @property {(params: {courseId: string, studentId: string}) => Promise<boolean>} removeStudent
  */
 
 /**
@@ -29,32 +29,32 @@ export function createCoursesUseCase({ deps }) {
       return await deps.coursesPort.list();
     },
 
-    async getById(id) {
-      return await deps.coursesPort.getById(id);
+    async getById({ id }) {
+      return await deps.coursesPort.getById({ id });
     },
 
-    async create(name) {
-      return await deps.coursesPort.create(name);
+    async create({ name }) {
+      return await deps.coursesPort.create({ name });
     },
 
-    async rename(id, newName) {
-      return await deps.coursesPort.rename(id, newName);
+    async rename({ id, newName }) {
+      return await deps.coursesPort.rename({ id, newName });
     },
 
-    async remove(id) {
-      return await deps.coursesPort.remove(id);
+    async remove({ id }) {
+      return await deps.coursesPort.remove({ id });
     },
 
-    async addStudent(courseId, studentName) {
-      return await deps.coursesPort.addStudent(courseId, studentName);
+    async addStudent({ courseId, studentName }) {
+      return await deps.coursesPort.addStudent({ courseId, studentName });
     },
 
-    async renameStudent(courseId, studentId, newName) {
-      return await deps.coursesPort.renameStudent(courseId, studentId, newName);
+    async renameStudent({ courseId, studentId, newName }) {
+      return await deps.coursesPort.renameStudent({ courseId, studentId, newName });
     },
 
-    async removeStudent(courseId, studentId) {
-      return await deps.coursesPort.removeStudent(courseId, studentId);
+    async removeStudent({ courseId, studentId }) {
+      return await deps.coursesPort.removeStudent({ courseId, studentId });
     }
   };
 }

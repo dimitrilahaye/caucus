@@ -8,9 +8,9 @@ import '../entities/place.js';
 /**
  * @typedef {object} PlacesPort
  * @property {() => Promise<Place[]>} list
- * @property {(name: string) => Promise<Place>} create
- * @property {(id: string, name: string) => Promise<Place|undefined>} rename
- * @property {(id: string) => Promise<boolean>} remove
+ * @property {(params: {name: string}) => Promise<Place>} create
+ * @property {(params: {id: string, newName: string}) => Promise<Place|undefined>} rename
+ * @property {(params: {id: string}) => Promise<boolean>} remove
  */
 
 export {};

@@ -4,14 +4,12 @@
  * Sections d'affichage pour la page des cours
  */
 
-import { createCourseCard, createCourseForm, createMessage } from './utils.js';
-
 /**
  * Crée la section principale de la page des cours
- * @param {{ courses: Array<import('../../../core/entities/course.js').Course>, onSubmitHandler: function(Event): Promise<void> }} params
+ * @param {{ courses: Array<import('../../../core/entities/course.js').Course>, onSubmitHandler: function(Event): Promise<void>, createCourseCard: function({ course: import('../../../core/entities/course.js').Course }): HTMLElement, createCourseForm: function({ onSubmitHandler: function(Event): Promise<void> }): HTMLElement, createMessage: function({ text: string }): HTMLElement }} params
  * @returns {HTMLElement}
  */
-export function createCoursesPageSection({ courses, onSubmitHandler }) {
+export function createCoursesPageSection({ courses, onSubmitHandler, createCourseCard, createCourseForm, createMessage }) {
   const container = document.createElement('div');
   container.className = 'card';
 
@@ -46,10 +44,10 @@ export function createCoursesPageSection({ courses, onSubmitHandler }) {
 
 /**
  * Crée la liste des cours
- * @param {{ courses: Array<import('../../../core/entities/course.js').Course> }} params
+ * @param {{ courses: Array<import('../../../core/entities/course.js').Course>, createCourseCard: function({ course: import('../../../core/entities/course.js').Course }): HTMLElement }} params
  * @returns {HTMLElement}
  */
-export function createCoursesList({ courses }) {
+export function createCoursesList({ courses, createCourseCard }) {
   const list = document.createElement('div');
   list.className = 'flex flex-col gap-sm';
   
@@ -63,10 +61,10 @@ export function createCoursesList({ courses }) {
 
 /**
  * Crée le message d'état des cours
- * @param {{ courses: Array<import('../../../core/entities/course.js').Course> }} params
+ * @param {{ courses: Array<import('../../../core/entities/course.js').Course>, createMessage: function({ text: string }): HTMLElement }} params
  * @returns {HTMLElement}
  */
-export function createCoursesMessage({ courses }) {
+export function createCoursesMessage({ courses, createMessage }) {
   const text = courses.length === 0 ? 'Créez votre premier cours' : '';
   return createMessage({ text });
 }

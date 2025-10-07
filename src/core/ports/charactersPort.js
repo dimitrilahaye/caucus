@@ -6,9 +6,9 @@ import '../entities/character.js';
 /**
  * @typedef {object} CharactersPort
  * @property {() => Promise<Character[]>} list
- * @property {(name: string) => Promise<Character>} create
- * @property {(id: string, name: string) => Promise<Character|undefined>} rename
- * @property {(id: string) => Promise<boolean>} remove
+ * @property {(params: {name: string}) => Promise<Character>} create
+ * @property {(params: {id: string, newName: string}) => Promise<Character|undefined>} rename
+ * @property {(params: {id: string}) => Promise<boolean>} remove
  */
 
 export {};

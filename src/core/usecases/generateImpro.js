@@ -16,17 +16,17 @@ import '../entities/place.js';
 
 /**
  * @typedef {object} ImproGenerationUseCase
- * @property {(students: Student[], placesCount: number) => Promise<Impro>} generate
+ * @property {(params: {students: Student[], placesCount: number}) => Promise<Impro>} generate
  */
 
 /**
  * Creates the impro generation use case with injected dependencies.
- * @param {{ deps: { charactersPort: import('./charactersPort.js').CharactersPort, moodsPort: import('./moodsPort.js').MoodsPort, placesPort: import('./placesPort.js').PlacesPort, randomPort: import('./randomPort.js').RandomPort } }} params
+ * @param {{ deps: { charactersPort: import('../ports/charactersPort.js').CharactersPort, moodsPort: import('../ports/moodsPort.js').MoodsPort, placesPort: import('../ports/placesPort.js').PlacesPort, randomPort: import('../ports/randomPort.js').RandomPort } }} params
  * @returns {ImproGenerationUseCase}
  */
 export function createImproGenerationUseCase({ deps }) {
   return {
-    async generate(students, placesCount) {
+    async generate({ students, placesCount }) {
       if (!students.length) {
         throw new Error('Aucun élève sélectionné');
       }

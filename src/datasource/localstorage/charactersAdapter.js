@@ -40,21 +40,30 @@ export function createCharactersAdapter() {
     async list() {
       return readAll();
     },
-    async create(name) {
+    /**
+     * @param {{ name: string }} params
+     */
+    async create({ name }) {
       const characters = readAll();
       const character = { id: uuid(), name };
       writeAll({ characters: [character, ...characters] });
       return character;
     },
-    async rename(id, name) {
+    /**
+     * @param {{ id: string, newName: string }} params
+     */
+    async rename({ id, newName }) {
       const characters = readAll();
       const idx = characters.findIndex(c => c.id === id);
       if (idx === -1) return undefined;
-      characters[idx] = { ...characters[idx], name };
+      characters[idx] = { ...characters[idx], name: newName };
       writeAll({ characters });
       return characters[idx];
     },
-    async remove(id) {
+    /**
+     * @param {{ id: string }} params
+     */
+    async remove({ id }) {
       const characters = readAll();
       const before = characters.length;
       const filtered = characters.filter(c => c.id !== id);
