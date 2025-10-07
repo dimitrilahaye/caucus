@@ -49,6 +49,128 @@
 - `src/datasource/`: `localstorage/` (implémentations des ports `core`).
 - `src/presentation/`: `components/`, `pages/`, `compose/` (composition root qui instancie et injecte).
 
+## Architecture des pages complexes (pattern impro/)
+Pour les pages complexes nécessitant plusieurs fichiers, utiliser le découpage suivant :
+
+### Structure d'une page complexe
+```
+src/presentation/pages/[page-name]/
+├── index.js          # Point d'entrée principal (renderPage)
+├── sections.js       # Fonctions de création des sections DOM
+├── handlers.js       # Gestionnaires d'événements (event handlers)
+├── utils.js          # Fonctions utilitaires spécifiques à la page
+└── constants.js      # Constantes et messages spécifiques à la page
+```
+
+### Rôles de chaque fichier
+
+#### `index.js` (Point d'entrée)
+- **Responsabilité** : Orchestration générale, état de l'application, composition des sections
+- **Contenu** :
+  - Fonction `render[PageName]Page(root, params, deps)`
+  - Gestion de l'état local de la page (variables `let`)
+  - Initialisation des données (appels aux use-cases)
+  - Composition des sections principales
+  - Fonctions de mise à jour de l'UI (`updateUI()`, `updateXXX()`)
+  - **Appels aux fonctions exposées** par sections.js, handlers.js, utils.js
+  - **Injection des dépendances** (use-cases, état, callbacks) dans les fonctions appelées
+- **Imports** : sections, handlers, constants, use-cases
+- **Pattern** : État local + fonctions de mise à jour + composition + injection de dépendances
+
+#### `sections.js` (Création DOM)
+- **Responsabilité** : Création des éléments DOM et sections visuelles
+- **Contenu** :
+  - Fonctions `create[SectionName]Section()` qui retournent des `HTMLElement`
+  - Logique pure de création DOM (pas d'event listeners)
+  - Fonctions pures qui prennent en arguments tout ce dont elles ont besoin
+- **Pattern** : Fonctions pures qui créent et retournent des éléments DOM
+- **Imports** : AUCUN import (fonctions pures uniquement)
+
+#### `handlers.js` (Gestionnaires d'événements)
+- **Responsabilité** : Création des event listeners pour les interactions utilisateur
+- **Contenu** :
+  - Fonctions `create[ActionName]Handler()` qui retournent des **event listeners**
+  - Logique de gestion des événements DOM (preventDefault, extraction des données du formulaire, etc.)
+  - Appels aux use-cases pour toute logique métier
+  - Gestion des erreurs et feedback utilisateur
+  - Fonctions pures qui prennent en arguments tout ce dont elles ont besoin
+- **Pattern** : Factory functions qui retournent des **fonctions event listener**
+- **Imports** : AUCUN import (fonctions pures uniquement)
+- **Règles métier** : DÉLÉGUÉES aux use-cases (pas de validation dans handlers)
+- **Usage** : Les fonctions retournées sont injectées dans `utils.js` via `addEventListener()`
+
+#### `utils.js` (Utilitaires spécifiques)
+- **Responsabilité** : Composants réutilisables et fonctions utilitaires
+- **Contenu** :
+  - Fonctions `create[ComponentName]()` pour composants réutilisables
+  - Fonctions utilitaires spécifiques à la page
+  - Helpers pour feedback visuel, création DOM, etc.
+  - **Injection des event listeners** via `addEventListener()` avec les handlers de `handlers.js`
+- **Pattern** : Fonctions utilitaires pures et composants réutilisables
+- **Imports** : AUCUN import (fonctions pures uniquement)
+- **Règles métier** : AUCUNE logique métier (délégation aux use-cases)
+
+#### `constants.js` (Configuration)
+- **Responsabilité** : Constantes, messages et configuration spécifiques
+- **Contenu** :
+  - Objets de configuration (`[PAGE]_CONFIG`)
+  - Messages utilisateur (`[PAGE]_MESSAGES`)
+  - Constantes métier spécifiques à la page
+- **Pattern** : Export d'objets de configuration et messages
+
+### Règles de découpage
+
+1. **Une page = un dossier** : Chaque page complexe doit avoir son propre dossier
+2. **Séparation des responsabilités** : Chaque fichier a une responsabilité claire et unique
+3. **Imports directionnels** :
+   - `index.js` → importe sections, handlers, constants, use-cases
+   - `sections.js` → AUCUN import (fonctions pures uniquement)
+   - `handlers.js` → AUCUN import (fonctions pures uniquement)
+   - `utils.js` → AUCUN import (fonctions pures uniquement)
+   - `constants.js` → aucun import (pur)
+4. **État local dans index.js** : L'état de la page reste dans le fichier principal
+5. **Fonctions de mise à jour** : Centralisées dans `index.js` pour maintenir la cohérence
+6. **Réutilisabilité** : Les composants dans `utils.js` doivent être réutilisables
+7. **Orchestration par index.js** : `index.js` appelle les fonctions exposées par les autres fichiers en leur passant toutes leurs dépendances (use-cases, état, callbacks)
+8. **Règles métier** : TOUTES les règles/invariants métier doivent être gérées via les use-cases
+9. **Typage JSDoc** : Tous les fichiers doivent être typés avec `// @ts-check` et JSDoc complet
+
+### Exemple concret du flux handlers.js → utils.js
+
+```javascript
+// handlers.js (AUCUN import)
+export function createCourseFormSubmitHandler(coursesUseCase, onRefresh) {
+  return async (e) => {
+    e.preventDefault();
+    const form = /** @type {HTMLFormElement} */ (e.target);
+    const input = /** @type {HTMLInputElement} */ (form.querySelector('input[name="courseName"]'));
+    const name = input.value.trim();
+    
+    if (!name) return;
+    
+    try {
+      await coursesUseCase.create(name);
+      input.value = '';
+      await onRefresh();
+    } catch (error) {
+      console.error('Erreur lors de la création du cours:', error);
+    }
+  };
+}
+
+// utils.js (AUCUN import)
+export function createCourseForm(onSubmitHandler) {
+  const form = document.createElement('form');
+  // ... création du DOM ...
+  form.addEventListener('submit', onSubmitHandler); // ← Handler injecté
+  return form;
+}
+
+// index.js (orchestrateur)
+const formSubmitHandler = createCourseFormSubmitHandler(deps.coursesUseCase, refresh);
+const form = createCourseForm(formSubmitHandler);
+```
+
 ## PWA & Build
 - Vite (vanilla JS) + `vite-plugin-pwa`.
 - GitHub Pages: respecter `base` dans `vite.config.js` (ex: `/cre-impro-vibe-cording/`).
