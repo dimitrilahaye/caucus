@@ -15,12 +15,10 @@ import '../entities/mood.js';
 
 /**
  * Creates the moods use case with injected dependencies.
- * @param {{
- *   moodsPort: import('../ports/moodsPort.js').MoodsPort
- * }} deps
+ * @param {{ deps: { moodsPort: import('../ports/moodsPort.js').MoodsPort } }} params
  * @returns {MoodsUseCase}
  */
-export function createMoodsUseCase(deps) {
+export function createMoodsUseCase({ deps }) {
   return {
     async list() {
       return await deps.moodsPort.list();

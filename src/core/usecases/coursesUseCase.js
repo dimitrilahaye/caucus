@@ -20,12 +20,10 @@ import '../entities/course.js';
 
 /**
  * Creates the courses use case with injected dependencies.
- * @param {{
- *   coursesPort: import('../ports/coursesPort.js').CoursesPort
- * }} deps
+ * @param {{ deps: { coursesPort: import('../ports/coursesPort.js').CoursesPort } }} params
  * @returns {CoursesUseCase}
  */
-export function createCoursesUseCase(deps) {
+export function createCoursesUseCase({ deps }) {
   return {
     async list() {
       return await deps.coursesPort.list();

@@ -37,7 +37,7 @@ const appRoot = document.getElementById('app');
 if (appRoot) {
   const deps = composeApp();
   const menuMount = document.getElementById('menu');
-  if (menuMount) renderBurgerMenu(menuMount);
+  if (menuMount) renderBurgerMenu({ mountOn: menuMount });
   const router = new Router([
     { path: '/courses', handler: () => renderCoursesPage({ root: appRoot, deps }) },
     { path: '/courses/:id', handler: (params) => renderCourseDetailsPage({ root: appRoot, params, deps }) },

@@ -44,22 +44,26 @@ export function composeApp() {
   
   // Create use cases with injected dependencies
   const deps = {
-    coursesUseCase: createCoursesUseCase({ coursesPort: coursesAdapter }),
-    placesUseCase: createPlacesUseCase({ placesPort: placesAdapter }),
-    moodsUseCase: createMoodsUseCase({ moodsPort: moodsAdapter }),
-    charactersUseCase: createCharactersUseCase({ charactersPort: charactersAdapter }),
+    coursesUseCase: createCoursesUseCase({ deps: { coursesPort: coursesAdapter } }),
+    placesUseCase: createPlacesUseCase({ deps: { placesPort: placesAdapter } }),
+    moodsUseCase: createMoodsUseCase({ deps: { moodsPort: moodsAdapter } }),
+    charactersUseCase: createCharactersUseCase({ deps: { charactersPort: charactersAdapter } }),
     improGenerationUseCase: createImproGenerationUseCase({
-      charactersPort: charactersAdapter,
-      moodsPort: moodsAdapter,
-      placesPort: placesAdapter,
-      randomPort
+      deps: {
+        charactersPort: charactersAdapter,
+        moodsPort: moodsAdapter,
+        placesPort: placesAdapter,
+        randomPort
+      }
     }),
     validationUseCase: createValidationUseCase(),
     regenerationUseCase: createRegenerationUseCase({
-      placesPort: placesAdapter,
-      charactersPort: charactersAdapter,
-      moodsPort: moodsAdapter,
-      randomPort
+      deps: {
+        placesPort: placesAdapter,
+        charactersPort: charactersAdapter,
+        moodsPort: moodsAdapter,
+        randomPort
+      }
     }),
     deletionUseCase: createDeletionUseCase(),
   };

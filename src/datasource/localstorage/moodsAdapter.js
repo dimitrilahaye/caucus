@@ -17,9 +17,9 @@ function readAll() {
 }
 
 /**
- * @param {Mood[]} moods
+ * @param {{ moods: Mood[] }} params
  */
-function writeAll(moods) {
+function writeAll({ moods }) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(moods));
 }
 
@@ -43,7 +43,7 @@ export function createMoodsAdapter() {
     async create(name) {
       const moods = readAll();
       const mood = { id: uuid(), name };
-      writeAll([mood, ...moods]);
+      writeAll({ moods: [mood, ...moods] });
       return mood;
     },
     async rename(id, name) {
@@ -51,14 +51,14 @@ export function createMoodsAdapter() {
       const idx = moods.findIndex(m => m.id === id);
       if (idx === -1) return undefined;
       moods[idx] = { ...moods[idx], name };
-      writeAll(moods);
+      writeAll({ moods });
       return moods[idx];
     },
     async remove(id) {
       const moods = readAll();
       const before = moods.length;
       const filtered = moods.filter(m => m.id !== id);
-      writeAll(filtered);
+      writeAll({ moods: filtered });
       return filtered.length !== before;
     },
   };

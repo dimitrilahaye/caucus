@@ -53,11 +53,10 @@ export function renderCrudListPage({ root, config }) {
 
   /**
    * Crée un élément éditable avec contenteditable
-   * @param {string} initialValue
-   * @param {string} itemId
+   * @param {{ initialValue: string, itemId: string }} params
    * @returns {HTMLElement}
    */
-  function createEditableElement(initialValue, itemId) {
+  function createEditableElement({ initialValue, itemId }) {
     const editableName = document.createElement('span');
     editableName.textContent = initialValue;
     editableName.contentEditable = 'true';
@@ -165,11 +164,10 @@ export function renderCrudListPage({ root, config }) {
 
   /**
    * Crée un bouton de suppression
-   * @param {string} itemName
-   * @param {string} itemId
+   * @param {{ itemName: string, itemId: string }} params
    * @returns {HTMLElement}
    */
-  function createDeleteButton(itemName, itemId) {
+  function createDeleteButton({ itemName, itemId }) {
     const deleteBtn = document.createElement('button');
     deleteBtn.type = 'button';
     deleteBtn.textContent = '🗑️';
@@ -200,8 +198,8 @@ export function renderCrudListPage({ root, config }) {
         const itemContent = document.createElement('div');
         itemContent.className = 'flex items-center justify-between gap-sm';
         
-        const editableName = createEditableElement(item.name, item.id);
-        const deleteBtn = createDeleteButton(item.name, item.id);
+        const editableName = createEditableElement({ initialValue: item.name, itemId: item.id });
+        const deleteBtn = createDeleteButton({ itemName: item.name, itemId: item.id });
         
         itemContent.appendChild(editableName);
         itemContent.appendChild(deleteBtn);

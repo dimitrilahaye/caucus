@@ -21,15 +21,10 @@ import '../entities/place.js';
 
 /**
  * Creates the impro generation use case with injected dependencies.
- * @param {{
- *   charactersPort: import('./charactersPort.js').CharactersPort,
- *   moodsPort: import('./moodsPort.js').MoodsPort,
- *   placesPort: import('./placesPort.js').PlacesPort,
- *   randomPort: import('./randomPort.js').RandomPort
- * }} deps
+ * @param {{ deps: { charactersPort: import('./charactersPort.js').CharactersPort, moodsPort: import('./moodsPort.js').MoodsPort, placesPort: import('./placesPort.js').PlacesPort, randomPort: import('./randomPort.js').RandomPort } }} params
  * @returns {ImproGenerationUseCase}
  */
-export function createImproGenerationUseCase(deps) {
+export function createImproGenerationUseCase({ deps }) {
   return {
     async generate(students, placesCount) {
       if (!students.length) {

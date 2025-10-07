@@ -33,11 +33,10 @@ function hasOldData() {
 
 /**
  * Migre une clé spécifique de l'ancien format vers le nouveau
- * @param {string} oldKey - Ancienne clé
- * @param {string} newKey - Nouvelle clé
+ * @param {{ oldKey: string, newKey: string }} params
  * @returns {boolean} - Succès de la migration
  */
-function migrateKey(oldKey, newKey) {
+function migrateKey({ oldKey, newKey }) {
   try {
     const data = localStorage.getItem(oldKey);
     if (data === null) return true; // Pas de données à migrer
@@ -85,7 +84,7 @@ export function migrateStorageKeys() {
 
   // Migrer chaque clé
   for (const [oldKey, newKey] of Object.entries(STORAGE_KEY_MAPPING)) {
-    const success = migrateKey(oldKey, newKey);
+    const success = migrateKey({ oldKey, newKey });
     
     if (success) {
       result.migratedKeys.push(`${oldKey} → ${newKey}`);

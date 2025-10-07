@@ -17,9 +17,9 @@ function readAll() {
 }
 
 /**
- * @param {Place[]} places
+ * @param {{ places: Place[] }} params
  */
-function writeAll(places) {
+function writeAll({ places }) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(places));
 }
 
@@ -43,7 +43,7 @@ export function createPlacesAdapter() {
     async create(name) {
       const places = readAll();
       const place = { id: uuid(), name };
-      writeAll([place, ...places]);
+      writeAll({ places: [place, ...places] });
       return place;
     },
     async rename(id, name) {
@@ -51,14 +51,14 @@ export function createPlacesAdapter() {
       const idx = places.findIndex(p => p.id === id);
       if (idx === -1) return undefined;
       places[idx] = { ...places[idx], name };
-      writeAll(places);
+      writeAll({ places });
       return places[idx];
     },
     async remove(id) {
       const places = readAll();
       const before = places.length;
       const filtered = places.filter(p => p.id !== id);
-      writeAll(filtered);
+      writeAll({ places: filtered });
       return filtered.length !== before;
     },
   };

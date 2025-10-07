@@ -22,9 +22,9 @@ function readAll() {
 }
 
 /**
- * @param {Course[]} courses
+ * @param {{ courses: Course[] }} params
  */
-function writeAll(courses) {
+function writeAll({ courses }) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(courses));
 }
 
@@ -52,7 +52,7 @@ export function createCoursesAdapter() {
     async create(name) {
       const courses = readAll();
       const course = { id: uuid(), name, students: [] };
-      writeAll([course, ...courses]);
+      writeAll({ courses: [course, ...courses] });
       return course;
     },
     async getById(id) {
@@ -64,14 +64,14 @@ export function createCoursesAdapter() {
       const idx = courses.findIndex(c => c.id === id);
       if (idx === -1) return undefined;
       courses[idx] = { ...courses[idx], name };
-      writeAll(courses);
+      writeAll({ courses });
       return courses[idx];
     },
     async remove(id) {
       const courses = readAll();
       const lenBefore = courses.length;
       const filtered = courses.filter(c => c.id !== id);
-      writeAll(filtered);
+      writeAll({ courses: filtered });
       return filtered.length !== lenBefore;
     },
     async addStudent(courseId, name) {
@@ -80,7 +80,7 @@ export function createCoursesAdapter() {
       if (idx === -1) return undefined;
       const student = { id: uuid(), name };
       courses[idx] = { ...courses[idx], students: [...courses[idx].students, student] };
-      writeAll(courses);
+      writeAll({ courses });
       return courses[idx];
     },
     async renameStudent(courseId, studentId, name) {
@@ -93,7 +93,7 @@ export function createCoursesAdapter() {
       const newStudents = courses[idx].students.slice();
       newStudents[sIdx] = updated;
       courses[idx] = { ...courses[idx], students: newStudents };
-      writeAll(courses);
+      writeAll({ courses });
       return courses[idx];
     },
     async removeStudent(courseId, studentId) {
@@ -103,7 +103,7 @@ export function createCoursesAdapter() {
       const before = courses[idx].students.length;
       const newStudents = courses[idx].students.filter(s => s.id !== studentId);
       courses[idx] = { ...courses[idx], students: newStudents };
-      writeAll(courses);
+      writeAll({ courses });
       return newStudents.length !== before;
     },
   };

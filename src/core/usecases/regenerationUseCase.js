@@ -13,15 +13,10 @@
 
 /**
  * Crée le use-case de régénération
- * @param {{
- *   placesPort: import('../ports/placesPort.js').PlacesPort,
- *   charactersPort: import('../ports/charactersPort.js').CharactersPort,
- *   moodsPort: import('../ports/moodsPort.js').MoodsPort,
- *   randomPort: import('../ports/randomPort.js').RandomPort
- * }} deps
+ * @param {{ deps: { placesPort: import('../ports/placesPort.js').PlacesPort, charactersPort: import('../ports/charactersPort.js').CharactersPort, moodsPort: import('../ports/moodsPort.js').MoodsPort, randomPort: import('../ports/randomPort.js').RandomPort } }} params
  * @returns {RegenerationUseCase}
  */
-export function createRegenerationUseCase(deps) {
+export function createRegenerationUseCase({ deps }) {
   return {
     async regeneratePlace(currentPlaces, placeIndex) {
       const places = await deps.placesPort.list();

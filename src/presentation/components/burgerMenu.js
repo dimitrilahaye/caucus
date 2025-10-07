@@ -2,9 +2,9 @@
 
 /**
  * Renders a simple burger menu with a link to the courses list.
- * @param {HTMLElement} mountOn typically document.body
+ * @param {{ mountOn: HTMLElement }} params
  */
-export function renderBurgerMenu(mountOn) {
+export function renderBurgerMenu({ mountOn }) {
   const container = document.createElement('div');
 
   const button = document.createElement('button');

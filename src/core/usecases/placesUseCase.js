@@ -15,12 +15,10 @@ import '../entities/place.js';
 
 /**
  * Creates the places use case with injected dependencies.
- * @param {{
- *   placesPort: import('../ports/placesPort.js').PlacesPort
- * }} deps
+ * @param {{ deps: { placesPort: import('../ports/placesPort.js').PlacesPort } }} params
  * @returns {PlacesUseCase}
  */
-export function createPlacesUseCase(deps) {
+export function createPlacesUseCase({ deps }) {
   return {
     async list() {
       return await deps.placesPort.list();

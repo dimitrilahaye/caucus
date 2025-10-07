@@ -17,11 +17,10 @@
  */
 
 /**
- * @param {string} path e.g. "/courses/:id"
- * @param {RouteHandler} handler
+ * @param {{ path: string, handler: RouteHandler }} params
  * @returns {CompiledRoute}
  */
-function compile(path, handler) {
+function compile({ path, handler }) {
   const keys = [];
   const regexStr = path
     .replace(/\//g, '\\/')
@@ -41,7 +40,7 @@ export class Router {
    * @param {Array<{path: string, handler: RouteHandler}>} routes
    */
   constructor(routes) {
-    this.#routes = routes.map(r => compile(r.path, r.handler));
+    this.#routes = routes.map(r => compile({ path: r.path, handler: r.handler }));
   }
 
   start() {

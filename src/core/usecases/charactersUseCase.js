@@ -15,12 +15,10 @@ import '../entities/character.js';
 
 /**
  * Creates the characters use case with injected dependencies.
- * @param {{
- *   charactersPort: import('../ports/charactersPort.js').CharactersPort
- * }} deps
+ * @param {{ deps: { charactersPort: import('../ports/charactersPort.js').CharactersPort } }} params
  * @returns {CharactersUseCase}
  */
-export function createCharactersUseCase(deps) {
+export function createCharactersUseCase({ deps }) {
   return {
     async list() {
       return await deps.charactersPort.list();

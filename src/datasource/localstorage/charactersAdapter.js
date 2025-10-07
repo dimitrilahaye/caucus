@@ -17,9 +17,9 @@ function readAll() {
 }
 
 /**
- * @param {Character[]} characters
+ * @param {{ characters: Character[] }} params
  */
-function writeAll(characters) {
+function writeAll({ characters }) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(characters));
 }
 
@@ -43,7 +43,7 @@ export function createCharactersAdapter() {
     async create(name) {
       const characters = readAll();
       const character = { id: uuid(), name };
-      writeAll([character, ...characters]);
+      writeAll({ characters: [character, ...characters] });
       return character;
     },
     async rename(id, name) {
@@ -51,14 +51,14 @@ export function createCharactersAdapter() {
       const idx = characters.findIndex(c => c.id === id);
       if (idx === -1) return undefined;
       characters[idx] = { ...characters[idx], name };
-      writeAll(characters);
+      writeAll({ characters });
       return characters[idx];
     },
     async remove(id) {
       const characters = readAll();
       const before = characters.length;
       const filtered = characters.filter(c => c.id !== id);
-      writeAll(filtered);
+      writeAll({ characters: filtered });
       return filtered.length !== before;
     },
   };
