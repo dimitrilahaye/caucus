@@ -272,3 +272,9 @@ renderBurgerMenu({ mountOn: menuMount });
 - **JAMAIS** créer de fonctions avec des arguments positionnels, peu importe le fichier.
 - **VÉRIFIER** que chaque nouvelle fonction suit le pattern `function name({ param1, param2 })`.
 - **APPLIQUER** cette règle de manière systématique et cohérente dans tout le projet.
+- **OBLIGATOIRE** : À chaque refactorisation, supprimer systématiquement le code mort :
+  - **Fonctions mortes** : Supprimer toutes les fonctions non utilisées (imports, exports, fonctions internes)
+  - **Arguments morts** : Supprimer tous les paramètres non utilisés dans les fonctions
+  - **Variables mortes** : Supprimer toutes les variables déclarées mais non utilisées
+  - **Imports morts** : Supprimer tous les imports non utilisés
+  - **Code mort** : Identifier et supprimer tout code inaccessible ou redondant
