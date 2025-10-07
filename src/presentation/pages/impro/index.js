@@ -189,7 +189,7 @@ export async function renderImproPage({ root, params, deps }) {
   
   const generateHandler = createGenerateHandler({
     selectedStudents,
-    placesCount,
+    getPlacesCount: () => placesCount,
     course: courseTyped,
     deps,
     onImproGenerated: (generatedImpro) => {

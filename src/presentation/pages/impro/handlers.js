@@ -52,10 +52,10 @@ export function createPlacesCountHandler({ onPlacesCountChange }) {
 
 /**
  * Crée un gestionnaire de génération d'impro
- * @param {{ selectedStudents: Set<string>, placesCount: number, course: import('../../../core/entities/course.js').Course, deps: Object, onImproGenerated: function(any): void, messages: Object }} params
+ * @param {{ selectedStudents: Set<string>, getPlacesCount: () => number, course: import('../../../core/entities/course.js').Course, deps: Object, onImproGenerated: function(any): void, messages: Object }} params
  * @returns {function(): Promise<void>}
  */
-export function createGenerateHandler({ selectedStudents, placesCount, course, deps, onImproGenerated, messages }) {
+export function createGenerateHandler({ selectedStudents, getPlacesCount, course, deps, onImproGenerated, messages }) {
   return async () => {
     // Validation des élèves
     const studentError = deps.validationUseCase.validateStudentSelection({ selectedStudents, course });
@@ -66,7 +66,8 @@ export function createGenerateHandler({ selectedStudents, placesCount, course, d
 
     // Validation du nombre de lieux
     const places = await deps.placesUseCase.list();
-    const placesError = deps.validationUseCase.validatePlacesCount({ placesCount, availablePlaces: places.length });
+    const currentPlacesCount = getPlacesCount();
+    const placesError = deps.validationUseCase.validatePlacesCount({ placesCount: currentPlacesCount, availablePlaces: places.length });
     if (placesError) {
       alert(placesError);
       return;
@@ -74,7 +75,7 @@ export function createGenerateHandler({ selectedStudents, placesCount, course, d
 
     try {
       const studentsToGenerate = course.students.filter(s => selectedStudents.has(s.id));
-      const impro = await deps.improGenerationUseCase.generate({ students: studentsToGenerate, placesCount });
+      const impro = await deps.improGenerationUseCase.generate({ students: studentsToGenerate, placesCount: currentPlacesCount });
       onImproGenerated(impro);
     } catch (error) {
       alert(`${messages.ERRORS.GENERATION_FAILED}: ${error.message}`);
