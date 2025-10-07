@@ -75,10 +75,6 @@ export async function renderImproPage({ root, params, deps }) {
   header.appendChild(title);
   container.appendChild(header);
 
-  // Wrapper pour createStudentCard avec la nouvelle signature
-  const createStudentCardWrapper = (student, isSelected, onToggle) => {
-    return createStudentCard({ student, isSelected, onToggle });
-  };
 
   // Fonctions de mise à jour
   function updateUI() {
@@ -93,7 +89,7 @@ export async function renderImproPage({ root, params, deps }) {
       selectedStudents,
       onToggle: (studentId) => createStudentToggleHandler({ studentId, selectedStudents, onUpdate: updateUI })(),
       onSelectAll: createSelectAllHandler({ course: courseTyped, selectedStudents, onUpdate: updateUI }),
-      createStudentCard: createStudentCardWrapper
+      createStudentCard: (student, isSelected, onToggle) => createStudentCard({ student, isSelected, onToggle })
     });
     newStudentSection.className += ' student-selection-section';
     container.insertBefore(newStudentSection, container.querySelector('.places-section'));
@@ -124,7 +120,7 @@ export async function renderImproPage({ root, params, deps }) {
     selectedStudents,
     onToggle: (studentId) => createStudentToggleHandler({ studentId, selectedStudents, onUpdate: updateUI })(),
     onSelectAll: createSelectAllHandler({ course: courseTyped, selectedStudents, onUpdate: updateUI }),
-    createStudentCard: createStudentCardWrapper
+    createStudentCard: (student, isSelected, onToggle) => createStudentCard({ student, isSelected, onToggle })
   });
   studentSection.className += ' student-selection-section';
   container.appendChild(studentSection);

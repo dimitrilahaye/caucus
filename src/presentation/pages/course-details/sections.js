@@ -6,10 +6,10 @@
 
 /**
  * Crée la section header avec titre éditable et bouton de suppression
- * @param {{ course: import('../../../core/entities/course.js').Course, courseId: string, coursesUseCase: import('../../../core/usecases/coursesUseCase.js').CoursesUseCase, messages: Object }} params
+ * @param {{ course: import('../../../core/entities/course.js').Course }} params
  * @returns {{ section: HTMLElement, title: HTMLElement, deleteBtn: HTMLElement }}
  */
-export function createHeaderSection({ course, courseId, coursesUseCase, messages }) {
+export function createHeaderSection({ course }) {
   const header = document.createElement('div');
   header.className = 'flex justify-between items-center mb-lg';
   
@@ -37,10 +37,10 @@ export function createHeaderSection({ course, courseId, coursesUseCase, messages
 
 /**
  * Crée la section de génération d'impro
- * @param {{ courseId: string, coursesUseCase: import('../../../core/usecases/coursesUseCase.js').CoursesUseCase, messages: Object }} params
+ * @param {{ messages: Object }} params
  * @returns {{ section: HTMLElement, button: HTMLElement }}
  */
-export function createImproSection({ courseId, coursesUseCase, messages }) {
+export function createImproSection({ messages }) {
   const improSection = document.createElement('div');
   improSection.className = 'mb-lg';
   
@@ -58,10 +58,10 @@ export function createImproSection({ courseId, coursesUseCase, messages }) {
 
 /**
  * Crée la section des élèves
- * @param {{ courseId: string, coursesUseCase: import('../../../core/usecases/coursesUseCase.js').CoursesUseCase, refreshStudents: () => Promise<void>, updateGenerateImproButton: () => Promise<void>, messages: Object }} params
+ * @param {{ messages: Object }} params
  * @returns {{ section: HTMLElement, emptyMsg: HTMLElement, list: HTMLElement, form: HTMLElement, input: HTMLElement }}
  */
-export function createStudentsSection({ courseId, coursesUseCase, refreshStudents, updateGenerateImproButton, messages }) {
+export function createStudentsSection({ messages }) {
   const studentsSection = document.createElement('div');
   studentsSection.className = 'mb-lg';
 
@@ -103,10 +103,10 @@ export function createStudentsSection({ courseId, coursesUseCase, refreshStudent
 
 /**
  * Crée un élément élève avec édition inline
- * @param {{ student: import('../../../core/entities/course.js').Student, courseId: string, coursesUseCase: import('../../../core/usecases/coursesUseCase.js').CoursesUseCase, refreshStudents: () => Promise<void>, updateGenerateImproButton: () => Promise<void> }} params
+ * @param {{ student: import('../../../core/entities/course.js').Student }} params
  * @returns {{ element: HTMLElement, editableName: HTMLElement, deleteBtn: HTMLElement }}
  */
-export function createStudentElement({ student, courseId, coursesUseCase, refreshStudents, updateGenerateImproButton }) {
+export function createStudentElement({ student }) {
   const studentCard = document.createElement('div');
   studentCard.className = 'card';
   studentCard.style.padding = '0.5rem 0.75rem';

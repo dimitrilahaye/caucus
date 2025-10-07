@@ -47,8 +47,6 @@ export function renderCrudListPage({ root, config }) {
     editableElement.style.display = 'inline-block';
 
     const deleteButton = createDeleteButton({ 
-      itemName: item.name, 
-      itemId: item.id, 
       onClick: async () => {
         const confirmed = window.confirm(`Supprimer ${config.entityName} "${item.name}" ?`);
         if (!confirmed) return;
@@ -103,7 +101,6 @@ export function renderCrudListPage({ root, config }) {
     title: config.title,
     placeholder: config.placeholder,
     emptyMessage: config.emptyMessage,
-    entityName: config.entityName,
     onSubmitHandler: async () => {
       const name = input.value.trim();
       if (!name) return;
@@ -111,7 +108,6 @@ export function renderCrudListPage({ root, config }) {
       input.value = '';
       refresh();
     },
-    createItemCard: createItemCardWithHandlers,
     createEmptyMessage: createEmptyMessage
   });
 

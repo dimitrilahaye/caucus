@@ -2,10 +2,10 @@
 
 /**
  * Crée la section principale du composant CRUD List Page
- * @param {{ title: string, placeholder: string, emptyMessage: string, entityName: string, onSubmitHandler: () => Promise<void>, createItemCard: (item: Object) => HTMLElement, createEmptyMessage: (params: { text: string, className?: string }) => HTMLElement }} params
+ * @param {{ title: string, placeholder: string, emptyMessage: string, onSubmitHandler: () => Promise<void>, createEmptyMessage: (params: { text: string, className?: string }) => HTMLElement }} params
  * @returns {{ container: HTMLElement, form: HTMLElement, input: HTMLInputElement, emptyMsg: HTMLElement, list: HTMLElement }}
  */
-export function createCrudListPageSection({ title, placeholder, emptyMessage, entityName, onSubmitHandler, createItemCard, createEmptyMessage }) {
+export function createCrudListPageSection({ title, placeholder, emptyMessage, onSubmitHandler, createEmptyMessage }) {
   const container = document.createElement('div');
   container.className = 'card';
 

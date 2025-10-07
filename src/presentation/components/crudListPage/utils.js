@@ -6,10 +6,10 @@
 
 /**
  * Crée un bouton de suppression
- * @param {{ itemName: string, itemId: string, onClick: () => Promise<void> }} params
+ * @param {{ onClick: () => Promise<void> }} params
  * @returns {HTMLElement}
  */
-export function createDeleteButton({ itemName, itemId, onClick }) {
+export function createDeleteButton({ onClick }) {
   const deleteBtn = document.createElement('button');
   deleteBtn.type = 'button';
   deleteBtn.textContent = '🗑️';

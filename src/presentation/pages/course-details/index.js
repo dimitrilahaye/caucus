@@ -47,10 +47,7 @@ export async function renderCourseDetailsPage({ root, params, deps }) {
 
   // Header avec titre éditable
   const { section: header, title, deleteBtn: deleteCourseBtn } = createHeaderSection({ 
-    course, 
-    courseId: params.id, 
-    coursesUseCase: deps.coursesUseCase, 
-    messages: COURSE_DETAILS_MESSAGES 
+    course
   });
   
   // Attacher les handlers du titre
@@ -83,8 +80,6 @@ export async function renderCourseDetailsPage({ root, params, deps }) {
 
   // Section génération d'impro
   const { section: improSection, button: generateImproBtn } = createImproSection({ 
-    courseId: params.id, 
-    coursesUseCase: deps.coursesUseCase, 
     messages: COURSE_DETAILS_MESSAGES 
   });
   
@@ -118,10 +113,6 @@ export async function renderCourseDetailsPage({ root, params, deps }) {
 
   // Section des élèves
   const { section: studentsSection, emptyMsg, list, form, input } = createStudentsSection({
-    courseId: params.id, 
-    coursesUseCase: deps.coursesUseCase, 
-    refreshStudents, 
-    updateGenerateImproButton,
     messages: COURSE_DETAILS_MESSAGES
   });
   
@@ -148,11 +139,7 @@ export async function renderCourseDetailsPage({ root, params, deps }) {
     emptyMsg.textContent = '';
     for (const student of updated.students) {
       const { element: studentElement, editableName, deleteBtn } = createStudentElement({
-        student, 
-        courseId: params.id, 
-        coursesUseCase: deps.coursesUseCase, 
-        refreshStudents, 
-        updateGenerateImproButton
+        student
       });
       
       // Attacher les handlers
