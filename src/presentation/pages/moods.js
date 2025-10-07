@@ -1,6 +1,6 @@
 // @ts-check
 
-import { renderCrudListPage } from '../components/crudListPage.js';
+import { renderCrudListPage } from '../components/crudListPage/index.js';
 
 /**
  * @param {{ root: HTMLElement, deps: { moodsUseCase: import('../../core/usecases/moodsUseCase.js').MoodsUseCase } }} params

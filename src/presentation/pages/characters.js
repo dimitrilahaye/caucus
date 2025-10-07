@@ -1,6 +1,6 @@
 // @ts-check
 
-import { renderCrudListPage } from '../components/crudListPage.js';
+import { renderCrudListPage } from '../components/crudListPage/index.js';
 
 /**
  * @param {{ root: HTMLElement, deps: { charactersUseCase: import('../../core/usecases/charactersUseCase.js').CharactersUseCase } }} params
