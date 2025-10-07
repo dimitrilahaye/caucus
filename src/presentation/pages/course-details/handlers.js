@@ -1,7 +1,5 @@
 // @ts-check
 
-import { COURSE_DETAILS_MESSAGES, COURSE_DETAILS_TIMEOUTS } from './constants.js';
-
 /**
  * Handlers pour la page des détails de cours
  */
@@ -37,9 +35,11 @@ export function createTitleFocusHandlerFunction(titleElement) {
  * @param {import('../../../core/entities/course.js').Course} course
  * @param {string} courseId
  * @param {import('../../../core/usecases/coursesUseCase.js').CoursesUseCase} coursesUseCase
+ * @param {Object} messages
+ * @param {Object} timeouts
  * @returns {function(): Promise<void>}
  */
-export function createTitleBlurHandlerFunction(titleElement, course, courseId, coursesUseCase) {
+export function createTitleBlurHandlerFunction(titleElement, course, courseId, coursesUseCase, messages, timeouts) {
   return async () => {
     // Éviter les appels multiples pendant la sauvegarde
     if (titleElement.dataset.saving === 'true') return;
@@ -93,7 +93,7 @@ export function createTitleBlurHandlerFunction(titleElement, course, courseId, c
           // Réactiver l'édition après la transition d'erreur
           titleElement.contentEditable = 'true';
           titleElement.dataset.saving = 'false';
-        }, COURSE_DETAILS_TIMEOUTS.ERROR_FEEDBACK);
+        }, timeouts.ERROR_FEEDBACK);
       }
     } else if (!newName) {
       // Si vide, revenir à l'ancienne valeur
@@ -125,11 +125,12 @@ export function createTitleKeydownHandlerFunction(titleElement, course) {
  * Crée un handler pour la suppression du cours (retourne une fonction)
  * @param {string} courseId
  * @param {import('../../../core/usecases/coursesUseCase.js').CoursesUseCase} coursesUseCase
+ * @param {Object} messages
  * @returns {function(): Promise<void>}
  */
-export function createDeleteCourseHandlerFunction(courseId, coursesUseCase) {
+export function createDeleteCourseHandlerFunction(courseId, coursesUseCase, messages) {
   return async () => {
-    const confirmed = window.confirm(COURSE_DETAILS_MESSAGES.CONFIRMATIONS.DELETE_COURSE);
+    const confirmed = window.confirm(messages.CONFIRMATIONS.DELETE_COURSE);
     if (!confirmed) return;
     const ok = await coursesUseCase.remove(courseId);
     if (ok) {
@@ -142,13 +143,14 @@ export function createDeleteCourseHandlerFunction(courseId, coursesUseCase) {
  * Crée un handler pour le bouton de génération d'impro (retourne une fonction)
  * @param {string} courseId
  * @param {import('../../../core/usecases/coursesUseCase.js').CoursesUseCase} coursesUseCase
+ * @param {Object} messages
  * @returns {function(): Promise<void>}
  */
-export function createGenerateImproHandlerFunction(courseId, coursesUseCase) {
+export function createGenerateImproHandlerFunction(courseId, coursesUseCase, messages) {
   return async () => {
     const currentCourse = await coursesUseCase.getById(courseId);
     if (!currentCourse || !currentCourse.students.length) {
-      alert(COURSE_DETAILS_MESSAGES.ERRORS.NO_STUDENTS_FOR_IMPRO);
+      alert(messages.ERRORS.NO_STUDENTS_FOR_IMPRO);
       return;
     }
     // Rediriger vers la page d'impro
@@ -260,7 +262,7 @@ export function createStudentEditHandlerFunction(editableElement, student, cours
           // Réactiver l'édition après la transition d'erreur
           editableElement.contentEditable = 'true';
           editableElement.dataset.saving = 'false';
-        }, COURSE_DETAILS_TIMEOUTS.ERROR_FEEDBACK);
+        }, timeouts.ERROR_FEEDBACK);
       }
     } else if (!newName) {
       // Si vide, revenir à l'ancienne valeur
@@ -288,11 +290,12 @@ export function createStudentEditHandlerFunction(editableElement, student, cours
  * @param {import('../../../core/usecases/coursesUseCase.js').CoursesUseCase} coursesUseCase
  * @param {() => Promise<void>} refreshStudents
  * @param {() => Promise<void>} updateGenerateImproButton
+ * @param {Object} messages
  * @returns {function(): Promise<void>}
  */
-export function createDeleteStudentHandlerFunction(student, courseId, coursesUseCase, refreshStudents, updateGenerateImproButton) {
+export function createDeleteStudentHandlerFunction(student, courseId, coursesUseCase, refreshStudents, updateGenerateImproButton, messages) {
   return async () => {
-    const confirmed = window.confirm(COURSE_DETAILS_MESSAGES.CONFIRMATIONS.DELETE_STUDENT(student.name));
+    const confirmed = window.confirm(messages.CONFIRMATIONS.DELETE_STUDENT(student.name));
     if (!confirmed) return;
     const ok = await coursesUseCase.removeStudent(courseId, student.id);
     if (ok) {

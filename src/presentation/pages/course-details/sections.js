@@ -1,7 +1,5 @@
 // @ts-check
 
-import { COURSE_DETAILS_MESSAGES } from './constants.js';
-
 /**
  * Sections pour la page des détails de cours
  */
@@ -11,9 +9,10 @@ import { COURSE_DETAILS_MESSAGES } from './constants.js';
  * @param {import('../../../core/entities/course.js').Course} course
  * @param {string} courseId
  * @param {import('../../../core/usecases/coursesUseCase.js').CoursesUseCase} coursesUseCase
+ * @param {Object} messages
  * @returns {{ section: HTMLElement, title: HTMLElement, deleteBtn: HTMLElement }}
  */
-export function createHeaderSection(course, courseId, coursesUseCase) {
+export function createHeaderSection(course, courseId, coursesUseCase, messages) {
   const header = document.createElement('div');
   header.className = 'flex justify-between items-center mb-lg';
   
@@ -43,15 +42,16 @@ export function createHeaderSection(course, courseId, coursesUseCase) {
  * Crée la section de génération d'impro
  * @param {string} courseId
  * @param {import('../../../core/usecases/coursesUseCase.js').CoursesUseCase} coursesUseCase
+ * @param {Object} messages
  * @returns {{ section: HTMLElement, button: HTMLElement }}
  */
-export function createImproSection(courseId, coursesUseCase) {
+export function createImproSection(courseId, coursesUseCase, messages) {
   const improSection = document.createElement('div');
   improSection.className = 'mb-lg';
   
   const generateImproBtn = document.createElement('button');
   generateImproBtn.type = 'button';
-  generateImproBtn.textContent = COURSE_DETAILS_MESSAGES.LABELS.GENERATE_IMPRO;
+  generateImproBtn.textContent = messages.LABELS.GENERATE_IMPRO;
   generateImproBtn.className = 'btn-primary btn-lg rounded';
   
   // Le handler sera attaché dans index.js
@@ -67,14 +67,15 @@ export function createImproSection(courseId, coursesUseCase) {
  * @param {import('../../../core/usecases/coursesUseCase.js').CoursesUseCase} coursesUseCase
  * @param {() => Promise<void>} refreshStudents
  * @param {() => Promise<void>} updateGenerateImproButton
+ * @param {Object} messages
  * @returns {{ section: HTMLElement, emptyMsg: HTMLElement, list: HTMLElement, form: HTMLElement, input: HTMLElement }}
  */
-export function createStudentsSection(courseId, coursesUseCase, refreshStudents, updateGenerateImproButton) {
+export function createStudentsSection(courseId, coursesUseCase, refreshStudents, updateGenerateImproButton, messages) {
   const studentsSection = document.createElement('div');
   studentsSection.className = 'mb-lg';
 
   const studentsTitle = document.createElement('h3');
-  studentsTitle.textContent = COURSE_DETAILS_MESSAGES.LABELS.STUDENTS_TITLE;
+  studentsTitle.textContent = messages.LABELS.STUDENTS_TITLE;
   studentsTitle.className = 'mb-md';
   studentsSection.appendChild(studentsTitle);
 
@@ -83,7 +84,7 @@ export function createStudentsSection(courseId, coursesUseCase, refreshStudents,
   
   const input = document.createElement('input');
   input.type = 'text';
-  input.placeholder = COURSE_DETAILS_MESSAGES.LABELS.STUDENT_NAME_PLACEHOLDER;
+  input.placeholder = messages.LABELS.STUDENT_NAME_PLACEHOLDER;
   input.required = true;
   input.name = 'studentName';
   

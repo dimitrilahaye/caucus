@@ -4,8 +4,6 @@
  * Gestionnaires d'événements pour la page d'impro
  */
 
-import { IMPRO_MESSAGES } from './constants.js';
-
 /**
  * Crée un gestionnaire de sélection d'élève
  * @param {string} studentId
@@ -63,9 +61,10 @@ export function createPlacesCountHandler(onPlacesCountChange) {
  * @param {import('../../../core/entities/course.js').Course} course
  * @param {Object} deps
  * @param {function(any): void} onImproGenerated
+ * @param {Object} messages
  * @returns {function(): Promise<void>}
  */
-export function createGenerateHandler(selectedStudents, placesCount, course, deps, onImproGenerated) {
+export function createGenerateHandler(selectedStudents, placesCount, course, deps, onImproGenerated, messages) {
   return async () => {
     // Validation des élèves
     const studentError = deps.validationUseCase.validateStudentSelection(selectedStudents, course);
@@ -87,7 +86,7 @@ export function createGenerateHandler(selectedStudents, placesCount, course, dep
       const impro = await deps.improGenerationUseCase.generate(studentsToGenerate, placesCount);
       onImproGenerated(impro);
     } catch (error) {
-      alert(`${IMPRO_MESSAGES.ERRORS.GENERATION_FAILED}: ${error.message}`);
+      alert(`${messages.ERRORS.GENERATION_FAILED}: ${error.message}`);
     }
   };
 }
@@ -98,16 +97,17 @@ export function createGenerateHandler(selectedStudents, placesCount, course, dep
  * @param {number} index
  * @param {Object} deps
  * @param {function(): void} onUpdate
+ * @param {Object} messages
  * @returns {function(): Promise<void>}
  */
-export function createPlaceRegenerateHandler(places, index, deps, onUpdate) {
+export function createPlaceRegenerateHandler(places, index, deps, onUpdate, messages) {
   return async () => {
     try {
       const newPlace = await deps.regenerationUseCase.regeneratePlace(places, index);
       places[index] = newPlace;
       onUpdate();
     } catch (error) {
-      alert(`${IMPRO_MESSAGES.ERRORS.REGENERATION_FAILED}: ${error.message}`);
+      alert(`${messages.ERRORS.REGENERATION_FAILED}: ${error.message}`);
     }
   };
 }
@@ -118,13 +118,14 @@ export function createPlaceRegenerateHandler(places, index, deps, onUpdate) {
  * @param {number} index
  * @param {Object} deps
  * @param {function(): void} onUpdate
+ * @param {Object} messages
  * @returns {function(): Promise<void>}
  */
-export function createPlaceDeleteHandler(places, index, deps, onUpdate) {
+export function createPlaceDeleteHandler(places, index, deps, onUpdate, messages) {
   return async () => {
     const placeName = places[index].name;
     const confirmed = await deps.deletionUseCase.confirmDeletion(
-      IMPRO_MESSAGES.CONFIRMATIONS.DELETE_PLACE(placeName)
+      messages.CONFIRMATIONS.DELETE_PLACE(placeName)
     );
     
     if (confirmed) {
@@ -140,16 +141,17 @@ export function createPlaceDeleteHandler(places, index, deps, onUpdate) {
  * @param {number} index
  * @param {Object} deps
  * @param {function(): void} onUpdate
+ * @param {Object} messages
  * @returns {function(): Promise<void>}
  */
-export function createCharacterRegenerateHandler(assignments, index, deps, onUpdate) {
+export function createCharacterRegenerateHandler(assignments, index, deps, onUpdate, messages) {
   return async () => {
     try {
       const newCharacter = await deps.regenerationUseCase.regenerateCharacter(assignments, index);
       assignments[index].character = newCharacter;
       onUpdate();
     } catch (error) {
-      alert(`${IMPRO_MESSAGES.ERRORS.REGENERATION_FAILED}: ${error.message}`);
+      alert(`${messages.ERRORS.REGENERATION_FAILED}: ${error.message}`);
     }
   };
 }
@@ -160,16 +162,17 @@ export function createCharacterRegenerateHandler(assignments, index, deps, onUpd
  * @param {number} index
  * @param {Object} deps
  * @param {function(): void} onUpdate
+ * @param {Object} messages
  * @returns {function(): Promise<void>}
  */
-export function createMoodRegenerateHandler(assignments, index, deps, onUpdate) {
+export function createMoodRegenerateHandler(assignments, index, deps, onUpdate, messages) {
   return async () => {
     try {
       const newMood = await deps.regenerationUseCase.regenerateMood(assignments, index);
       assignments[index].mood = newMood;
       onUpdate();
     } catch (error) {
-      alert(`${IMPRO_MESSAGES.ERRORS.REGENERATION_FAILED}: ${error.message}`);
+      alert(`${messages.ERRORS.REGENERATION_FAILED}: ${error.message}`);
     }
   };
 }
@@ -180,13 +183,14 @@ export function createMoodRegenerateHandler(assignments, index, deps, onUpdate) 
  * @param {number} index
  * @param {Object} deps
  * @param {function(): void} onUpdate
+ * @param {Object} messages
  * @returns {function(): Promise<void>}
  */
-export function createStudentDeleteHandler(assignments, index, deps, onUpdate) {
+export function createStudentDeleteHandler(assignments, index, deps, onUpdate, messages) {
   return async () => {
     const studentName = assignments[index].student.name;
     const confirmed = await deps.deletionUseCase.confirmDeletion(
-      IMPRO_MESSAGES.CONFIRMATIONS.DELETE_STUDENT(studentName)
+      messages.CONFIRMATIONS.DELETE_STUDENT(studentName)
     );
     
     if (confirmed) {

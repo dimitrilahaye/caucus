@@ -3,6 +3,7 @@
 import { createStudentSelectionSection, createPlacesCountSection, createPlacesList, createAssignmentsList } from './sections.js';
 import { createStudentToggleHandler, createSelectAllHandler, createPlacesCountHandler, createGenerateHandler, createPlaceRegenerateHandler, createPlaceDeleteHandler, createCharacterRegenerateHandler, createMoodRegenerateHandler, createStudentDeleteHandler } from './handlers.js';
 import { IMPRO_CONFIG, IMPRO_MESSAGES } from './constants.js';
+import { createStudentCard } from './utils.js';
 
 /**
  * @param {HTMLElement} root
@@ -88,7 +89,8 @@ export async function renderImproPage(root, params, deps) {
       courseTyped,
       selectedStudents,
       (studentId) => createStudentToggleHandler(studentId, selectedStudents, updateUI)(),
-      createSelectAllHandler(courseTyped, selectedStudents, updateUI)
+      createSelectAllHandler(courseTyped, selectedStudents, updateUI),
+      createStudentCard
     );
     newStudentSection.className += ' student-selection-section';
     container.insertBefore(newStudentSection, container.querySelector('.places-section'));
@@ -118,7 +120,8 @@ export async function renderImproPage(root, params, deps) {
     courseTyped,
     selectedStudents,
     (studentId) => createStudentToggleHandler(studentId, selectedStudents, updateUI)(),
-    createSelectAllHandler(courseTyped, selectedStudents, updateUI)
+    createSelectAllHandler(courseTyped, selectedStudents, updateUI),
+    createStudentCard
   );
   studentSection.className += ' student-selection-section';
   container.appendChild(studentSection);
@@ -150,7 +153,8 @@ export async function renderImproPage(root, params, deps) {
         impro = generatedImpro;
         hasGeneratedImpro = true;
         renderResults();
-      }
+      },
+      IMPRO_MESSAGES
     );
     
     await handler();
@@ -186,8 +190,8 @@ export async function renderImproPage(root, params, deps) {
     
     const placesList = createPlacesList(
       impro.places,
-      (index) => createPlaceRegenerateHandler(impro.places, index, deps, renderResults)(),
-      (index) => createPlaceDeleteHandler(impro.places, index, deps, renderResults)()
+      (index) => createPlaceRegenerateHandler(impro.places, index, deps, renderResults, IMPRO_MESSAGES)(),
+      (index) => createPlaceDeleteHandler(impro.places, index, deps, renderResults, IMPRO_MESSAGES)()
     );
     resultsSection.appendChild(placesList);
     
@@ -199,9 +203,9 @@ export async function renderImproPage(root, params, deps) {
     
     const assignmentsList = createAssignmentsList(
       impro.assignments,
-      (index) => createCharacterRegenerateHandler(impro.assignments, index, deps, renderResults)(),
-      (index) => createMoodRegenerateHandler(impro.assignments, index, deps, renderResults)(),
-      (index) => createStudentDeleteHandler(impro.assignments, index, deps, renderResults)()
+      (index) => createCharacterRegenerateHandler(impro.assignments, index, deps, renderResults, IMPRO_MESSAGES)(),
+      (index) => createMoodRegenerateHandler(impro.assignments, index, deps, renderResults, IMPRO_MESSAGES)(),
+      (index) => createStudentDeleteHandler(impro.assignments, index, deps, renderResults, IMPRO_MESSAGES)()
     );
     resultsSection.appendChild(assignmentsList);
   }

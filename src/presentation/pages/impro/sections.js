@@ -4,17 +4,16 @@
  * Sections d'affichage pour la page d'impro
  */
 
-import { createStudentCard } from './utils.js';
-
 /**
  * Crée la section de sélection des élèves
  * @param {import('../../../core/entities/course.js').Course} course
  * @param {Set<string>} selectedStudents
  * @param {function(string): void} onToggle
  * @param {function(): void} onSelectAll
+ * @param {function(import('../../../core/entities/course.js').Student, boolean, function(string): void): HTMLElement} createStudentCard
  * @returns {HTMLElement}
  */
-export function createStudentSelectionSection(course, selectedStudents, onToggle, onSelectAll) {
+export function createStudentSelectionSection(course, selectedStudents, onToggle, onSelectAll, createStudentCard) {
   const section = document.createElement('div');
   section.className = 'mb-md';
   
