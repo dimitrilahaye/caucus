@@ -4,7 +4,7 @@
 - Application pour aider les profs de théâtre à générer des impros pour leurs cours.
 - Un prof définit ses cours (ex: « Nantes 15-18 ans », « Rennes adultes ») et leurs élèves (ex: « Marion », « Edwin »).
 - Le prof gère des listes: lieux (ex: « Une école », « Un zoo »), émotions (ex: « Joie », « Peur »), personnages (ex: « un dresseur d'ours », « une policière »).
-- Pour une impro: sélectionner un cours et un ou plusieurs élèves; pour chaque élève, tirer aléatoirement un personnage et une émotion (sans doublon de personnage). L’impro se déroule dans un ou plusieurs lieux tirés aléatoirement.
+- Pour une impro: sélectionner un cours et un ou plusieurs élèves; pour chaque élève, tirer aléatoirement un personnage et une émotion (sans doublon de personnage). L'impro se déroule dans un ou plusieurs lieux tirés aléatoirement.
 
 ## Architecture (3 couches + inversion de dépendances)
 - Dossiers sous `src/`:
@@ -12,7 +12,7 @@
   - `datasource/`: persistance via LocalStorage. Implémente les interfaces (ports) définies par `core/`.
   - `presentation/`: gestion du DOM (event listeners, éléments, MAJ du DOM). Consomme les interfaces `core/` via injection.
 - Inversion de dépendances:
-  - `core/` expose des interfaces (ports) pour les accès données et l’aléatoire.
+  - `core/` expose des interfaces (ports) pour les accès données et l'aléatoire.
   - `datasource/` fournit les adaptateurs qui implémentent ces ports.
   - `presentation/` compose le tout (composition root) et injecte les implémentations dans les use-cases `core/`.
 - Règles d'import:
@@ -37,12 +37,12 @@
 - Création / persistence des personnages
 - Création / persistence des émotions
 - Création / persistence des lieux
-- Sélection d’un cours puis d’un ou plusieurs élèves de ce cours.
+- Sélection d'un cours puis d'un ou plusieurs élèves de ce cours.
 - Attribution par élève: 1 personnage + 1 émotion tirés aléatoirement.
 - Aucun doublon de personnage dans une impro.
 - Lieux: 1 ou plusieurs lieux tirés aléatoirement.
 - Aléatoire injectable via `RandomPort` dans `core` (RNG déterministe en tests).
-- Si nombre de personnages uniques < nombre d’élèves sélectionnés → erreur métier claire.
+- Si nombre de personnages uniques < nombre d'élèves sélectionnés → erreur métier claire.
 
 ## Organisation suggérée
 - `src/core/`: `entities/`, `ports/` (StoragePort, RandomPort), `usecases/` (ex: `generateImpro.js`), `utils/`.
@@ -67,12 +67,12 @@ src/presentation/pages/[page-name]/
 #### `index.js` (Point d'entrée)
 - **Responsabilité** : Orchestration générale, état de l'application, composition des sections
 - **Contenu** :
-  - Fonction `render[PageName]Page(root, params, deps)`
+  - Fonction `render[PageName]Page({ root, params, deps })` avec **arguments nommés**
   - Gestion de l'état local de la page (variables `let`)
   - Initialisation des données (appels aux use-cases)
   - Composition des sections principales
   - Fonctions de mise à jour de l'UI (`updateUI()`, `updateXXX()`)
-  - **Appels aux fonctions exposées** par sections.js, handlers.js, utils.js
+  - **Appels aux fonctions exposées** par sections.js, handlers.js, utils.js avec **arguments nommés**
   - **Injection des dépendances** (use-cases, état, callbacks) dans les fonctions appelées
 - **Imports** : sections, handlers, constants, use-cases
 - **Pattern** : État local + fonctions de mise à jour + composition + injection de dépendances
@@ -80,7 +80,7 @@ src/presentation/pages/[page-name]/
 #### `sections.js` (Création DOM)
 - **Responsabilité** : Création des éléments DOM et sections visuelles
 - **Contenu** :
-  - Fonctions `create[SectionName]Section()` qui retournent des `HTMLElement`
+  - Fonctions `create[SectionName]Section({ ... })` qui retournent des `HTMLElement` avec **arguments nommés**
   - Logique pure de création DOM (pas d'event listeners)
   - Fonctions pures qui prennent en arguments tout ce dont elles ont besoin
 - **Pattern** : Fonctions pures qui créent et retournent des éléments DOM
@@ -89,7 +89,7 @@ src/presentation/pages/[page-name]/
 #### `handlers.js` (Gestionnaires d'événements)
 - **Responsabilité** : Création des event listeners pour les interactions utilisateur
 - **Contenu** :
-  - Fonctions `create[ActionName]Handler()` qui retournent des **event listeners**
+  - Fonctions `create[ActionName]Handler({ ... })` qui retournent des **event listeners** avec **arguments nommés**
   - Logique de gestion des événements DOM (preventDefault, extraction des données du formulaire, etc.)
   - Appels aux use-cases pour toute logique métier
   - Gestion des erreurs et feedback utilisateur
@@ -102,7 +102,7 @@ src/presentation/pages/[page-name]/
 #### `utils.js` (Utilitaires spécifiques)
 - **Responsabilité** : Composants réutilisables et fonctions utilitaires
 - **Contenu** :
-  - Fonctions `create[ComponentName]()` pour composants réutilisables
+  - Fonctions `create[ComponentName]({ ... })` pour composants réutilisables avec **arguments nommés**
   - Fonctions utilitaires spécifiques à la page
   - Helpers pour feedback visuel, création DOM, etc.
   - **Injection des event listeners** via `addEventListener()` avec les handlers de `handlers.js`
@@ -134,12 +134,13 @@ src/presentation/pages/[page-name]/
 7. **Orchestration par index.js** : `index.js` appelle les fonctions exposées par les autres fichiers en leur passant toutes leurs dépendances (use-cases, état, callbacks)
 8. **Règles métier** : TOUTES les règles/invariants métier doivent être gérées via les use-cases
 9. **Typage JSDoc** : Tous les fichiers doivent être typés avec `// @ts-check` et JSDoc complet
+10. **Arguments nommés** : TOUTES les fonctions doivent utiliser des arguments nommés (objet avec propriétés nommées)
 
 ### Exemple concret du flux handlers.js → utils.js
 
 ```javascript
 // handlers.js (AUCUN import)
-export function createCourseFormSubmitHandler(coursesUseCase, onRefresh) {
+export function createCourseFormSubmitHandler({ coursesUseCase, onRefresh }) {
   return async (e) => {
     e.preventDefault();
     const form = /** @type {HTMLFormElement} */ (e.target);
@@ -159,7 +160,7 @@ export function createCourseFormSubmitHandler(coursesUseCase, onRefresh) {
 }
 
 // utils.js (AUCUN import)
-export function createCourseForm(onSubmitHandler) {
+export function createCourseForm({ onSubmitHandler }) {
   const form = document.createElement('form');
   // ... création du DOM ...
   form.addEventListener('submit', onSubmitHandler); // ← Handler injecté
@@ -167,8 +168,85 @@ export function createCourseForm(onSubmitHandler) {
 }
 
 // index.js (orchestrateur)
-const formSubmitHandler = createCourseFormSubmitHandler(deps.coursesUseCase, refresh);
-const form = createCourseForm(formSubmitHandler);
+const formSubmitHandler = createCourseFormSubmitHandler({ coursesUseCase: deps.coursesUseCase, onRefresh: refresh });
+const form = createCourseForm({ onSubmitHandler: formSubmitHandler });
+```
+
+## Arguments nommés (OBLIGATOIRE - TOUS LES FICHIERS)
+- **TOUTES** les fonctions du projet doivent utiliser des arguments nommés
+- **Pattern** : `function name({ param1, param2, param3 })` au lieu de `function name(param1, param2, param3)`
+- **JSDoc** : `@param {{ param1: Type1, param2: Type2, param3: Type3 }} params`
+- **Appels** : `functionName({ param1: value1, param2: value2, param3: value3 })`
+- **S'applique à** :
+  - ✅ Toutes les fonctions exportées
+  - ✅ Toutes les fonctions internes
+  - ✅ Tous les use-cases (`core/usecases/`)
+  - ✅ Tous les adapters (`datasource/`)
+  - ✅ Tous les composants (`presentation/components/`)
+  - ✅ Toutes les pages (`presentation/pages/`)
+  - ✅ Tous les utilitaires (`core/utils/`, `presentation/pages/*/utils.js`)
+  - ✅ Tous les handlers (`presentation/pages/*/handlers.js`)
+  - ✅ Toutes les sections (`presentation/pages/*/sections.js`)
+  - ✅ Tous les fichiers de composition (`presentation/compose/`)
+  - ✅ Tous les fichiers de routage (`presentation/router.js`)
+  - ✅ Tous les fichiers principaux (`main.js`)
+- **Avantages** :
+  - Lisibilité maximale : chaque paramètre est clairement identifié
+  - Maintenance facilitée : ajout de paramètres sans casser les appels existants
+  - Sécurité renforcée : impossible de passer les arguments dans le mauvais ordre
+  - Documentation auto-générée : JSDoc avec noms des propriétés
+  - IntelliSense amélioré : meilleure autocomplétion dans l'IDE
+
+### Exemples d'arguments nommés (TOUS LES FICHIERS)
+
+```javascript
+// ❌ AVANT - Arguments positionnels
+export function createStudentCard(student, isSelected, onToggle) { ... }
+createStudentCard(student, true, handleToggle);
+
+// ✅ APRÈS - Arguments nommés
+export function createStudentCard({ student, isSelected, onToggle }) { ... }
+createStudentCard({ student, isSelected: true, onToggle: handleToggle });
+
+// ❌ AVANT - Use-case avec arguments positionnels
+export function createCharactersUseCase(deps) { ... }
+createCharactersUseCase({ charactersPort: adapter });
+
+// ✅ APRÈS - Use-case avec arguments nommés
+export function createCharactersUseCase({ deps }) { ... }
+createCharactersUseCase({ deps: { charactersPort: adapter } });
+
+// ❌ AVANT - Adapter avec arguments positionnels
+function writeAll(characters) { ... }
+writeAll([character, ...characters]);
+
+// ✅ APRÈS - Adapter avec arguments nommés
+function writeAll({ characters }) { ... }
+writeAll({ characters: [character, ...characters] });
+
+// ❌ AVANT - Handler avec arguments positionnels
+export function createCourseFormSubmitHandler(coursesUseCase, onRefresh) { ... }
+createCourseFormSubmitHandler(deps.coursesUseCase, refresh);
+
+// ✅ APRÈS - Handler avec arguments nommés
+export function createCourseFormSubmitHandler({ coursesUseCase, onRefresh }) { ... }
+createCourseFormSubmitHandler({ coursesUseCase: deps.coursesUseCase, onRefresh: refresh });
+
+// ❌ AVANT - Utilitaire avec arguments positionnels
+function migrateKey(oldKey, newKey) { ... }
+migrateKey(oldKey, newKey);
+
+// ✅ APRÈS - Utilitaire avec arguments nommés
+function migrateKey({ oldKey, newKey }) { ... }
+migrateKey({ oldKey, newKey });
+
+// ❌ AVANT - Composant avec arguments positionnels
+export function renderBurgerMenu(mountOn) { ... }
+renderBurgerMenu(menuMount);
+
+// ✅ APRÈS - Composant avec arguments nommés
+export function renderBurgerMenu({ mountOn }) { ... }
+renderBurgerMenu({ mountOn: menuMount });
 ```
 
 ## PWA & Build
@@ -177,9 +255,11 @@ const form = createCourseForm(formSubmitHandler);
 
 ## Style de code
 - Noms explicites; éviter les abréviations obscures.
-- Retours précoces; éviter l’imbrication profonde; pas de `try/catch` superflu.
+- Retours précoces; éviter l'imbrication profonde; pas de `try/catch` superflu.
 - Commentaires concis pour invariants et décisions non évidentes.
 - Aucune dépendance au DOM/Storage dans `core`.
+- **Arguments nommés** : TOUTES les fonctions doivent utiliser des arguments nommés (objet avec propriétés nommées).
+- **Cohérence totale** : Aucune exception à la règle des arguments nommés dans tout le projet.
 
 ## Par défaut, l'IA doit
 - Respecter les couches et l'inversion de dépendances.
@@ -188,3 +268,7 @@ const form = createCourseForm(formSubmitHandler);
 - Écrire/mettre à jour les types via JSDoc.
 - Centraliser l'instanciation dans `presentation/compose`.
 - Garder `core` pur et indépendant de l'environnement.
+- **TOUJOURS** utiliser des arguments nommés pour toutes les fonctions dans tous les fichiers.
+- **JAMAIS** créer de fonctions avec des arguments positionnels, peu importe le fichier.
+- **VÉRIFIER** que chaque nouvelle fonction suit le pattern `function name({ param1, param2 })`.
+- **APPLIQUER** cette règle de manière systématique et cohérente dans tout le projet.
