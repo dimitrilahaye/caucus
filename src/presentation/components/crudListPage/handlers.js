@@ -115,31 +115,3 @@ export function createEditableKeydownHandler({ editableElement, initialValue }) 
   };
 }
 
-/**
- * Crée le gestionnaire de suppression d'un élément
- * @param {{ itemName: string, itemId: string, entityName: string, useCase: Object, onSuccess: () => void }} params
- * @returns {() => Promise<void>}
- */
-export function createDeleteItemHandler({ itemName, itemId, entityName, useCase, onSuccess }) {
-  return async () => {
-    const confirmed = window.confirm(`${entityName} "${itemName}" ?`);
-    if (!confirmed) return;
-    const ok = await useCase.remove(itemId);
-    if (ok) onSuccess();
-  };
-}
-
-/**
- * Crée le gestionnaire de soumission du formulaire d'ajout
- * @param {{ input: HTMLInputElement, useCase: Object, onSuccess: () => void }} params
- * @returns {() => Promise<void>}
- */
-export function createFormSubmitHandler({ input, useCase, onSuccess }) {
-  return async () => {
-    const name = input.value.trim();
-    if (!name) return;
-    await useCase.create(name);
-    input.value = '';
-    onSuccess();
-  };
-}

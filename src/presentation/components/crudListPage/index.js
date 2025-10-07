@@ -5,11 +5,9 @@ import { createCrudListPageSection } from './sections.js';
 import { 
   createEditableFocusHandler, 
   createEditableBlurHandler, 
-  createEditableKeydownHandler, 
-  createDeleteItemHandler,
-  createFormSubmitHandler 
+  createEditableKeydownHandler
 } from './handlers.js';
-import { createEditableElement, createDeleteButton, createItemCard, createEmptyMessage } from './utils.js';
+import { createDeleteButton, createItemCard, createEmptyMessage } from './utils.js';
 
 /**
  * Composant générique pour les pages CRUD avec édition inline

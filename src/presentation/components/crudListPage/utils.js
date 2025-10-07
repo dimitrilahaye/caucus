@@ -5,26 +5,6 @@
  */
 
 /**
- * Crée un élément éditable avec contenteditable
- * @param {{ initialValue: string, itemId: string, onBlur: (newName: string) => Promise<void>, onFocus: () => void, onKeydown: (e: KeyboardEvent) => void }} params
- * @returns {HTMLElement}
- */
-export function createEditableElement({ initialValue, itemId, onBlur, onFocus, onKeydown }) {
-  const editableName = document.createElement('span');
-  editableName.textContent = initialValue;
-  editableName.contentEditable = 'true';
-  editableName.className = 'editable-name px-1 py-0.5 rounded hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500';
-  editableName.style.minHeight = '1.5rem';
-  editableName.style.display = 'inline-block';
-
-  editableName.addEventListener('focus', onFocus);
-  editableName.addEventListener('blur', () => onBlur(editableName.textContent.trim()));
-  editableName.addEventListener('keydown', onKeydown);
-
-  return editableName;
-}
-
-/**
  * Crée un bouton de suppression
  * @param {{ itemName: string, itemId: string, onClick: () => Promise<void> }} params
  * @returns {HTMLElement}
